@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="ray">
+</Property><Property Name="Solution File" Value="C:\Users\cktang\Desktop\working_4411\working_4411\rt2002ustsp-skel\rt2002ustsp-skel\ray.sln">
+</Property><Property Name="User Options File" Value="C:\Users\cktang\Desktop\working_4411\working_4411\rt2002ustsp-skel\rt2002ustsp-skel\ray.suo">
+</Property><Property Name="Date" Value="Wednesday, January 25, 2012">
+</Property><Property Name="Time" Value="15:55 PM">
+</Property></Properties><Event ErrorLevel="0" Project="" Source="ray.sln" Description="File successfully backed up as C:\Users\cktang\Desktop\working_4411\working_4411\rt2002ustsp-skel\rt2002ustsp-skel\ray.sln.old">
+</Event><Event ErrorLevel="0" Project="" Source="ray.suo" Description="File successfully backed up as C:\Users\cktang\Desktop\working_4411\working_4411\rt2002ustsp-skel\rt2002ustsp-skel\ray.suo.old">
+</Event><Event ErrorLevel="0" Project="ray" Source="ray.vcproj" Description="Converting project file 'C:\Users\cktang\Desktop\working_4411\working_4411\rt2002ustsp-skel\rt2002ustsp-skel\ray.vcproj'.">
+</Event><Event ErrorLevel="1" Project="ray" Source="ray.vcproj" Description="VCWebServiceProxyGeneratorTool is no longer supported. The tool has been removed from your project settings.">
+</Event><Event ErrorLevel="1" Project="ray" Source="ray.vcproj" Description="MSB8012: $(TargetPath) ('C:\Users\cktang\Desktop\working_4411\working_4411\rt2002ustsp-skel\rt2002ustsp-skel\.\Release\ray.exe') does not match the Linker's OutputFile property value '.\Release/ray.exe' ('C:\Users\cktang\Desktop\working_4411\working_4411\rt2002ustsp-skel\rt2002ustsp-skel\Release/ray.exe') in project configuration 'Release|Win32'. This may cause your project to build incorrectly. To correct this, please make sure that $(TargetPath) property value matches the value specified in %(Link.OutputFile).">
+</Event><Event ErrorLevel="1" Project="ray" Source="ray.vcproj" Description="MSB8012: $(TargetPath) ('C:\Users\cktang\Desktop\working_4411\working_4411\rt2002ustsp-skel\rt2002ustsp-skel\.\Debug\ray.exe') does not match the Linker's OutputFile property value '.\Debug/ray.exe' ('C:\Users\cktang\Desktop\working_4411\working_4411\rt2002ustsp-skel\rt2002ustsp-skel\Debug/ray.exe') in project configuration 'Debug|Win32'. This may cause your project to build incorrectly. To correct this, please make sure that $(TargetPath) property value matches the value specified in %(Link.OutputFile).">
+</Event><Event ErrorLevel="0" Project="ray" Source="ray.vcproj" Description="Done converting to new project file 'C:\Users\cktang\Desktop\working_4411\working_4411\rt2002ustsp-skel\rt2002ustsp-skel\ray.vcxproj'.">
+</Event><Event ErrorLevel="3" Project="ray" Source="ray.vcproj" Description="Converted">
+</Event><Event ErrorLevel="0" Project="" Source="ray.sln" Description="Solution converted successfully">
+</Event><Event ErrorLevel="3" Project="" Source="ray.sln" Description="Converted">
+</Event></UpgradeLog>
