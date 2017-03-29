@@ -280,7 +280,7 @@ public:
 	void setQuadric(double value) { quadric = value; }
 	double getConstant() { return constant; }
 	double getLinear() { return linear * 0.1; }
-	double getQuadric() { return quadric * 0.01; }
+	double getQuadric() { return quadric * 0.05; }
 
 	void setAmbientLight(double value) { ambientLight = value; }
 	double getAmbientLight() { return ambientLight; }

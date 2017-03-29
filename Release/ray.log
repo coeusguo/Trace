@@ -1,9 +1,48 @@
-﻿  material.cpp
+﻿  RayTracer.cpp
+c:\users\coeus\desktop\comp4411\trace\trace\src\scene/scene.h(290): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+c:\users\coeus\desktop\comp4411\trace\trace\src\fileio/parse.h(180): warning C4018: '<': signed/unsigned mismatch
+  Box.cpp
+c:\users\coeus\desktop\comp4411\trace\trace\src\sceneobjects\../scene/scene.h(290): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+  Cone.cpp
+c:\users\coeus\desktop\comp4411\trace\trace\src\sceneobjects\../scene/scene.h(290): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+  Cylinder.cpp
+c:\users\coeus\desktop\comp4411\trace\trace\src\sceneobjects\../scene/scene.h(290): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+  Sphere.cpp
+c:\users\coeus\desktop\comp4411\trace\trace\src\sceneobjects\../scene/scene.h(290): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+  Square.cpp
+c:\users\coeus\desktop\comp4411\trace\trace\src\sceneobjects\../scene/scene.h(290): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+  trimesh.cpp
+c:\users\coeus\desktop\comp4411\trace\trace\src\sceneobjects\../scene/scene.h(290): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+src\SceneObjects\trimesh.cpp(91): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+src\SceneObjects\trimesh.cpp(102): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  read.cpp
+c:\users\coeus\desktop\comp4411\trace\trace\src\fileio\../scene/scene.h(290): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+c:\users\coeus\desktop\comp4411\trace\trace\src\fileio\parse.h(180): warning C4018: '<': signed/unsigned mismatch
+  main.cpp
+c:\users\coeus\desktop\comp4411\trace\trace\src\scene/scene.h(290): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+  light.cpp
+c:\users\coeus\desktop\comp4411\trace\trace\src\scene\scene.h(290): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+  material.cpp
 c:\users\coeus\desktop\comp4411\trace\trace\src\scene\scene.h(290): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
 src\scene\material.cpp(30): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 src\scene\material.cpp(33): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 src\scene\material.cpp(39): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 src\scene\material.cpp(42): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  ray.cpp
+c:\users\coeus\desktop\comp4411\trace\trace\src\scene\scene.h(290): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+  scene.cpp
+c:\users\coeus\desktop\comp4411\trace\trace\src\scene\scene.h(290): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+  TraceGLWindow.cpp
+c:\users\coeus\desktop\comp4411\trace\trace\src\scene/scene.h(290): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+  TraceUI.cpp
+c:\users\coeus\desktop\comp4411\trace\trace\src\scene/scene.h(290): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+src\ui\TraceUI.cpp(34): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+src\ui\TraceUI.cpp(37): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+src\ui\TraceUI.cpp(180): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
+  Generating Code...
 fltk.lib(case.obj) : warning LNK4204: 'C:\Users\Coeus\Desktop\comp4411\Trace\Trace\Release\vc140.pdb' is missing debugging information for referencing module; linking object as if no debug info
 fltk.lib(filename_absolute.obj) : warning LNK4204: 'C:\Users\Coeus\Desktop\comp4411\Trace\Trace\Release\vc140.pdb' is missing debugging information for referencing module; linking object as if no debug info
 fltk.lib(filename_expand.obj) : warning LNK4204: 'C:\Users\Coeus\Desktop\comp4411\Trace\Trace\Release\vc140.pdb' is missing debugging information for referencing module; linking object as if no debug info
