@@ -1,7 +1,7 @@
 // The main ray tracer.
 
 #include <Fl/fl_ask.h>
-
+#
 #include "RayTracer.h"
 #include "scene/light.h"
 #include "scene/material.h"
@@ -17,37 +17,116 @@ vec3f RayTracer::trace( Scene *scene, double x, double y )
 {
     ray r( vec3f(0,0,0), vec3f(0,0,0) );
     scene->getCamera()->rayThrough( x,y,r );
-	return traceRay( scene, r, vec3f(1.0,1.0,1.0), 0 ).clamp();
+	return traceRay( scene, r, vec3f(1.0,1.0,1.0), 0 ,false).clamp();
 }
 
 // Do recursive ray tracing!  You'll want to insert a lot of code here
 // (or places called from here) to handle reflection, refraction, etc etc.
-vec3f RayTracer::traceRay( Scene *scene, const ray& r, 
-	const vec3f& thresh, int depth )
+vec3f RayTracer::traceRay(Scene *scene, const ray& r,
+	const vec3f& thresh, int depth,bool isInside)
 {
 	isect i;
+	
+	if (depth > scene->getDepth())
+		return vec3f(0.0, 0.0, 0.0);
 
-	if( scene->intersect( r, i ) ) {
-		// YOUR CODE HERE
-
-		// An intersection occured!  We've got work to do.  For now,
-		// this code gets the material for the surface that was intersected,
-		// and asks that material to provide a color for the ray.  
-
-		// This is a great place to insert code for recursive ray tracing.
-		// Instead of just returning the result of shade(), add some
-		// more steps: add in the contributions from reflected and refracted
-		// rays.
+	if (scene->intersect(r, i)) {
 
 		const Material& m = i.getMaterial();
-		return m.shade(scene, r, i);
-	
-	} else {
+		vec3f phong(0.0, 0.0, 0.0);
+		vec3f refColor(0.0, 0.0, 0.0);
+		vec3f refraColor(0.0, 0.0, 0.0);
+
+		//phong shading
+		phong = m.shade(scene, r, i);
+
+		vec3f normal = i.N;
+		vec3f reflecVec = r.getDirection() - r.getDirection() * normal * 2 * normal;
+		reflecVec = reflecVec.normalize();
+		ray newRay(r.at(i.t), reflecVec);
+		
+		//reflection
+		refColor = traceRay(scene, newRay, thresh, depth + 1,isInside);
+
+		refColor = prod(refColor, m.kr);
+
+		//the matrial is transmissive if length > 0
+		if (i.getMaterial().kt.length() > 0) {
+			double index = i.getMaterial().index;
+			double indexAir = 1.0;
+
+			//check whether the ray is inside the box
+			vec3f pos = r.at(i.t);//the position of intersection point
+			vec3f dir = r.getDirection();
+
+			
+			//the ray is perpendicuar to the surface
+
+			if (!isInside) {//air->object
+				
+				if (abs(dir * normal) < RAY_EPSILON) {//dir is conside with normal
+					ray newRay(pos, dir);
+					refraColor = traceRay(scene, newRay, thresh, depth + 1,true);
+				}
+				else {
+
+					double sinAir = sqrt(1 - pow(dir * normal, 2));
+					double radAir = asin(sinAir);
+					
+					double sinTheta2 = sinAir / index;//index of air is 1.0,so omitted here
+					double delta = radAir - asin(sinTheta2);
+					double sinTheta1 = sin(delta);
+
+
+					double fac = sinTheta2 / sinTheta1;
+					vec3f newDir = -(normal + fac * (-dir));
+					newDir = newDir.normalize();
+					ray refraRay(pos, newDir);
+					refraColor = traceRay(scene, refraRay, thresh, depth + 1, true);
+					//fl_message();
+				}
+				
+
+			}
+			else {//obj->air
+				if (abs(dir * normal) < RAY_EPSILON) {
+					ray newRay(pos, dir);
+					refraColor = traceRay(scene, newRay, thresh, depth + 1, false);
+				}
+				else {
+					double critical = 1.0 / index;//totally inner reflection if sinTheta is greater than this
+					double sinTheta1 = sqrt(1 - pow(dir * normal, 2));
+					if (critical - sinTheta1 > RAY_EPSILON) {
+						double sinAir = index * sinTheta1;
+						double radAir = asin(sinAir);
+						double sinTheta2 = sin(radAir - asin(sinTheta1));
+						double sinTheta3 = sin(3.1416 - radAir);
+						double fac = sinTheta3 / sinTheta2;
+						vec3f newDir = -(-normal + fac * (-dir));
+						newDir = newDir.normalize();
+						ray refraRay(pos, newDir);
+						refraColor = traceRay(scene, refraRay, thresh, depth + 1,false);
+					}
+					else {
+
+						refraColor = vec3f(0, 0, 0);
+					}
+				}
+			}
+			
+			
+		}
+		refraColor = prod(refraColor, m.kt);
+
+		vec3f result = phong + refColor + refraColor;
+		return result;
+	}
+	else {
 		// No intersection.  This ray travels to infinity, so we color
 		// it according to the background color, which in this (simple) case
 		// is just black.
 
-		return vec3f( 0.0, 0.0, 0.0 );
+		return vec3f(0.0, 0.0, 0.0);
 	}
 }
 

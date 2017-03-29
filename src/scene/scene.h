@@ -285,6 +285,9 @@ public:
 	void setAmbientLight(double value) { ambientLight = value; }
 	double getAmbientLight() { return ambientLight; }
 
+	//recurtion depth
+	void setDepth(int value) { depth = value; }
+	int getDepth() { return depth; }
 private:
     list<Geometry*> objects;
 	list<Geometry*> nonboundedobjects;
@@ -296,7 +299,7 @@ private:
 	double constant;
 	double linear;
 	double quadric;
-
+	double depth;
 	double ambientLight;
 
 	// Each object in the scene, provided that it has hasBoundingBoxCapability(),

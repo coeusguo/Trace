@@ -35,7 +35,7 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 			diffuse = 0;
 
 		vec3f ref = lightDirection - lightDirection * normal * 2 * normal;//the reflection of the light direction vector
-		ref.normalize();
+		ref = ref.normalize();
 		float spec = ref * r.getDirection();
 		if (spec < 0)
 			spec = 0;
@@ -51,6 +51,8 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 	for (int i = 0; i < 3; i++)
 		if (color[i] > 255)
 			color[i] = 255;
-
+	vec3f trans(1.0, 1.0, 1.0);
+	trans -= i.getMaterial().kt;
+	color = prod(color, trans);
 	return color;
 }

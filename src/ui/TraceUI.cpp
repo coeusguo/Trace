@@ -89,7 +89,8 @@ void TraceUI::cb_sizeSlides(Fl_Widget* o, void* v)
 
 void TraceUI::cb_depthSlides(Fl_Widget* o, void* v)
 {
-	((TraceUI*)(o->user_data()))->m_nDepth=int( ((Fl_Slider *)o)->value() ) ;
+	((TraceUI*)(o->user_data()))->m_nDepth=int( ((Fl_Slider *)o)->value() );
+	((TraceUI*)(o->user_data()))->raytracer->getScene()->setDepth(((TraceUI*)(o->user_data()))->m_nDepth);
 }
 
 //distance attenuation
