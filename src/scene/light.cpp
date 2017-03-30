@@ -77,3 +77,37 @@ vec3f PointLight::shadowAttenuation(const vec3f& P) const
 	else
 		return vec3f(1, 1, 1);
 }
+
+vec3f SpotLight::getColor(const vec3f& P) const
+{
+	// Color doesn't depend on P 
+	return color;
+}
+
+vec3f SpotLight::getDirection(const vec3f& P) const
+{
+	return (position - P).normalize();
+}
+
+double SpotLight::distanceAttenuation(const vec3f& P) const {
+	vec3f d = (P - position).normalize();
+	double value = d * direction;
+	if (value >= angleCos)
+		return 1.0;
+	else
+		return 0.0;
+}
+
+vec3f SpotLight::shadowAttenuation(const vec3f& P) const
+{
+	
+	Scene* scene = getScene();
+	vec3f direction = getDirection(P);
+	isect i;
+	ray lightRay(P, direction);
+	bool hasOne = scene->intersect(lightRay, i);
+	if (hasOne)
+		return i.getMaterial().kt;
+	else
+		return vec3f(1, 1, 1);
+}

@@ -49,4 +49,25 @@ protected:
 	vec3f position;
 };
 
+class SpotLight
+	: public Light
+{
+public:
+	SpotLight(Scene *scene, const vec3f& pos, const vec3f& direction, const vec3f edgePlace, const vec3f& color)
+		: Light(scene, color), position(pos), direction(direction) {
+		angleCos = cos((edgePlace[0] / 180)*3.1416);
+		//cout << "success" << endl;
+	}
+	virtual vec3f shadowAttenuation(const vec3f& P) const;
+	virtual double distanceAttenuation(const vec3f& P) const;
+	virtual vec3f getColor(const vec3f& P) const;
+	virtual vec3f getDirection(const vec3f& P) const;
+
+protected:
+	vec3f position;
+	vec3f direction;
+	double angleCos;
+};
+
+
 #endif // __LIGHT_H__
