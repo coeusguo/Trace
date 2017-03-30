@@ -12,6 +12,7 @@
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Value_Slider.H>
 #include <FL/Fl_Check_Button.H>
+#include <FL/Fl_Light_Button.H>
 #include <FL/Fl_Button.H>
 
 #include <FL/fl_file_chooser.H>		// FLTK file chooser
@@ -33,10 +34,14 @@ public:
 	Fl_Slider*			m_attenuationLinearSlider;
 	Fl_Slider*			m_attenuationQuadricSlider;
 	Fl_Slider*			m_ambientLightSlider;
+	Fl_Slider*			m_AntiAliasingGridSiseSlider;
 
 
 	Fl_Button*			m_renderButton;
 	Fl_Button*			m_stopButton;
+	Fl_Button*			m_AntiSuperSampButton;
+	Fl_Button*			m_AntiAdaptSampButton;
+
 
 	TraceGLWindow*		m_traceGlWindow;
 
@@ -72,6 +77,9 @@ private:
 	static void cb_attenuationLinearSlides(Fl_Widget* o, void* v);
 	static void cb_attenuationQuadricSlides(Fl_Widget* o, void* v);
 	static void cb_ambientLightSlides(Fl_Widget* o, void* v);
+	static void cb_Anti_Super_button(Fl_Widget* o, void* v);
+	static void cb_Anti_Adaptive_button(Fl_Widget* o, void* v);
+	static void cb_antiAliasingGridSizeSlides(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);

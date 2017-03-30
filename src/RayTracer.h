@@ -6,6 +6,7 @@
 #include "scene/scene.h"
 #include "scene/ray.h"
 
+
 class RayTracer
 {
 public:
@@ -30,6 +31,12 @@ public:
 		return scene;
 	}
 
+	void setSupperSamping(bool value) { supperSampling = value; }
+	bool getSupperSamping() { return supperSampling; }
+	void setAdaptive(bool value) { adaptive = value; }
+	bool getAdaptive() { return adaptive; }
+	void setGridSize(int value) { gridSize = value; }
+
 private:
 	unsigned char *buffer;
 	int buffer_width, buffer_height;
@@ -37,6 +44,11 @@ private:
 	Scene *scene;
 
 	bool m_bSceneLoaded;
+	
+	//anti-aliasing
+	bool supperSampling;
+	bool adaptive;
+	int gridSize;
 };
 
 #endif // __RAYTRACER_H__

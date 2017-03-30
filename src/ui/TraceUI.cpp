@@ -112,6 +112,28 @@ void TraceUI::cb_ambientLightSlides(Fl_Widget* o, void* v) {
 	pUI->raytracer->getScene()->setAmbientLight(double(((Fl_Slider *)o)->value()));
 }
 
+//anti-aliasing
+void TraceUI::cb_Anti_Super_button(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->raytracer->setSupperSamping(!pUI->raytracer->getSupperSamping());
+	if(pUI->raytracer->getSupperSamping())
+		pUI->m_AntiAdaptSampButton->deactivate();
+	else
+		pUI->m_AntiAdaptSampButton->activate();
+}
+void TraceUI::cb_Anti_Adaptive_button(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->raytracer->setAdaptive(!pUI->raytracer->getAdaptive());
+	if (pUI->raytracer->getAdaptive())
+		pUI->m_AntiSuperSampButton->deactivate();
+	else
+		pUI->m_AntiSuperSampButton->activate();
+}
+void TraceUI::cb_antiAliasingGridSizeSlides(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->raytracer->setGridSize(int(((Fl_Slider *)o)->value()));
+}
+
 void TraceUI::cb_render(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -234,7 +256,7 @@ TraceUI::TraceUI() {
 	// init.
 	m_nDepth = 0;
 	m_nSize = 150;
-	m_mainWindow = new Fl_Window(100, 40, 350, 200, "Ray <Not Loaded>");
+	m_mainWindow = new Fl_Window(100, 40, 350, 400, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
 		m_menubar = new Fl_Menu_Bar(0, 0, 350, 25);
@@ -317,6 +339,7 @@ TraceUI::TraceUI() {
 		m_ambientLightSlider->value(0.2);
 		m_ambientLightSlider->align(FL_ALIGN_RIGHT);
 		m_ambientLightSlider->callback(cb_ambientLightSlides);
+
 		m_renderButton = new Fl_Button(270, 27, 70, 25, "&Render");
 		m_renderButton->user_data((void*)(this));
 		m_renderButton->callback(cb_render);
@@ -324,6 +347,32 @@ TraceUI::TraceUI() {
 		m_stopButton = new Fl_Button(270, 55, 70, 25, "&Stop");
 		m_stopButton->user_data((void*)(this));
 		m_stopButton->callback(cb_stop);
+
+		//anti aliasing by supper sampling button
+		m_AntiSuperSampButton = new Fl_Light_Button(10, 180, 130, 25, "&Supper Sampling");
+		m_AntiSuperSampButton->user_data((void*)(this));
+		m_AntiSuperSampButton->callback(cb_Anti_Super_button);
+		m_AntiSuperSampButton->value(false);
+
+		//anti aliasing by supper sampling button
+		m_AntiAdaptSampButton = new Fl_Light_Button(150, 180, 190, 25, "&Adaptive Supper Sampling");
+		m_AntiAdaptSampButton->user_data((void*)(this));
+		m_AntiAdaptSampButton->callback(cb_Anti_Adaptive_button);
+		m_AntiAdaptSampButton->value(false);
+
+		//anti aliasing grid size slider
+		// install slider ambient light
+		m_ambientLightSlider = new Fl_Value_Slider(10, 210, 180, 20, "Number of sup-pixel");
+		m_ambientLightSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_ambientLightSlider->type(FL_HOR_NICE_SLIDER);
+		m_ambientLightSlider->labelfont(FL_COURIER);
+		m_ambientLightSlider->labelsize(12);
+		m_ambientLightSlider->minimum(1);
+		m_ambientLightSlider->maximum(5);
+		m_ambientLightSlider->step(1);
+		m_ambientLightSlider->value(3);
+		m_ambientLightSlider->align(FL_ALIGN_RIGHT);
+		m_ambientLightSlider->callback(cb_antiAliasingGridSizeSlides);
 
 		m_mainWindow->callback(cb_exit2);
 		m_mainWindow->when(FL_HIDE);

@@ -1,7 +1,6 @@
 // The main ray tracer.
 
 #include <Fl/fl_ask.h>
-#
 #include "RayTracer.h"
 #include "scene/light.h"
 #include "scene/material.h"
@@ -16,7 +15,25 @@
 vec3f RayTracer::trace( Scene *scene, double x, double y )
 {
     ray r( vec3f(0,0,0), vec3f(0,0,0) );
-    scene->getCamera()->rayThrough( x,y,r );
+	scene->getCamera()->rayThrough(x, y, r);
+	if (supperSampling) {
+		vec3f result(0.0, 0.0, 0.0);
+		double stepX = 1.0 / (double(gridSize) * buffer_width);
+		double stepY = 1.0 / (double(gridSize) * buffer_height);
+		x = x + stepX * 0.5 - 0.5;
+		y = y + stepY * 0.5 - 0.5;
+		for (int Y = 1; Y <= gridSize; Y++) {
+			for (int X = 1; X <= gridSize; X++) {
+				scene->getCamera()->rayThrough(x, y, r);
+				result += traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0, false).clamp();
+				x += stepX;
+			}
+			y += stepY;
+		}
+		double number = 1.0/(gridSize * gridSize);
+		result *= number;
+		return result;
+	}
 	return traceRay( scene, r, vec3f(1.0,1.0,1.0), 0 ,false).clamp();
 }
 
@@ -26,7 +43,6 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 	const vec3f& thresh, int depth,bool isInside)
 {
 	isect i;
-	
 	if (depth > scene->getDepth())
 		return vec3f(0.0, 0.0, 0.0);
 
@@ -137,6 +153,9 @@ RayTracer::RayTracer()
 	scene = NULL;
 
 	m_bSceneLoaded = false;
+	supperSampling = false;
+	adaptive = false;
+	gridSize = 3;
 }
 
 
@@ -229,9 +248,10 @@ void RayTracer::tracePixel( int i, int j )
 	if( !scene )
 		return;
 
+	
 	double x = double(i)/double(buffer_width);
 	double y = double(j)/double(buffer_height);
-
+	
 	col = trace( scene,x,y );
 
 	unsigned char *pixel = buffer + ( i + j * buffer_width ) * 3;

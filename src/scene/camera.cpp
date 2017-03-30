@@ -23,6 +23,7 @@ Camera::rayThrough( double x, double y, ray &r )
     y -= 0.5;
     vec3f dir = look + x * u + y * v;
     r = ray( eye, dir.normalize() );
+
 }
 
 void
@@ -90,6 +91,7 @@ Camera::update()
     v = m * vec3f( 0,1,0 ) * normalizedHeight;
     look = m * vec3f( 0,0,-1 );
 }
+
 
 
 

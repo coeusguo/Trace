@@ -18,7 +18,9 @@ class SceneObject;
 class ray {
 public:
 	ray( const vec3f& pp, const vec3f& dd )
-		: p( pp ), d( dd ) {}
+		: p(pp), d(dd) {
+		planeCoord = NULL;
+	}
 	ray( const ray& other ) 
 		: p( other.p ), d( other.d ) {}
 	~ray() {}
@@ -31,10 +33,13 @@ public:
 
 	vec3f getPosition() const { return p; }
 	vec3f getDirection() const { return d; }
+	void setPlaneCoord(double* coords) { planeCoord = coords; }
+	const double* getPlaneCoord()const { return planeCoord; }
 
 protected:
 	vec3f p;
 	vec3f d;
+	double* planeCoord;
 };
 
 // The description of an intersection point.

@@ -45,7 +45,6 @@ double PointLight::distanceAttenuation( const vec3f& P ) const
 	double distance = (P - position).length();
 	Scene* scene = getScene();
 	double att = 1.0 / (scene->getConstant() + scene->getLinear() * distance + scene->getQuadric() * distance * distance);
-	cout << att << endl;
 	if (att > 1.0)
 		return 1.0;
 	else
