@@ -37,7 +37,7 @@ vec3f RayTracer::trace( Scene *scene, double x, double y )
 		for (int Y = 1; Y <= gridSize; Y++) {
 			for (int X = 1; X <= gridSize; X++) {
 				scene->getCamera()->rayThrough(x + deltaX * stepX, y + deltaY * stepY, r);
-				result += traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0, false).clamp();
+				result += traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0, false,NULL).clamp();
 				x += stepX;
 			}
 			y += stepY;
@@ -47,13 +47,13 @@ vec3f RayTracer::trace( Scene *scene, double x, double y )
 		return result;
 	}
 	//cout << "(" << x << "," << y << ")";
-	return traceRay( scene, r, vec3f(1.0,1.0,1.0), 0 ,false).clamp();
+	return traceRay( scene, r, vec3f(1.0,1.0,1.0), 0 ,false,NULL).clamp();
 }
 
 // Do recursive ray tracing!  You'll want to insert a lot of code here
 // (or places called from here) to handle reflection, refraction, etc etc.
 vec3f RayTracer::traceRay(Scene *scene, const ray& r,
-	const vec3f& thresh, int depth,bool isInside)
+	const vec3f& thresh, int depth,bool isInside,const Material* material)
 {
 	isect i;
 	if (depth > scene->getDepth())
@@ -74,7 +74,7 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 		ray newRay(r.at(i.t), reflecVec);
 		
 		//reflection
-		refColor = traceRay(scene, newRay, thresh, depth + 1,isInside);
+		refColor = traceRay(scene, newRay, thresh, depth + 1,isInside,&m);
 
 		refColor = prod(refColor, m.kr);
 
@@ -92,9 +92,10 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 
 			if (!isInside) {//air->object
 				
-				if (abs(dir * normal) < RAY_EPSILON) {//dir is conside with normal
+				if (abs(abs(dir * normal) - 1) < RAY_EPSILON) {//dir is conside with normal
 					ray newRay(pos, dir);
-					refraColor = traceRay(scene, newRay, thresh, depth + 1,true);
+					refraColor = traceRay(scene, newRay, thresh, depth + 1,true,&m);
+					//cout << "(" << refraColor[0] << "," << refraColor[1] << "," << refraColor[2] << ")";
 				}
 				else {
 
@@ -110,34 +111,81 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 					vec3f newDir = -(normal + fac * (-dir));
 					newDir = newDir.normalize();
 					ray refraRay(pos, newDir);
-					refraColor = traceRay(scene, refraRay, thresh, depth + 1, true);
+					refraColor = traceRay(scene, refraRay, thresh, depth + 1, true,&m);
 					//fl_message();
 				}
 				
 
 			}
-			else {//obj->air
-				if (abs(dir * normal) < RAY_EPSILON) {
+			else {//obj->air , obj -> obj
+				double index1 = material->index;
+				double index2 = m.index;
+				bool same = (material == &m);
+				if (abs(abs(dir * normal) - 1) < RAY_EPSILON||(!same && index1 == index2)){
 					ray newRay(pos, dir);
-					refraColor = traceRay(scene, newRay, thresh, depth + 1, false);
+					if (same) {
+						refraColor = traceRay(scene, newRay, thresh, depth + 1, false, material);
+						//cout << "(" << refraColor[0] << "," << refraColor[1] << "," << refraColor[2] << ")";
+					}
+					else
+						refraColor = traceRay(scene, newRay, thresh, depth + 1, true, &m);//overlapping objects!
 				}
 				else {
-					double critical = 1.0 / index;//totally inner reflection if sinTheta is greater than this
-					double sinTheta1 = sqrt(1 - pow(dir * normal, 2));
-					if (critical - sinTheta1 > RAY_EPSILON) {
-						double sinAir = index * sinTheta1;
-						double radAir = asin(sinAir);
-						double sinTheta2 = sin(radAir - asin(sinTheta1));
-						double sinTheta3 = sin(3.1416 - radAir);
-						double fac = sinTheta3 / sinTheta2;
-						vec3f newDir = -(-normal + fac * (-dir));
+				
+					if (m.index > material->index) {
+						
+						double sinTheta1 = sqrt(1 - pow(dir * normal, 2));
+						double theta1 = asin(sinTheta1);
+
+						double sinTheta2 = (sinTheta1 * index1) / index2;//the sine of inner object
+						double delta = theta1 - asin(sinTheta2);
+						double sinTheta3 = sin(delta);
+
+
+						double fac = sinTheta2 / sinTheta3;
+						vec3f newDir = -(normal + fac * (-dir));
 						newDir = newDir.normalize();
 						ray refraRay(pos, newDir);
-						refraColor = traceRay(scene, refraRay, thresh, depth + 1,false);
+						refraColor = traceRay(scene, refraRay, thresh, depth + 1, true, &m);
 					}
-					else {
+					else if(material == &m){// obj -> air
+						double critical = 1.0 / index;//totally inner reflection if sinTheta is greater than this
+						double sinTheta1 = sqrt(1 - pow(dir * normal, 2));
+						if (critical - sinTheta1 > RAY_EPSILON) {
+							double sinAir = index * sinTheta1;
+							double radAir = asin(sinAir);
+							double sinTheta2 = sin(radAir - asin(sinTheta1));
+							double sinTheta3 = sin(3.1416 - radAir);
+							double fac = sinTheta3 / sinTheta2;
+							vec3f newDir = -(-normal + fac * (-dir));
+							newDir = newDir.normalize();
+							ray refraRay(pos, newDir);
+							refraColor = traceRay(scene, refraRay, thresh, depth + 1, false,material);
+						}
+						else {
 
-						refraColor = vec3f(0, 0, 0);
+							refraColor = vec3f(0, 0, 0);
+						}
+					}
+					else {//material->index > m.index
+						double critical = index2 / index1;//totally inner reflection if sinTheta is greater than this
+						double sinTheta1 = sqrt(1 - pow(dir * normal, 2));
+						if (critical - sinTheta1 > RAY_EPSILON) {
+							double sinAlpha = index1 * sinTheta1 / index2;
+							double alpha = asin(sinAlpha);
+							double sinTheta2 = sin(alpha - asin(sinTheta1));
+							double sinTheta3 = sin(3.1416 - alpha);
+							double fac = sinTheta3 / sinTheta2;
+							vec3f newDir = -(-normal + fac * (-dir));
+							newDir = newDir.normalize();
+							ray refraRay(pos, newDir);
+							refraColor = traceRay(scene, refraRay, thresh, depth + 1, true, &m);
+
+						}
+						else {//totally inner reflection
+
+							refraColor = vec3f(0, 0, 0);
+						}
 					}
 				}
 			}

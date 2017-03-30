@@ -5,6 +5,7 @@
 
 #include "scene/scene.h"
 #include "scene/ray.h"
+#include "scene/material.h"
 #include "fileio/bitmap.h"
 
 class RayTracer
@@ -14,7 +15,7 @@ public:
     ~RayTracer();
 
     vec3f trace( Scene *scene, double x, double y );
-	vec3f traceRay( Scene *scene, const ray& r, const vec3f& thresh, int depth ,bool isInside);
+	vec3f traceRay( Scene *scene, const ray& r, const vec3f& thresh, int depth ,bool isInside,const Material* m);
 
 
 	void getBuffer( unsigned char *&buf, int &w, int &h );

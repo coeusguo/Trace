@@ -62,6 +62,18 @@ private:
 	int			m_nSize;
 	int			m_nDepth;
 
+	//distanceAttenuation
+	double		m_nQuadric;
+	double		m_nLinear;
+	double		m_nConstant;
+
+	//ambient light
+	double		m_nAmbientLight;
+
+	//anti-aliasing
+	bool		m_nSuperSampling;
+	bool		m_nAdaptive;
+	bool		m_nJitter;
 // static class members
 	static Fl_Menu_Item menuitems[];
 

@@ -38,6 +38,12 @@ void TraceUI::cb_load_scene(Fl_Menu_* o, void* v)
 		}
 
 		pUI->m_mainWindow->label(buf);
+		pUI->raytracer->getScene()->setDepth(pUI->m_nDepth);
+		pUI->raytracer->getScene()->setQuadric(pUI->m_nQuadric);
+		pUI->raytracer->getScene()->setLinear(pUI->m_nLinear);
+		pUI->raytracer->getScene()->setConstant(pUI->m_nConstant);
+		pUI->raytracer->getScene()->setAmbientLight(pUI->m_nAmbientLight);
+
 	}
 }
 
@@ -47,6 +53,7 @@ void TraceUI::cb_background_image(Fl_Menu_* o, void* v) {
 	if (newfile != NULL) {
 		pUI->raytracer->loadBackgroundImage(newfile);
 		pUI->m_backgroundButton->activate();
+
 	}
 }
 
@@ -98,27 +105,38 @@ void TraceUI::cb_sizeSlides(Fl_Widget* o, void* v)
 
 void TraceUI::cb_depthSlides(Fl_Widget* o, void* v)
 {
-	((TraceUI*)(o->user_data()))->m_nDepth=int( ((Fl_Slider *)o)->value() );
-	((TraceUI*)(o->user_data()))->raytracer->getScene()->setDepth(((TraceUI*)(o->user_data()))->m_nDepth);
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->m_nDepth=int( ((Fl_Slider *)o)->value() );
+	if (pUI->raytracer->sceneLoaded()) {
+		pUI->raytracer->getScene()->setDepth(pUI->m_nDepth);
+	}
 }
 
 //distance attenuation
 void TraceUI::cb_attenuationConstantSlides(Fl_Widget* o, void* v) {
 	TraceUI* pUI = (TraceUI*)(o->user_data());
-	pUI->raytracer->getScene()->setConstant(double(((Fl_Slider *)o)->value()));
+	pUI->m_nConstant = double(((Fl_Slider *)o)->value());
+	if(pUI->raytracer->sceneLoaded())
+		pUI->raytracer->getScene()->setConstant(double(((Fl_Slider *)o)->value()));
 }
 void TraceUI::cb_attenuationLinearSlides(Fl_Widget* o, void* v) {
 	TraceUI* pUI = (TraceUI*)(o->user_data());
-	pUI->raytracer->getScene()->setLinear(double(((Fl_Slider *)o)->value()));
+	pUI->m_nLinear = double(((Fl_Slider *)o)->value());
+	if (pUI->raytracer->sceneLoaded())
+		pUI->raytracer->getScene()->setLinear(double(((Fl_Slider *)o)->value()));
 }
 void TraceUI::cb_attenuationQuadricSlides(Fl_Widget* o, void* v) {
 	TraceUI* pUI = (TraceUI*)(o->user_data());
-	pUI->raytracer->getScene()->setQuadric(double(((Fl_Slider *)o)->value()));
+	pUI->m_nQuadric = double(((Fl_Slider *)o)->value());
+	if (pUI->raytracer->sceneLoaded())
+		pUI->raytracer->getScene()->setQuadric(double(((Fl_Slider *)o)->value()));
 }
 //ambient light
 void TraceUI::cb_ambientLightSlides(Fl_Widget* o, void* v) {
 	TraceUI* pUI = (TraceUI*)(o->user_data());
-	pUI->raytracer->getScene()->setAmbientLight(double(((Fl_Slider *)o)->value()));
+	pUI->m_nAmbientLight = double(((Fl_Slider *)o)->value());
+	if (pUI->raytracer->sceneLoaded())
+		pUI->raytracer->getScene()->setAmbientLight(double(((Fl_Slider *)o)->value()));
 }
 
 //anti-aliasing
@@ -310,6 +328,11 @@ TraceUI::TraceUI() {
 		m_sizeSlider->callback(cb_sizeSlides);
 
 		// install slider attenuation constant
+		m_nConstant = 0.25;
+		m_nLinear = 0.25;
+		m_nQuadric = 0.5;
+		m_nAmbientLight = 0.2;
+
 		m_attenuationConstantSlider = new Fl_Value_Slider(10, 80, 180, 20, "Attenuation, Constant");
 		m_attenuationConstantSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_attenuationConstantSlider->type(FL_HOR_NICE_SLIDER);
@@ -318,7 +341,7 @@ TraceUI::TraceUI() {
 		m_attenuationConstantSlider->minimum(0);
 		m_attenuationConstantSlider->maximum(1.0);
 		m_attenuationConstantSlider->step(0.01);
-		m_attenuationConstantSlider->value(0.25);
+		m_attenuationConstantSlider->value(m_nConstant);
 		m_attenuationConstantSlider->align(FL_ALIGN_RIGHT);
 		m_attenuationConstantSlider->callback(cb_attenuationConstantSlides);
 
@@ -331,7 +354,7 @@ TraceUI::TraceUI() {
 		m_attenuationLinearSlider->minimum(0);
 		m_attenuationLinearSlider->maximum(1);
 		m_attenuationLinearSlider->step(0.01);
-		m_attenuationLinearSlider->value(0.25);
+		m_attenuationLinearSlider->value(m_nLinear);
 		m_attenuationLinearSlider->align(FL_ALIGN_RIGHT);
 		m_attenuationLinearSlider->callback(cb_attenuationLinearSlides);
 
@@ -344,7 +367,7 @@ TraceUI::TraceUI() {
 		m_attenuationQuadricSlider->minimum(0);
 		m_attenuationQuadricSlider->maximum(1);
 		m_attenuationQuadricSlider->step(0.01);
-		m_attenuationQuadricSlider->value(0.5);
+		m_attenuationQuadricSlider->value(m_nQuadric);
 		m_attenuationQuadricSlider->align(FL_ALIGN_RIGHT);
 		m_attenuationQuadricSlider->callback(cb_attenuationQuadricSlides);
 
@@ -357,7 +380,7 @@ TraceUI::TraceUI() {
 		m_ambientLightSlider->minimum(0);
 		m_ambientLightSlider->maximum(1);
 		m_ambientLightSlider->step(0.01);
-		m_ambientLightSlider->value(0.2);
+		m_ambientLightSlider->value(m_nAmbientLight);
 		m_ambientLightSlider->align(FL_ALIGN_RIGHT);
 		m_ambientLightSlider->callback(cb_ambientLightSlides);
 
@@ -370,21 +393,24 @@ TraceUI::TraceUI() {
 		m_stopButton->callback(cb_stop);
 
 		//anti aliasing by supper sampling button
+		m_nAdaptive = false;
+		m_nJitter = false;
+		m_nSuperSampling = false;
 		m_AntiSuperSampButton = new Fl_Light_Button(10, 180, 120, 25, "&Supper Samp");
 		m_AntiSuperSampButton->user_data((void*)(this));
 		m_AntiSuperSampButton->callback(cb_Anti_Super_button);
-		m_AntiSuperSampButton->value(false);
+		m_AntiSuperSampButton->value(m_nSuperSampling);
 
 		//anti aliasing by supper sampling button
 		m_AntiAdaptSampButton = new Fl_Light_Button(140, 180, 130, 25, "&Adapt Supper");
 		m_AntiAdaptSampButton->user_data((void*)(this));
 		m_AntiAdaptSampButton->callback(cb_Anti_Adaptive_button);
-		m_AntiAdaptSampButton->value(false);
+		m_AntiAdaptSampButton->value(m_nAdaptive);
 
 		m_JitterButton = new Fl_Light_Button(280, 180, 60, 25, "&Jitter");
 		m_JitterButton->user_data((void*)(this));
 		m_JitterButton->callback(cb_Jitter_button);
-		m_JitterButton->value(false);
+		m_JitterButton->value(m_nJitter);
 
 		//anti aliasing grid size slider
 		// install slider ambient light
