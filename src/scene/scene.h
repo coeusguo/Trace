@@ -255,6 +255,7 @@ public:
 		constant = 0.2;
 		linear = 0.025;
 		quadric = 0.005;
+		depth = 0;
 		ambientLight = 0.20;
 	}
 	virtual ~Scene();

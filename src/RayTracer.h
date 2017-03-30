@@ -5,7 +5,7 @@
 
 #include "scene/scene.h"
 #include "scene/ray.h"
-
+#include <time.h>
 
 class RayTracer
 {
@@ -36,6 +36,8 @@ public:
 	void setAdaptive(bool value) { adaptive = value; }
 	bool getAdaptive() { return adaptive; }
 	void setGridSize(int value) { gridSize = value; }
+	void setJitter(bool value) { jitter = value; }
+	bool getJitter() { return jitter; }
 
 private:
 	unsigned char *buffer;
@@ -48,6 +50,7 @@ private:
 	//anti-aliasing
 	bool supperSampling;
 	bool adaptive;
+	bool jitter;
 	int gridSize;
 };
 

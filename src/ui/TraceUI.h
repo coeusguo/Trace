@@ -41,6 +41,7 @@ public:
 	Fl_Button*			m_stopButton;
 	Fl_Button*			m_AntiSuperSampButton;
 	Fl_Button*			m_AntiAdaptSampButton;
+	Fl_Button*			m_JitterButton;
 
 
 	TraceGLWindow*		m_traceGlWindow;
@@ -80,6 +81,7 @@ private:
 	static void cb_Anti_Super_button(Fl_Widget* o, void* v);
 	static void cb_Anti_Adaptive_button(Fl_Widget* o, void* v);
 	static void cb_antiAliasingGridSizeSlides(Fl_Widget* o, void* v);
+	static void cb_Jitter_button(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);

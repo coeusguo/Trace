@@ -134,6 +134,11 @@ void TraceUI::cb_antiAliasingGridSizeSlides(Fl_Widget* o, void* v) {
 	pUI->raytracer->setGridSize(int(((Fl_Slider *)o)->value()));
 }
 
+void TraceUI::cb_Jitter_button(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->raytracer->setJitter(!pUI->raytracer->getAdaptive());
+}
+
 void TraceUI::cb_render(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -349,16 +354,21 @@ TraceUI::TraceUI() {
 		m_stopButton->callback(cb_stop);
 
 		//anti aliasing by supper sampling button
-		m_AntiSuperSampButton = new Fl_Light_Button(10, 180, 130, 25, "&Supper Sampling");
+		m_AntiSuperSampButton = new Fl_Light_Button(10, 180, 120, 25, "&Supper Samp");
 		m_AntiSuperSampButton->user_data((void*)(this));
 		m_AntiSuperSampButton->callback(cb_Anti_Super_button);
 		m_AntiSuperSampButton->value(false);
 
 		//anti aliasing by supper sampling button
-		m_AntiAdaptSampButton = new Fl_Light_Button(150, 180, 190, 25, "&Adaptive Supper Sampling");
+		m_AntiAdaptSampButton = new Fl_Light_Button(140, 180, 130, 25, "&Adapt Supper");
 		m_AntiAdaptSampButton->user_data((void*)(this));
 		m_AntiAdaptSampButton->callback(cb_Anti_Adaptive_button);
 		m_AntiAdaptSampButton->value(false);
+
+		m_JitterButton = new Fl_Light_Button(280, 180, 60, 25, "&Jitter");
+		m_JitterButton->user_data((void*)(this));
+		m_JitterButton->callback(cb_Jitter_button);
+		m_JitterButton->value(false);
 
 		//anti aliasing grid size slider
 		// install slider ambient light
@@ -370,7 +380,7 @@ TraceUI::TraceUI() {
 		m_ambientLightSlider->minimum(1);
 		m_ambientLightSlider->maximum(5);
 		m_ambientLightSlider->step(1);
-		m_ambientLightSlider->value(3);
+		m_ambientLightSlider->value(2);
 		m_ambientLightSlider->align(FL_ALIGN_RIGHT);
 		m_ambientLightSlider->callback(cb_antiAliasingGridSizeSlides);
 

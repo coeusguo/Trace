@@ -7,25 +7,36 @@
 #include "scene/ray.h"
 #include "fileio/read.h"
 #include "fileio/parse.h"
+#include <random>
 
 // Trace a top-level ray through normalized window coordinates (x,y)
 // through the projection plane, and out into the scene.  All we do is
 // enter the main ray-tracing method, getting things started by plugging
 // in an initial ray weight of (0.0,0.0,0.0) and an initial recursion depth of 0.
+
 vec3f RayTracer::trace( Scene *scene, double x, double y )
 {
     ray r( vec3f(0,0,0), vec3f(0,0,0) );
 	scene->getCamera()->rayThrough(x, y, r);
-	
+
+	uniform_real_distribution<double> rand(0,2);
+	static default_random_engine re;
+
 	if (supperSampling) {
+		double deltaX = 0.0;
+		double deltaY = 0.0;
+		if (jitter) {
+			deltaX = rand(re) - 1.0;
+			deltaY = rand(re) - 1.0;
+		}
 		vec3f result(0.0, 0.0, 0.0);
-		double stepX = 1.0 / (double(gridSize) * buffer_width);
-		double stepY = 1.0 / (double(gridSize) * buffer_height);
-		x = x + stepX * 0.5;
-		y = y + stepY * 0.5;
+		double stepX = 1.0 / (double(gridSize) * buffer_width * 2);
+		double stepY = 1.0 / (double(gridSize) * buffer_height * 2);
+		x = x - (gridSize / 2) * stepX + stepX * 0.5;
+		y = y - (gridSize / 2) * stepY + stepY * 0.5;
 		for (int Y = 1; Y <= gridSize; Y++) {
 			for (int X = 1; X <= gridSize; X++) {
-				scene->getCamera()->rayThrough(x, y, r);
+				scene->getCamera()->rayThrough(x + deltaX * stepX, y + deltaY * stepY, r);
 				result += traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0, false).clamp();
 				x += stepX;
 			}
@@ -153,10 +164,10 @@ RayTracer::RayTracer()
 	buffer = NULL;
 	buffer_width = buffer_height = 256;
 	scene = NULL;
-
 	m_bSceneLoaded = false;
 	supperSampling = false;
 	adaptive = false;
+	jitter = false;
 	gridSize = 3;
 }
 
