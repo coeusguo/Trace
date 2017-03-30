@@ -16,12 +16,13 @@ vec3f RayTracer::trace( Scene *scene, double x, double y )
 {
     ray r( vec3f(0,0,0), vec3f(0,0,0) );
 	scene->getCamera()->rayThrough(x, y, r);
+	
 	if (supperSampling) {
 		vec3f result(0.0, 0.0, 0.0);
 		double stepX = 1.0 / (double(gridSize) * buffer_width);
 		double stepY = 1.0 / (double(gridSize) * buffer_height);
-		x = x + stepX * 0.5 - 0.5;
-		y = y + stepY * 0.5 - 0.5;
+		x = x + stepX * 0.5;
+		y = y + stepY * 0.5;
 		for (int Y = 1; Y <= gridSize; Y++) {
 			for (int X = 1; X <= gridSize; X++) {
 				scene->getCamera()->rayThrough(x, y, r);
@@ -34,6 +35,7 @@ vec3f RayTracer::trace( Scene *scene, double x, double y )
 		result *= number;
 		return result;
 	}
+	
 	return traceRay( scene, r, vec3f(1.0,1.0,1.0), 0 ,false).clamp();
 }
 
@@ -47,7 +49,6 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 		return vec3f(0.0, 0.0, 0.0);
 
 	if (scene->intersect(r, i)) {
-
 		const Material& m = i.getMaterial();
 		vec3f phong(0.0, 0.0, 0.0);
 		vec3f refColor(0.0, 0.0, 0.0);
@@ -55,7 +56,7 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 
 		//phong shading
 		phong = m.shade(scene, r, i);
-
+		//cout << "(" << phong[0] << "," << phong[1] << "," << phong[2] << ")";
 		vec3f normal = i.N;
 		vec3f reflecVec = r.getDirection() - r.getDirection() * normal * 2 * normal;
 		reflecVec = reflecVec.normalize();
@@ -135,6 +136,7 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 		refraColor = prod(refraColor, m.kt);
 
 		vec3f result = phong + refColor + refraColor;
+		//cout << "(" << result[0] << "," << result[1] << "," << result[2] << ")";
 		return result;
 	}
 	else {

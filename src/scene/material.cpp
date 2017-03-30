@@ -23,7 +23,6 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 	vec3f normal = i.N;
 	vec3f point = r.at(i.t);
 	vec3f color = ke + ka * scene->getAmbientLight();
-
 	for (l = scene->beginLights(); l != scene->endLights(); ++l) {
 		vec3f lightDirection = (*l)->getDirection(point);
 
@@ -52,7 +51,8 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 		if (color[i] > 255)
 			color[i] = 255;
 	vec3f trans(1.0, 1.0, 1.0);
-	trans -= i.getMaterial().kt;
+	trans -= kt;
 	color = prod(color, trans);
+
 	return color;
 }
