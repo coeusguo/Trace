@@ -42,6 +42,8 @@ public:
 	Fl_Button*			m_AntiSuperSampButton;
 	Fl_Button*			m_AntiAdaptSampButton;
 	Fl_Button*			m_JitterButton;
+	Fl_Button*			m_backgroundButton;
+	Fl_Button*			m_textureButton;
 
 
 	TraceGLWindow*		m_traceGlWindow;
@@ -69,9 +71,9 @@ private:
 	static void cb_save_image(Fl_Menu_* o, void* v);
 	static void cb_exit(Fl_Menu_* o, void* v);
 	static void cb_about(Fl_Menu_* o, void* v);
+	static void cb_background_image(Fl_Menu_* o, void* v);
 
 	static void cb_exit2(Fl_Widget* o, void* v);
-
 	static void cb_sizeSlides(Fl_Widget* o, void* v);
 	static void cb_depthSlides(Fl_Widget* o, void* v);
 	static void cb_attenuationConstantSlides(Fl_Widget* o, void* v);
@@ -82,6 +84,8 @@ private:
 	static void cb_Anti_Adaptive_button(Fl_Widget* o, void* v);
 	static void cb_antiAliasingGridSizeSlides(Fl_Widget* o, void* v);
 	static void cb_Jitter_button(Fl_Widget* o, void* v);
+	static void cb_Background_button(Fl_Widget* o, void* v);
+	static void cb_Texture_button(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);

@@ -33,9 +33,12 @@ public:
 	vec3f getPosition() const { return p; }
 	vec3f getDirection() const { return d; }
 
+	void setCoords(double* coord) { coords = coord; }
+	const double* getCoords()const { return coords; }
 protected:
 	vec3f p;
 	vec3f d;
+	double* coords;
 };
 
 // The description of an intersection point.

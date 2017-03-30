@@ -5,7 +5,7 @@
 
 #include "scene/scene.h"
 #include "scene/ray.h"
-#include <time.h>
+#include "fileio/bitmap.h"
 
 class RayTracer
 {
@@ -39,6 +39,11 @@ public:
 	void setJitter(bool value) { jitter = value; }
 	bool getJitter() { return jitter; }
 
+	//background image 
+	void setUsingBackgroundImage(bool value) { usingBackgroundImage = value; }
+	bool getUisingBackgroundImage() { return usingBackgroundImage; }
+	void loadBackgroundImage(char* fn);
+
 private:
 	unsigned char *buffer;
 	int buffer_width, buffer_height;
@@ -52,6 +57,12 @@ private:
 	bool adaptive;
 	bool jitter;
 	int gridSize;
+	
+	//background image
+	unsigned char* m_ucBackground;
+	bool usingBackgroundImage;
+	int m_nWidth;
+	int m_nHeight;
 };
 
 #endif // __RAYTRACER_H__

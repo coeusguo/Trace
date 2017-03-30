@@ -46,7 +46,7 @@ vec3f RayTracer::trace( Scene *scene, double x, double y )
 		result *= number;
 		return result;
 	}
-	
+	//cout << "(" << x << "," << y << ")";
 	return traceRay( scene, r, vec3f(1.0,1.0,1.0), 0 ,false).clamp();
 }
 
@@ -151,11 +151,16 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 		return result;
 	}
 	else {
-		// No intersection.  This ray travels to infinity, so we color
-		// it according to the background color, which in this (simple) case
-		// is just black.
-
-		return vec3f(0.0, 0.0, 0.0);
+		if (usingBackgroundImage&&m_ucBackground) {
+			int x = r.getCoords()[0] * m_nWidth;
+			int y = r.getCoords()[1] * m_nHeight;
+			//cout << r.getCoords()[0] << "," << r.getCoords()[1] << endl;
+			int index = (y * m_nWidth + x) * 3;
+			return vec3f(m_ucBackground[index] / 255.0, m_ucBackground[index + 1] / 255.0, m_ucBackground[index + 2] / 255.0);
+		}
+		else {
+			return vec3f(0.0, 0.0, 0.0);
+		}
 	}
 }
 
@@ -164,9 +169,11 @@ RayTracer::RayTracer()
 	buffer = NULL;
 	buffer_width = buffer_height = 256;
 	scene = NULL;
+	m_ucBackground = NULL;
 	m_bSceneLoaded = false;
 	supperSampling = false;
 	adaptive = false;
+	usingBackgroundImage = false;
 	jitter = false;
 	gridSize = 3;
 }
@@ -272,4 +279,24 @@ void RayTracer::tracePixel( int i, int j )
 	pixel[0] = (int)( 255.0 * col[0]);
 	pixel[1] = (int)( 255.0 * col[1]);
 	pixel[2] = (int)( 255.0 * col[2]);
+}
+
+void RayTracer::loadBackgroundImage(char* fn) {
+	
+	if (m_ucBackground)
+		delete[]m_ucBackground;
+	
+	unsigned char*	data;
+	int				width,height;
+
+	if ((data = readBMP(fn, width, height)) == NULL)
+	{
+		fl_alert("Can't load bitmap file");
+		return;
+	}
+
+	m_nWidth = width;
+	m_nHeight = height;
+	m_ucBackground = data;
+	//cout << width << "," << height << endl;
 }

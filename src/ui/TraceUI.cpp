@@ -41,6 +41,15 @@ void TraceUI::cb_load_scene(Fl_Menu_* o, void* v)
 	}
 }
 
+void TraceUI::cb_background_image(Fl_Menu_* o, void* v) {
+	TraceUI* pUI = whoami(o);
+	char* newfile = fl_file_chooser("Load Background Image?", "*.bmp", NULL);
+	if (newfile != NULL) {
+		pUI->raytracer->loadBackgroundImage(newfile);
+		pUI->m_backgroundButton->activate();
+	}
+}
+
 void TraceUI::cb_save_image(Fl_Menu_* o, void* v) 
 {
 	TraceUI* pUI=whoami(o);
@@ -137,6 +146,12 @@ void TraceUI::cb_antiAliasingGridSizeSlides(Fl_Widget* o, void* v) {
 void TraceUI::cb_Jitter_button(Fl_Widget* o, void* v) {
 	TraceUI* pUI = (TraceUI*)(o->user_data());
 	pUI->raytracer->setJitter(!pUI->raytracer->getAdaptive());
+}
+
+//background image
+void TraceUI::cb_Background_button(Fl_Widget* o, void* v){
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->raytracer->setUsingBackgroundImage(!pUI->raytracer->getUisingBackgroundImage());
 }
 
 void TraceUI::cb_render(Fl_Widget* o, void* v)
@@ -247,6 +262,7 @@ Fl_Menu_Item TraceUI::menuitems[] = {
 	{ "&File",		0, 0, 0, FL_SUBMENU },
 		{ "&Load Scene...",	FL_ALT + 'l', (Fl_Callback *)TraceUI::cb_load_scene },
 		{ "&Save Image...",	FL_ALT + 's', (Fl_Callback *)TraceUI::cb_save_image },
+		{ "&Load Bacground Image",	FL_ALT + 'b', (Fl_Callback *)TraceUI::cb_background_image },
 		{ "&Exit",			FL_ALT + 'e', (Fl_Callback *)TraceUI::cb_exit },
 		{ 0 },
 
@@ -383,6 +399,12 @@ TraceUI::TraceUI() {
 		m_ambientLightSlider->value(2);
 		m_ambientLightSlider->align(FL_ALIGN_RIGHT);
 		m_ambientLightSlider->callback(cb_antiAliasingGridSizeSlides);
+
+		m_backgroundButton = new Fl_Light_Button(10, 235, 100, 25, "&Background");
+		m_backgroundButton->user_data((void*)(this));
+		m_backgroundButton->callback(cb_Background_button);
+		m_backgroundButton->value(false);
+		m_backgroundButton->deactivate();
 
 		m_mainWindow->callback(cb_exit2);
 		m_mainWindow->when(FL_HIDE);
