@@ -263,8 +263,9 @@ void RayTracer::loadBackgroundImage(char* fn) {
 	m_nWidth = width;
 	m_nHeight = height;
 	m_ucBackground = data;
-	//cout << width << "," << height << endl;
+
 }
+
 
 vec3f RayTracer::refractionDirection(vec3f& normal, vec3f& dir, double indexFrom, double indexTo) {
 	if (abs(abs(normal * dir) - 1) < RAY_EPSILON) 
@@ -280,7 +281,7 @@ vec3f RayTracer::refractionDirection(vec3f& normal, vec3f& dir, double indexFrom
 		return dir;
 	}
 	else if (indexFrom > indexTo) {//currentIndex is greater than the next index,should consider total inner reflection
-		double critical = indexTo / indexFrom;
+		double critical = indexTo / indexFrom;//the value if sine,not radian or degree
 
 		if (critical - sinTheta1 > RAY_EPSILON) {
 			double sinAlpha = sin(3.1416 - theta2);

@@ -46,7 +46,7 @@ void TraceUI::cb_load_scene(Fl_Menu_* o, void* v)
 
 	}
 }
-
+//load backgroung image
 void TraceUI::cb_background_image(Fl_Menu_* o, void* v) {
 	TraceUI* pUI = whoami(o);
 	char* newfile = fl_file_chooser("Load Background Image?", "*.bmp", NULL);
@@ -54,6 +54,18 @@ void TraceUI::cb_background_image(Fl_Menu_* o, void* v) {
 		pUI->raytracer->loadBackgroundImage(newfile);
 		pUI->m_backgroundButton->activate();
 
+	}
+}
+
+//load texture image
+void TraceUI::cb_texture_image(Fl_Menu_* o, void* v) {
+	TraceUI* pUI = whoami(o);
+	if (!pUI->raytracer->sceneLoaded())
+		return;
+	char* newfile = fl_file_chooser("Load Texture Image?", "*.bmp", NULL);
+	if (newfile != NULL) {
+		pUI->raytracer->getScene()->loadTextureImage(newfile);
+		pUI->m_textureButton->activate();
 	}
 }
 
@@ -172,6 +184,12 @@ void TraceUI::cb_Background_button(Fl_Widget* o, void* v){
 	pUI->raytracer->setUsingBackgroundImage(!pUI->raytracer->getUisingBackgroundImage());
 }
 
+//texture image
+void TraceUI::cb_Texture_button(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->raytracer->getScene()->setUsingTexture(!pUI->raytracer->getScene()->getUsingTexture());
+}
+
 void TraceUI::cb_render(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -281,6 +299,7 @@ Fl_Menu_Item TraceUI::menuitems[] = {
 		{ "&Load Scene...",	FL_ALT + 'l', (Fl_Callback *)TraceUI::cb_load_scene },
 		{ "&Save Image...",	FL_ALT + 's', (Fl_Callback *)TraceUI::cb_save_image },
 		{ "&Load Bacground Image",	FL_ALT + 'b', (Fl_Callback *)TraceUI::cb_background_image },
+		{ "&Load Texture Image",	FL_ALT + 't', (Fl_Callback *)TraceUI::cb_texture_image },
 		{ "&Exit",			FL_ALT + 'e', (Fl_Callback *)TraceUI::cb_exit },
 		{ 0 },
 
@@ -431,6 +450,12 @@ TraceUI::TraceUI() {
 		m_backgroundButton->callback(cb_Background_button);
 		m_backgroundButton->value(false);
 		m_backgroundButton->deactivate();
+
+		m_textureButton = new Fl_Light_Button(120, 235, 80, 25, "&Texture");
+		m_textureButton->user_data((void*)(this));
+		m_textureButton->callback(cb_Texture_button);
+		m_textureButton->value(false);
+		m_textureButton->deactivate();
 
 		m_mainWindow->callback(cb_exit2);
 		m_mainWindow->when(FL_HIDE);

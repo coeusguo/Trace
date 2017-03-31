@@ -5,19 +5,9 @@
 // Apply the phong model to this point on the surface of the object, returning
 // the color of that point.
 int Material::numMaterials = 0;
+
 vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 {
-	// YOUR CODE HERE
-
-	// For now, this method just returns the diffuse color of the object.
-	// This gives a single matte color for every distinct surface in the
-	// scene, and that's it.  Simple, but enough to get you started.
-	// (It's also inconsistent with the phong model...)
-
-	// Your mission is to fill in this method with the rest of the phong
-	// shading model, including the contributions of all the light sources.
-    // You will need to call both distanceAttenuation() and shadowAttenuation()
-    // somewhere in your code in order to compute shadows and light falloff.
 
 	typedef list<Light*>::const_iterator 	cliter;
 	cliter l;
@@ -29,7 +19,7 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 
 		float fatt = (*l)->distanceAttenuation(point);//distance attenuation
 		vec3f satt = (*l)->shadowAttenuation(point);
-		vec3f i = (*l)->getColor(point);//the intensity of current light
+		vec3f ii = (*l)->getColor(point);//the intensity of current light
 		float diffuse = normal*lightDirection;//N * L
 		if (diffuse < 0)
 			diffuse = 0;
@@ -41,9 +31,15 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 			spec = 0;
 		spec = pow(spec, shininess);
 
-		vec3f result = (kd * diffuse + ks * spec) * fatt;
+		vec3f diffuseColor = kd;
+		
+		if (scene->getUsingTexture())
+			diffuseColor = ((MaterialSceneObject*)(i.obj))->getTextureColor(r.at(i.t));
+			
+
+		vec3f result = (diffuseColor * diffuse + ks * spec) * fatt;
 		for (int k = 0; k < 3; k++)
-			result[k] = result[k] * i[k] * satt[k];
+			result[k] = result[k] * ii[k] * satt[k];
 
 		color += result;
 	}
@@ -57,3 +53,5 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 
 	return color;
 }
+
+

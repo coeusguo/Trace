@@ -228,7 +228,7 @@ public:
 
 	virtual const Material& getMaterial() const { return *material; }
 	virtual void setMaterial( Material *m )	{ material = m; }
-
+	virtual vec3f getTextureColor(vec3f& intersectPoint) {return material->kd;}
 protected:
 	MaterialSceneObject( Scene *scene, Material *mat ) 
 		: SceneObject( scene ), material( mat ) {}
@@ -257,6 +257,8 @@ public:
 		quadric = 0.005;
 		depth = 0;
 		ambientLight = 0.20;
+		m_ucTextureImage = NULL;
+		usingTexture = false;
 	}
 	virtual ~Scene();
 
@@ -290,6 +292,12 @@ public:
 	//recurtion depth
 	void setDepth(int value) { depth = value; }
 	int getDepth() { return depth; }
+
+	//texture image
+	void loadTextureImage(char* fn);
+	bool getUsingTexture() { return usingTexture; }
+	void setUsingTexture(bool value) { usingTexture = value; }
+	vec3f getColor(double u, double v);
 private:
     list<Geometry*> objects;
 	list<Geometry*> nonboundedobjects;
@@ -303,6 +311,12 @@ private:
 	double quadric;
 	double depth;
 	double ambientLight;
+
+	//texture image
+	unsigned char* m_ucTextureImage;
+	bool usingTexture;
+	int m_textureWidth;
+	int m_textureHeight;
 
 	// Each object in the scene, provided that it has hasBoundingBoxCapability(),
 	// must fall within this bounding box.  Objects that don't have hasBoundingBoxCapability()

@@ -46,6 +46,7 @@ public:
 	bool getUisingBackgroundImage() { return usingBackgroundImage; }
 	void loadBackgroundImage(char* fn);
 
+
 private:
 	unsigned char *buffer;
 	int buffer_width, buffer_height;
@@ -65,6 +66,7 @@ private:
 	bool usingBackgroundImage;
 	int m_nWidth;
 	int m_nHeight;
+	
 
 	vec3f refractionDirection(vec3f& normal, vec3f& dir, double indexFrom, double indexTo);
 };

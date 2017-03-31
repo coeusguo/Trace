@@ -34,3 +34,28 @@ bool Sphere::intersectLocal( const ray& r, isect& i ) const
 	return true;
 }
 
+vec3f Sphere::getTextureColor(vec3f& intersecPoint) {
+	vec3f localPoint = transform->globalToLocalCoords(intersecPoint);
+	vec3f dir = localPoint.normalize();
+	vec3f pole(0.0, 1.0, 0.0);
+	vec3f equator(0.0, 0.0, 1.0);
+
+	double phi = acos(-dir * pole);
+	double v = phi / 3.1415926536;
+	double u;
+	
+	double fac = (equator * dir) / sin(phi);
+	if (1 + fac < RAY_EPSILON)
+		u = 1;
+	else if (1 - fac < RAY_EPSILON)
+		u = 0;
+	else
+		u = acos((equator * dir) / sin(phi)) / (2 * 3.1416);
+
+	//cout << (equator * dir) / sin(phi);
+	vec3f pxe(1.0, 0.0, 0.0);
+	
+	if (pxe * dir <= 0)
+		u = 1 - u;
+	return scene->getColor(u, v);
+}

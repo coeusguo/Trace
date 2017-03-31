@@ -199,3 +199,36 @@ void Scene::initScene()
 			nonboundedobjects.push_back(*j);
 	}
 }
+
+void Scene::loadTextureImage(char* fn) {
+	if (m_ucTextureImage)
+		delete[]m_ucTextureImage;
+
+	unsigned char*	data;
+	int				width, height;
+
+	if ((data = readBMP(fn, width, height)) == NULL)
+	{
+		fl_alert("Can't load bitmap file");
+		return;
+	}
+
+	m_textureWidth = width;
+	m_textureHeight = height;
+	m_ucTextureImage = data;
+}
+
+vec3f Scene::getColor(double u, double v) {//given u , v from [0,1],return the corresponding color in of the texture map
+	int x = u * m_textureWidth;
+	if (x >= m_textureWidth)
+		x = m_textureWidth - 1;
+	int y = v * m_textureHeight;
+	if (y >= m_textureHeight)
+		y = m_textureHeight - 1;
+	int index = (y * m_textureWidth + x) * 3;
+	vec3f result;
+	//cout << "(" << x << "," << y << ")";
+	if(m_ucTextureImage)
+		result = vec3f(m_ucTextureImage[index] / 255.0f, m_ucTextureImage[index + 1] / 255.0f, m_ucTextureImage[index + 2] / 255.0f);
+	return result;
+}
