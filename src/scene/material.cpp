@@ -4,6 +4,7 @@
 
 // Apply the phong model to this point on the surface of the object, returning
 // the color of that point.
+int Material::numMaterials = 0;
 vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 {
 	// YOUR CODE HERE

@@ -7,6 +7,7 @@
 #include "scene/ray.h"
 #include "scene/material.h"
 #include "fileio/bitmap.h"
+#include <stack>
 
 class RayTracer
 {
@@ -15,7 +16,7 @@ public:
     ~RayTracer();
 
     vec3f trace( Scene *scene, double x, double y );
-	vec3f traceRay( Scene *scene, const ray& r, const vec3f& thresh, int depth ,bool isInside,const Material* m);
+	vec3f traceRay( Scene *scene, const ray& r, const vec3f& thresh, int depth ,stack<Material> materials);
 
 
 	void getBuffer( unsigned char *&buf, int &w, int &h );
@@ -64,6 +65,8 @@ private:
 	bool usingBackgroundImage;
 	int m_nWidth;
 	int m_nHeight;
+
+	vec3f refractionDirection(vec3f& normal, vec3f& dir, double indexFrom, double indexTo);
 };
 
 #endif // __RAYTRACER_H__
