@@ -544,6 +544,19 @@ static void processObject( Obj *obj, Scene *scene, mmap& materials )
 			tupleToVec(getField(child, "edgeplace")),
 			tupleToVec(getColorField(child))));
 	}
+	else if (name == "shape_light") {
+		if (child == NULL) {
+			throw ParseError("No info for shape_light");
+		}
+
+		scene->add(new ShapeLight(scene,
+			tupleToVec(getField(child, "position")),
+			tupleToVec(getField(child, "direction")).normalize(),
+			tupleToVec(getField(child, "parms")),
+			tupleToVec(getField(child, "up")).normalize(),
+			tupleToVec(getField(child, "shape")),
+			tupleToVec(getColorField(child))));
+	}
 	else if (name == "sphere" ||
 				name == "box" ||
 				name == "cylinder" ||
