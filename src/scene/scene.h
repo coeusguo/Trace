@@ -270,6 +270,7 @@ public:
 	void add( Geometry* obj )
 	{
 		obj->ComputeBoundingBox();
+		//cout << "add" << endl;
 		objects.push_back( obj );
 	}
 	void add( Light* light )
@@ -306,10 +307,14 @@ public:
 	void setUsingBump(bool value) { usingBump = value; }
 	bool getUsingBump() { return usingBump; }
 	vec3f getColor(double u, double v);
-
+	bool isTextureLoaded() { return m_ucTextureImage ? true : false; }
 	vec3f getTextureNormal(float x, float y);
 	void loadNormalMap(char* fname);
 	void saveImage(char* fname);
+
+	//height field
+	void loadHeightFieldMap(char* fname);
+	friend class Trimesh;
 private:
     list<Geometry*> objects;
 	list<Geometry*> nonboundedobjects;
@@ -332,6 +337,8 @@ private:
 	int m_textureWidth;
 	int m_textureHeight;
 	bool usingBump;
+
+	
 	// Each object in the scene, provided that it has hasBoundingBoxCapability(),
 	// must fall within this bounding box.  Objects that don't have hasBoundingBoxCapability()
 	// are exempt from this requirement.

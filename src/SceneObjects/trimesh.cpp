@@ -62,6 +62,7 @@ Trimesh::doubleCheck()
 // Calculates and returns the normal of the triangle too.
 bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
 {
+	cout << "here!";
     const vec3f& a = parent->vertices[ids[0]];
     const vec3f& b = parent->vertices[ids[1]];
     const vec3f& c = parent->vertices[ids[2]];
@@ -138,7 +139,7 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
             (*m) += bary[jj] * (*parent->materials[ ids[jj] ]);
         i.setMaterial( m );
     }
-    
+	//cout << "h";
     return true;
 }
 
@@ -173,5 +174,11 @@ void Trimesh::generateNormals()
     }
 
     delete [] numFaces;
+}
+
+void Trimesh::addToNBoundedObjects() {
+	for (int i = 0; i < faces.size(); i++) {
+		scene->nonboundedobjects.push_back(faces.at(i));
+	}
 }
 

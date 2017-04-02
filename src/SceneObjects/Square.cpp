@@ -39,6 +39,8 @@ bool Square::intersectLocal( const ray& r, isect& i ) const
 }
 
 vec3f Square::getTextureColor( vec3f& intersecPoint) {
+	if (!scene->isTextureLoaded())
+		return vec3f(0.0, 0.0, 0.0);
 	vec3f localPoint = transform->globalToLocalCoords(intersecPoint);
 	double u = localPoint[0] + 0.5;
 	double v = localPoint[1] + 0.5;

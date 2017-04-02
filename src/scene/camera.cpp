@@ -26,8 +26,6 @@ Camera::rayThrough( double x, double y, ray &r )
     y -= 0.5;
     vec3f dir = look + x * u + y * v;
 	
-	
-
     r = ray( eye, dir.normalize() );
 	r.setCoords(coord);
 

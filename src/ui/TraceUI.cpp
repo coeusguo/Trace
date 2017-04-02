@@ -64,6 +64,15 @@ void TraceUI::cb_background_image(Fl_Menu_* o, void* v) {
 	}
 }
 
+//load height field image
+void TraceUI::cb_height_field_map(Fl_Menu_* o, void* v){
+	TraceUI* pUI = whoami(o);
+	char* newfile = fl_file_chooser("Load Height Field Image?", "*.bmp", NULL);
+	if (newfile != NULL) {
+		pUI->raytracer->getScene()->loadHeightFieldMap(newfile);
+	}
+}
+
 //load texture image
 void TraceUI::cb_texture_image(Fl_Menu_* o, void* v) {
 	TraceUI* pUI = whoami(o);
@@ -325,6 +334,7 @@ Fl_Menu_Item TraceUI::menuitems[] = {
 		{ "&Load Bacground Image",	FL_ALT + 'b', (Fl_Callback *)TraceUI::cb_background_image },
 		{ "&Load Texture Image",	FL_ALT + 't', (Fl_Callback *)TraceUI::cb_texture_image },
 		{ "&Load Normal Map",	FL_ALT + 'm', (Fl_Callback *)TraceUI::cb_load_normal_map },
+		{ "&Load HField Map",	FL_ALT + 'h', (Fl_Callback *)TraceUI::cb_height_field_map},
 		{ "&Exit",			FL_ALT + 'e', (Fl_Callback *)TraceUI::cb_exit },
 		{ 0 },
 

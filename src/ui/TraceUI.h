@@ -94,6 +94,7 @@ private:
 	static void cb_background_image(Fl_Menu_* o, void* v);
 	static void cb_texture_image(Fl_Menu_* o, void* v);
 	static void cb_load_normal_map(Fl_Menu_* o, void* v);
+	static void cb_height_field_map(Fl_Menu_* o, void* v);
 
 	static void cb_exit2(Fl_Widget* o, void* v);
 	static void cb_sizeSlides(Fl_Widget* o, void* v);

@@ -3,6 +3,8 @@
 #include "scene.h"
 #include "light.h"
 #include "../ui/TraceUI.h"
+#include "../SceneObjects/trimesh.h"
+
 extern TraceUI* traceUI;
 
 void BoundingBox::operator=(const BoundingBox& target)
@@ -260,18 +262,31 @@ void Scene::calcualteNormalMap(unsigned char* filteredMap) {
 	unsigned char* greyScale = new unsigned char[m_textureHeight*m_textureWidth];
 	for (int i = 0; i < m_textureHeight * m_textureWidth; i++)
 		greyScale[i] = filteredMap[i * 3] * 0.299 + filteredMap[i * 3 + 1] * 0.587 + filteredMap[i * 3 + 2] * 0.114;
+		//greyScale[i] = (filteredMap[i * 3] + filteredMap[i * 3 + 1] + filteredMap[i * 3 + 2]) / 3.0f;
 
 	for (int Y = 0; Y < m_textureHeight; Y++) {
 		for (int X = 0; X < m_textureWidth; X++) {
 			int right;
 			int up;
-			int current = greyScale[Y * m_textureWidth + X];
+			int left;
+			int down;
+
+			//int current = greyScale[Y * m_textureWidth + X];
 
 			if (X == m_textureWidth - 1)
 				right = greyScale[Y * m_textureWidth + X];
 			else
 				right = greyScale[Y * m_textureWidth + X + 1];
 
+			if (X == 0)
+				left = greyScale[Y * m_textureWidth + X];
+			else
+				left = greyScale[Y * m_textureWidth + X - 1];
+
+			if (Y == 0)
+				down = greyScale[Y * m_textureWidth + X];
+			else
+				down = greyScale[(Y - 1) * m_textureWidth + X];
 
 			if (Y == m_textureHeight - 1)
 				up = greyScale[Y * m_textureWidth + X];
@@ -279,10 +294,12 @@ void Scene::calcualteNormalMap(unsigned char* filteredMap) {
 				up = greyScale[(Y + 1) * m_textureWidth + X];
 
 
-			vec3f a(1.0, 0.0, right - current);
-			vec3f b(0.0, 1.0, up - current);
+			vec3f a(1.0, 0.0, (right - left + 1) * 0.5);
+			vec3f b(0.0, 1.0, (up - down + 1) * 0.5);
 			vec3f n = (a ^ b).normalize();
 
+			//float ha = (right - left + 1) * 0.5;
+			//float hb = (up - down + 1) * 0.5;
 
 			//cout << n[0] << "," << n[1] << "," << n[2] << endl;
 			//cout << X << "," << Y << endl;
@@ -382,4 +399,56 @@ void Scene::loadNormalMap(char* fname) {
 	}
 
 	m_ucNormalMap = data;
+}
+
+void Scene::loadHeightFieldMap(char* fname) {
+	
+	unsigned char* heightFieldImage;
+	unsigned char* greyScaleMap;
+
+	unsigned char*	data;
+	int				width, height;
+
+
+	if ((data = readBMP(fname, width, height)) == NULL)
+	{
+		fl_alert("Can't load bitmap file");
+		return;
+	}
+
+	
+	heightFieldImage = data;
+	greyScaleMap = new unsigned char[width * height];
+
+	for(int i = 0;i < width * height;i ++)
+		greyScaleMap[i] = heightFieldImage[i * 3] * 0.299 + heightFieldImage[i * 3 + 1] * 0.587 + heightFieldImage[i * 3 + 2] * 0.114;
+
+	Trimesh* mesh = new Trimesh(this,new Material,new TransformRoot);
+
+	for (int Z = 0; Z < height; Z++) {
+		for (int X = 0; X < width; X++) {
+			Material* m = new Material;
+			m->kd = vec3f(heightFieldImage[(Z * width + X) * 3] / 255.0f, heightFieldImage[(Z * width + X) * 3 + 1] / 255.0f, heightFieldImage[(Z * width + X) * 3 + 2] / 255.0f);
+			float x = (float(X) / float(width)) * 2;
+			float z = (float(Z) / float(height)) * 2;
+			float y = float(greyScaleMap[Z * width + X]) / 255.0f;
+			mesh->addVertex(vec3f(x, y, z));
+			mesh->addMaterial(m);
+			//cout << "(" << x << "," << y << "," << z << ")";
+		}
+	}
+	int k = 0;
+	for(int Y = 0; Y < height - 11; Y = Y + 10) {
+		for (int X = 0; X < width - 11; X = X + 10) {
+			mesh->addFace(Y * width + X, (Y + 10) * width + X, (Y + 10) * width + X + 10);
+			mesh->addFace(Y * width + X, (Y + 10) * width + X + 1 + 10, Y * width + X + 10);
+			//cout << k++ << "," << k++ << ",";
+		}
+	}
+	boundedobjects.push_back(mesh);
+	mesh->addToNBoundedObjects();
+	//cout << "done" << endl;
+	//cout << objects.size() << endl;
+	//cout << boundedobjects.size();
+	fl_message("done!");
 }

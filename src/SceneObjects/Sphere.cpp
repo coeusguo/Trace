@@ -35,6 +35,8 @@ bool Sphere::intersectLocal( const ray& r, isect& i ) const
 }
 
 vec3f Sphere::getTextureColor(vec3f& intersecPoint) {
+	if (!scene->isTextureLoaded())
+		return vec3f(0.0, 0.0, 0.0);
 	vec3f localPoint = transform->globalToLocalCoords(intersecPoint);
 	vec3f dir = localPoint.normalize();
 	vec3f pole(0.0, 1.0, 0.0);
