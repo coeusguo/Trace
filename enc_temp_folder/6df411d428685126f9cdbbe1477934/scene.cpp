@@ -441,7 +441,7 @@ void Scene::loadHeightFieldMap(char* fname) {
 	for(int Y = 0; Y < height - 11; Y = Y + 10) {
 		for (int X = 0; X < width - 11; X = X + 10) {
 			mesh->addFace(Y * width + X, (Y + 10) * width + X, (Y + 10) * width + X + 10);
-			mesh->addFace(Y * width + X, (Y + 10) * width + X  + 10, Y * width + X + 10);
+			mesh->addFace(Y * width + X, (Y + 10) * width + X + 1 + 10, Y * width + X + 10);
 			//cout << k++ << "," << k++ << ",";
 		}
 	}
