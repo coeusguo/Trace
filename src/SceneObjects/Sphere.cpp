@@ -53,7 +53,7 @@ vec3f Sphere::getTextureColor(vec3f& intersecPoint) {
 		u = acos((equator * dir) / sin(phi)) / (2 * 3.1416);
 
 	vec3f x = (pole ^ dir).normalize();
-	vec3f y = (x ^ dir).normalize();
+	vec3f y = (dir ^ x).normalize();
 
 	mat4f rotate(
 		vec4f(x[0], x[1], x[2], 0.0f),
