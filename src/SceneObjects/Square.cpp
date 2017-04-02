@@ -37,3 +37,15 @@ bool Square::intersectLocal( const ray& r, isect& i ) const
 
 	return true;
 }
+
+vec3f Square::getTextureColor( vec3f& intersecPoint) {
+	vec3f localPoint = transform->globalToLocalCoords(intersecPoint);
+	double u = localPoint[0] + 0.5;
+	double v = localPoint[1] + 0.5;
+
+	//cout << "(" << u << "," << v << ")";
+	mat4f a;
+	
+	setTextureNormal(u, v, a.identity());
+	return scene->getColor(u, v);
+}

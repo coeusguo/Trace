@@ -20,22 +20,31 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 		float fatt = (*l)->distanceAttenuation(point);//distance attenuation
 		vec3f satt = (*l)->shadowAttenuation(point);
 		vec3f ii = (*l)->getColor(point);//the intensity of current light
+
+		vec3f diffuseColor = kd;
+		
+		vec3f temp = ((MaterialSceneObject*)(i.obj))->getTextureColor(r.at(i.t));
+		if (scene->getUsingTexture())
+			diffuseColor = temp;
+
+		if (scene->getUsingBump())
+			normal = i.obj->getBumpNormal();
+
 		float diffuse = normal*lightDirection;//N * L
 		if (diffuse < 0)
 			diffuse = 0;
 
 		vec3f ref = lightDirection - lightDirection * normal * 2 * normal;//the reflection of the light direction vector
 		ref = ref.normalize();
+
 		float spec = ref * r.getDirection();
 		if (spec < 0)
 			spec = 0;
 		spec = pow(spec, shininess);
 
-		vec3f diffuseColor = kd;
 		
-		if (scene->getUsingTexture())
-			diffuseColor = ((MaterialSceneObject*)(i.obj))->getTextureColor(r.at(i.t));
-			
+		
+		
 
 		vec3f result = (diffuseColor * diffuse + ks * spec) * fatt;
 		for (int k = 0; k < 3; k++)
@@ -53,5 +62,6 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 
 	return color;
 }
+
 
 

@@ -196,10 +196,13 @@ public:
     
 	Geometry( Scene *scene ) 
 		: SceneElement( scene ) {}
-
+	vec3f getBumpNormal() const{ return currentNormal; }
+	void setTextureNormal(float x, float y, const mat4f& mat);
 protected:
 	BoundingBox bounds;
     TransformNode *transform;
+
+	vec3f currentNormal;
 };
 
 // A SceneObject is a real actual thing that we want to model in the 
@@ -258,7 +261,9 @@ public:
 		depth = 0;
 		ambientLight = 0.20;
 		m_ucTextureImage = NULL;
+		m_ucNormalMap = NULL;
 		usingTexture = false;
+		usingBump = false;
 	}
 	virtual ~Scene();
 
@@ -297,7 +302,14 @@ public:
 	void loadTextureImage(char* fn);
 	bool getUsingTexture() { return usingTexture; }
 	void setUsingTexture(bool value) { usingTexture = value; }
+	void calcualteNormalMap(unsigned char* filteredMap);
+	void setUsingBump(bool value) { usingBump = value; }
+	bool getUsingBump() { return usingBump; }
 	vec3f getColor(double u, double v);
+
+	vec3f getTextureNormal(float x, float y);
+	void loadNormalMap(char* fname);
+	void saveImage(char* fname);
 private:
     list<Geometry*> objects;
 	list<Geometry*> nonboundedobjects;
@@ -305,6 +317,7 @@ private:
     list<Light*> lights;
     Camera camera;
 	
+	unsigned char* filter();
 	//distance attenuation
 	double constant;
 	double linear;
@@ -314,10 +327,11 @@ private:
 
 	//texture image
 	unsigned char* m_ucTextureImage;
+	unsigned char* m_ucNormalMap;
 	bool usingTexture;
 	int m_textureWidth;
 	int m_textureHeight;
-
+	bool usingBump;
 	// Each object in the scene, provided that it has hasBoundingBoxCapability(),
 	// must fall within this bounding box.  Objects that don't have hasBoundingBoxCapability()
 	// are exempt from this requirement.

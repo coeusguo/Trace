@@ -117,10 +117,11 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 		return result;
 	}
 	else {
-		if (usingBackgroundImage&&m_ucBackground) {
+		if (usingBackgroundImage&&m_ucBackground&&depth==0) {
 			int x = r.getCoords()[0] * m_nWidth;
 			int y = r.getCoords()[1] * m_nHeight;
 			int index = (y * m_nWidth + x) * 3;
+			//cout << "(" << r.getCoords()[0] << "," << r.getCoords()[1] << ")";
 			return vec3f(m_ucBackground[index] / 255.0, m_ucBackground[index + 1] / 255.0, m_ucBackground[index + 2] / 255.0);
 		}
 		else {

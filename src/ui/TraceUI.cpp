@@ -36,14 +36,21 @@ void TraceUI::cb_load_scene(Fl_Menu_* o, void* v)
 		} else{
 			sprintf(buf, "Ray <Not Loaded>");
 		}
-
+		pUI->m_BumpButton->deactivate();
+		pUI->m_nBump = false;
+		pUI->m_BumpButton->value(false);
+		pUI->m_textureButton->deactivate();
+		pUI->m_nTexture = false;
+		pUI->m_textureButton->value(false);
 		pUI->m_mainWindow->label(buf);
 		pUI->raytracer->getScene()->setDepth(pUI->m_nDepth);
 		pUI->raytracer->getScene()->setQuadric(pUI->m_nQuadric);
 		pUI->raytracer->getScene()->setLinear(pUI->m_nLinear);
 		pUI->raytracer->getScene()->setConstant(pUI->m_nConstant);
 		pUI->raytracer->getScene()->setAmbientLight(pUI->m_nAmbientLight);
-
+		pUI->raytracer->getScene()->setUsingTexture(pUI->m_nTexture);
+		pUI->raytracer->getScene()->setUsingBump(pUI->m_nBump);
+		
 	}
 }
 //load backgroung image
@@ -66,6 +73,17 @@ void TraceUI::cb_texture_image(Fl_Menu_* o, void* v) {
 	if (newfile != NULL) {
 		pUI->raytracer->getScene()->loadTextureImage(newfile);
 		pUI->m_textureButton->activate();
+		pUI->m_BumpButton->activate();
+	}
+}
+
+void TraceUI::cb_load_normal_map(Fl_Menu_* o, void* v) {
+	TraceUI* pUI = whoami(o);
+	if (!pUI->raytracer->sceneLoaded())
+		return;
+	char* newfile = fl_file_chooser("Load Texture Image?", "*.bmp", NULL);
+	if (newfile != NULL) {
+		pUI->raytracer->getScene()->loadNormalMap(newfile);
 	}
 }
 
@@ -76,6 +94,7 @@ void TraceUI::cb_save_image(Fl_Menu_* o, void* v)
 	char* savefile = fl_file_chooser("Save Image?", "*.bmp", "save.bmp" );
 	if (savefile != NULL) {
 		pUI->m_traceGlWindow->saveImage(savefile);
+		//pUI->raytracer->getScene()->saveImage(savefile);
 	}
 }
 
@@ -189,6 +208,11 @@ void TraceUI::cb_Texture_button(Fl_Widget* o, void* v) {
 	TraceUI* pUI = (TraceUI*)(o->user_data());
 	pUI->raytracer->getScene()->setUsingTexture(!pUI->raytracer->getScene()->getUsingTexture());
 }
+//bump mapping
+void TraceUI::cb_Bump_mapping_button(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->raytracer->getScene()->setUsingBump(!pUI->raytracer->getScene()->getUsingBump());
+}
 
 void TraceUI::cb_render(Fl_Widget* o, void* v)
 {
@@ -300,6 +324,7 @@ Fl_Menu_Item TraceUI::menuitems[] = {
 		{ "&Save Image...",	FL_ALT + 's', (Fl_Callback *)TraceUI::cb_save_image },
 		{ "&Load Bacground Image",	FL_ALT + 'b', (Fl_Callback *)TraceUI::cb_background_image },
 		{ "&Load Texture Image",	FL_ALT + 't', (Fl_Callback *)TraceUI::cb_texture_image },
+		{ "&Load Normal Map",	FL_ALT + 'm', (Fl_Callback *)TraceUI::cb_load_normal_map },
 		{ "&Exit",			FL_ALT + 'e', (Fl_Callback *)TraceUI::cb_exit },
 		{ 0 },
 
@@ -445,17 +470,26 @@ TraceUI::TraceUI() {
 		m_ambientLightSlider->align(FL_ALIGN_RIGHT);
 		m_ambientLightSlider->callback(cb_antiAliasingGridSizeSlides);
 
+		m_nbackground = false;
 		m_backgroundButton = new Fl_Light_Button(10, 235, 100, 25, "&Background");
 		m_backgroundButton->user_data((void*)(this));
 		m_backgroundButton->callback(cb_Background_button);
-		m_backgroundButton->value(false);
+		m_backgroundButton->value(m_nbackground);
 		m_backgroundButton->deactivate();
 
+		m_nBump = false;
+		m_nTexture = false;
 		m_textureButton = new Fl_Light_Button(120, 235, 80, 25, "&Texture");
 		m_textureButton->user_data((void*)(this));
 		m_textureButton->callback(cb_Texture_button);
-		m_textureButton->value(false);
+		m_textureButton->value(m_nTexture);
 		m_textureButton->deactivate();
+
+		m_BumpButton = new Fl_Light_Button(210, 235, 120, 25, "&Bump mapping");
+		m_BumpButton->user_data((void*)(this));
+		m_BumpButton->callback(cb_Bump_mapping_button);
+		m_BumpButton->value(m_nBump);
+		m_BumpButton->deactivate();
 
 		m_mainWindow->callback(cb_exit2);
 		m_mainWindow->when(FL_HIDE);

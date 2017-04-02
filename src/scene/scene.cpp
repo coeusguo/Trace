@@ -135,6 +135,11 @@ Scene::~Scene()
 	for( l = lights.begin(); l != lights.end(); ++l ) {
 		delete (*l);
 	}
+
+	if (m_ucTextureImage)
+		delete[]m_ucTextureImage;
+	if (m_ucNormalMap)
+		delete[]m_ucNormalMap;
 }
 
 // Get any intersection with an object.  Return information about the 
@@ -216,6 +221,10 @@ void Scene::loadTextureImage(char* fn) {
 	m_textureWidth = width;
 	m_textureHeight = height;
 	m_ucTextureImage = data;
+
+	unsigned char* temp = filter();
+	calcualteNormalMap(temp);//calculate the normal map of the loaded texture image
+	delete[]temp;
 }
 
 vec3f Scene::getColor(double u, double v) {//given u , v from [0,1],return the corresponding color in of the texture map
@@ -231,4 +240,146 @@ vec3f Scene::getColor(double u, double v) {//given u , v from [0,1],return the c
 	if(m_ucTextureImage)
 		result = vec3f(m_ucTextureImage[index] / 255.0f, m_ucTextureImage[index + 1] / 255.0f, m_ucTextureImage[index + 2] / 255.0f);
 	return result;
+}
+
+void Scene::calcualteNormalMap(unsigned char* filteredMap) {
+	if (!filteredMap)
+		return;
+
+	if (!m_ucTextureImage)
+		return;
+
+	if (m_ucNormalMap)
+		delete[]m_ucNormalMap;
+
+
+	m_ucNormalMap = new unsigned char[m_textureWidth * m_textureHeight * 3];
+
+	//cout << m_textureWidth * m_textureHeight * 3 << endl;
+
+	unsigned char* greyScale = new unsigned char[m_textureHeight*m_textureWidth];
+	for (int i = 0; i < m_textureHeight * m_textureWidth; i++)
+		greyScale[i] = filteredMap[i * 3] * 0.299 + filteredMap[i * 3 + 1] * 0.587 + filteredMap[i * 3 + 2] * 0.114;
+
+	for (int Y = 0; Y < m_textureHeight; Y++) {
+		for (int X = 0; X < m_textureWidth; X++) {
+			int right;
+			int up;
+			int current = greyScale[Y * m_textureWidth + X];
+
+			if (X == m_textureWidth - 1)
+				right = greyScale[Y * m_textureWidth + X];
+			else
+				right = greyScale[Y * m_textureWidth + X + 1];
+
+
+			if (Y == m_textureHeight - 1)
+				up = greyScale[Y * m_textureWidth + X];
+			else
+				up = greyScale[(Y + 1) * m_textureWidth + X];
+
+
+			vec3f a(1.0, 0.0, right - current);
+			vec3f b(0.0, 1.0, up - current);
+			vec3f n = (a ^ b).normalize();
+
+
+			//cout << n[0] << "," << n[1] << "," << n[2] << endl;
+			//cout << X << "," << Y << endl;
+			
+			m_ucNormalMap[(Y * m_textureWidth + X) * 3] = (n[0] + 1) * 0.5 * 255.0f;
+			m_ucNormalMap[(Y * m_textureWidth + X) * 3 + 1] = (n[1] + 1) * 0.5 * 255.0f;
+			m_ucNormalMap[(Y * m_textureWidth + X) * 3 + 2] = n[2] * 255.0f;
+		}
+	}
+}
+
+vec3f Scene::getTextureNormal(float x, float y) {
+	int xx = x * m_textureWidth;
+	if (xx >= m_textureWidth)
+		xx = m_textureWidth - 1;
+	int yy = y * m_textureHeight;
+	if (yy >= m_textureHeight)
+		yy = m_textureHeight - 1;
+
+	int index = (yy * m_textureWidth + xx) * 3;
+	return vec3f(m_ucNormalMap[index], m_ucNormalMap[index + 1], m_ucNormalMap[index + 2]);
+}
+
+void  Geometry::setTextureNormal(float x, float y,const mat4f& mat) {
+	vec3f rgbNormal = scene->getTextureNormal(x, y);
+	rgbNormal[0] = (rgbNormal[0] / 255.0f) * 2 - 1;
+	rgbNormal[1] = (rgbNormal[1] / 255.0f) * 2 - 1;
+	rgbNormal[2] = rgbNormal[2] / 255.0f;
+	currentNormal = (mat * rgbNormal).normalize();
+	//cout << "(" << currentNormal[0] << "," << currentNormal[1] << "," << currentNormal[2] << ")";
+}
+
+void Scene::saveImage(char *iname)
+{
+
+	if (m_ucNormalMap)
+		writeBMP(iname, m_textureWidth, m_textureHeight, m_ucNormalMap);
+}
+
+unsigned char* Scene::filter() {
+	if (!m_ucTextureImage)
+		return NULL;
+
+	unsigned char* temp = new unsigned char[m_textureWidth * m_textureHeight * 3];
+	memset(temp, 0, m_textureWidth * m_textureHeight * 3);
+	mat3f kernel(
+		vec3f(0.0625, 0.125, 0.0625),
+		vec3f(0.125, 0.25, 1.25),
+		vec3f(0.0625, 0.125, 0.0625)
+	);
+
+	for (int Y = 0; Y < m_textureHeight; Y++) {
+		for (int X = 0; X < m_textureWidth; X++) {
+			int index2 = (Y * m_textureWidth + X) * 3;
+			for (int j = -1; j < 2; j++) {
+				for (int i = -1; i < 2; i++) {
+					int x = abs(X + i);
+					int y = abs(Y + j);
+					if (x >= m_textureWidth)
+						x = m_textureWidth - 2;
+					if (y >= m_textureHeight)
+						y = m_textureHeight - 2;
+
+					int index = (y * m_textureWidth + x) * 3;
+					temp[index2] += kernel[j + 1][i + 1] * m_ucTextureImage[index];
+					temp[index2 + 1] += kernel[j + 1][i + 1] * m_ucTextureImage[index + 1];
+					temp[index2 + 2] += kernel[j + 1][i + 1] * m_ucTextureImage[index + 2];
+				}
+			}
+		}
+	}
+
+	return temp;
+}
+
+void Scene::loadNormalMap(char* fname) {
+	if (m_ucNormalMap)
+		delete[]m_ucNormalMap;
+
+	unsigned char*	data;
+	int				width, height;
+
+	if (!m_ucTextureImage) {
+		fl_alert("Load a texture image first!");
+		return;
+	}
+
+	if ((data = readBMP(fname, width, height)) == NULL)
+	{
+		fl_alert("Can't load bitmap file");
+		return;
+	}
+
+	if (width != m_textureWidth || height != m_textureHeight) {
+		fl_alert("Size doesn`t match!");
+		return;
+	}
+
+	m_ucNormalMap = data;
 }

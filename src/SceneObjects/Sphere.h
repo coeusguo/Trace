@@ -22,5 +22,7 @@ public:
 		localbounds.max = vec3f(1.0f, 1.0f, 1.0f);
         return localbounds;
     }
+	
+
 };
 #endif // __SPHERE_H__

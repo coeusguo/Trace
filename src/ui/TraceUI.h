@@ -44,6 +44,8 @@ public:
 	Fl_Button*			m_JitterButton;
 	Fl_Button*			m_backgroundButton;
 	Fl_Button*			m_textureButton;
+	Fl_Button*			m_BumpButton;
+
 
 
 	TraceGLWindow*		m_traceGlWindow;
@@ -74,6 +76,12 @@ private:
 	bool		m_nSuperSampling;
 	bool		m_nAdaptive;
 	bool		m_nJitter;
+
+	//background
+	bool		m_nbackground;
+	//texture mapping
+	bool		m_nTexture;
+	bool		m_nBump;
 // static class members
 	static Fl_Menu_Item menuitems[];
 
@@ -85,6 +93,7 @@ private:
 	static void cb_about(Fl_Menu_* o, void* v);
 	static void cb_background_image(Fl_Menu_* o, void* v);
 	static void cb_texture_image(Fl_Menu_* o, void* v);
+	static void cb_load_normal_map(Fl_Menu_* o, void* v);
 
 	static void cb_exit2(Fl_Widget* o, void* v);
 	static void cb_sizeSlides(Fl_Widget* o, void* v);
@@ -99,6 +108,7 @@ private:
 	static void cb_Jitter_button(Fl_Widget* o, void* v);
 	static void cb_Background_button(Fl_Widget* o, void* v);
 	static void cb_Texture_button(Fl_Widget* o, void* v);
+	static void cb_Bump_mapping_button(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);
