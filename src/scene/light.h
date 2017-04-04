@@ -2,12 +2,13 @@
 #define __LIGHT_H__
 
 #include "scene.h"
+#include <random>
 
 class Light
 	: public SceneElement
 {
 public:
-	virtual vec3f shadowAttenuation(const vec3f& P) const = 0;
+	virtual vec3f shadowAttenuation(const vec3f& P,bool enableSoftShadow) const = 0;
 	virtual double distanceAttenuation( const vec3f& P ) const = 0;
 	virtual vec3f getColor( const vec3f& P ) const = 0;
 	virtual vec3f getDirection( const vec3f& P ) const = 0;
@@ -25,7 +26,7 @@ class DirectionalLight
 public:
 	DirectionalLight( Scene *scene, const vec3f& orien, const vec3f& color )
 		: Light( scene, color ), orientation( orien ) {}
-	virtual vec3f shadowAttenuation(const vec3f& P) const;
+	virtual vec3f shadowAttenuation(const vec3f& P, bool enableSoftShadow) const;
 	virtual double distanceAttenuation( const vec3f& P ) const;
 	virtual vec3f getColor( const vec3f& P ) const;
 	virtual vec3f getDirection( const vec3f& P ) const;
@@ -40,7 +41,7 @@ class PointLight
 public:
 	PointLight( Scene *scene, const vec3f& pos, const vec3f& color )
 		: Light( scene, color ), position( pos ) {}
-	virtual vec3f shadowAttenuation(const vec3f& P) const;
+	virtual vec3f shadowAttenuation(const vec3f& P, bool enableSoftShadow) const;
 	virtual double distanceAttenuation( const vec3f& P ) const;
 	virtual vec3f getColor( const vec3f& P ) const;
 	virtual vec3f getDirection( const vec3f& P ) const;
@@ -58,7 +59,7 @@ public:
 		angleCos = cos((edgePlace[0] / 180)*3.1416);
 		//cout << "success" << endl;
 	}
-	virtual vec3f shadowAttenuation(const vec3f& P) const;
+	virtual vec3f shadowAttenuation(const vec3f& P, bool enableSoftShadow) const;
 	virtual double distanceAttenuation(const vec3f& P) const;
 	virtual vec3f getColor(const vec3f& P) const;
 	virtual vec3f getDirection(const vec3f& P) const;
@@ -110,7 +111,7 @@ public:
 		setType(shape[0]);
 		projectionMatrix = projection * rotate * translate;
 	}
-	virtual vec3f shadowAttenuation(const vec3f& P) const;
+	virtual vec3f shadowAttenuation(const vec3f& P, bool enableSoftShadow) const;
 	virtual double distanceAttenuation(const vec3f& P) const;
 	virtual vec3f getColor(const vec3f& P) const;
 	virtual vec3f getDirection(const vec3f& P) const;

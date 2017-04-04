@@ -91,7 +91,7 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 		vec3f refraColor(0.0, 0.0, 0.0);
 		//cout << (-dir)*normal<<endl;
 		//phong shading
-		phong = m.shade(scene, r, i);
+		phong = m.shade(scene, r, i,enableSoftShadow);
 		
 		//reflection
 		vec3f reflecVec = r.getDirection() - r.getDirection() * normal * 2 * normal;

@@ -6,7 +6,7 @@
 // the color of that point.
 int Material::numMaterials = 0;
 
-vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
+vec3f Material::shade( Scene *scene, const ray& r, const isect& i ,bool enableSoftShadow) const
 {
 
 	typedef list<Light*>::const_iterator 	cliter;
@@ -18,7 +18,7 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 		vec3f lightDirection = (*l)->getDirection(point);
 
 		float fatt = (*l)->distanceAttenuation(point);//distance attenuation
-		vec3f satt = (*l)->shadowAttenuation(point);
+		vec3f satt = (*l)->shadowAttenuation(point,enableSoftShadow);
 		vec3f ii = (*l)->getColor(point);//the intensity of current light
 
 		vec3f diffuseColor = kd;
@@ -41,10 +41,6 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ) const
 		if (spec < 0)
 			spec = 0;
 		spec = pow(spec, shininess);
-
-		
-		
-		
 
 		vec3f result = (diffuseColor * diffuse + ks * spec) * fatt;
 		for (int k = 0; k < 3; k++)
