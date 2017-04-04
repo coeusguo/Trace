@@ -53,6 +53,13 @@ public:
 	int getApertureSize() { return apertureSize; }
 	void setFocalLength(float value) { focalLength = value; }
 	float getFocalLength() { return focalLength; }
+
+	//glossy reflection
+	void setEnableGlossy(bool value) { enableGlossy = value; }
+	bool getEnableGlossy() { return enableGlossy; }
+	//soft shadow
+	void setEnableSoftShadow(bool value) { enableSoftShadow = value; }
+	bool getEnableSoftShadow() { return enableSoftShadow; }
 private:
 	unsigned char *buffer;
 	int buffer_width, buffer_height;
@@ -77,7 +84,11 @@ private:
 	int apertureSize;
 	float focalLength;
 	bool enableDepthOfField;
-	
+
+	//glossy reflection
+	bool enableGlossy;
+	//soft shadow
+	bool enableSoftShadow;
 
 	vec3f refractionDirection(vec3f& normal, vec3f& dir, double indexFrom, double indexTo);
 };

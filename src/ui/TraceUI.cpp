@@ -239,6 +239,18 @@ void TraceUI::cb_aperture_size_slider(Fl_Widget* o, void* v) {
 	pUI->raytracer->setApertureSize(pUI->m_nApertureSize);
 }
 
+//glossy reflection
+void TraceUI::cb_glossy_reflection(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->raytracer->setEnableGlossy(!pUI->raytracer->getEnableGlossy());
+}
+
+//soft shadow
+void TraceUI::cb_soft_shadow(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->raytracer->setEnableSoftShadow(!pUI->raytracer->getEnableSoftShadow());
+}
+
 void TraceUI::cb_render(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -497,7 +509,7 @@ TraceUI::TraceUI() {
 		m_ambientLightSlider->callback(cb_antiAliasingGridSizeSlides);
 
 		m_nbackground = false;
-		m_backgroundButton = new Fl_Light_Button(10, 235, 100, 25, "&Background");
+		m_backgroundButton = new Fl_Light_Button(10, 235, 110, 25, "&Background");
 		m_backgroundButton->user_data((void*)(this));
 		m_backgroundButton->callback(cb_Background_button);
 		m_backgroundButton->value(m_nbackground);
@@ -505,13 +517,13 @@ TraceUI::TraceUI() {
 
 		m_nBump = false;
 		m_nTexture = false;
-		m_textureButton = new Fl_Light_Button(120, 235, 80, 25, "&Texture");
+		m_textureButton = new Fl_Light_Button(130, 235, 80, 25, "&Texture");
 		m_textureButton->user_data((void*)(this));
 		m_textureButton->callback(cb_Texture_button);
 		m_textureButton->value(m_nTexture);
 		m_textureButton->deactivate();
 
-		m_BumpButton = new Fl_Light_Button(210, 235, 120, 25, "&Bump mapping");
+		m_BumpButton = new Fl_Light_Button(220, 235, 120, 25, "&Bump mapping");
 		m_BumpButton->user_data((void*)(this));
 		m_BumpButton->callback(cb_Bump_mapping_button);
 		m_BumpButton->value(m_nBump);
@@ -525,6 +537,20 @@ TraceUI::TraceUI() {
 		m_DepthFieldButton->user_data((void*)(this));
 		m_DepthFieldButton->callback(cb_depth_of_field_button);
 		m_DepthFieldButton->value(m_nDepthOfField);
+
+		//glossy reflection
+		m_nEnableGlossy = false;
+		m_GlossyReflectionButton = new Fl_Light_Button(130, 265, 100, 25, "&Glossy Refl.");
+		m_GlossyReflectionButton->user_data((void*)(this));
+		m_GlossyReflectionButton->callback(cb_glossy_reflection);
+		m_GlossyReflectionButton->value(m_nEnableGlossy);
+
+		//soft shadow
+		m_nEnableSoftShadow = false;
+		m_SoftShadowButton = new Fl_Light_Button(240, 265, 100, 25, "&Soft Shadow");
+		m_SoftShadowButton->user_data((void*)(this));
+		m_SoftShadowButton->callback(cb_soft_shadow);
+		m_SoftShadowButton->value(m_nEnableSoftShadow);
 
 		m_FocalLengthSlider = new Fl_Value_Slider(10, 295, 180, 20, "Focal Length");
 		m_FocalLengthSlider->user_data((void*)(this));	// record self to be used by static callback functions

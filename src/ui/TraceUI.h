@@ -48,6 +48,8 @@ public:
 	Fl_Button*			m_textureButton;
 	Fl_Button*			m_BumpButton;
 	Fl_Button*			m_DepthFieldButton;
+	Fl_Button*			m_GlossyReflectionButton;
+	Fl_Button*			m_SoftShadowButton;
 
 
 
@@ -82,6 +84,7 @@ private:
 
 	//background
 	bool		m_nbackground;
+
 	//texture mapping
 	bool		m_nTexture;
 	bool		m_nBump;
@@ -90,6 +93,12 @@ private:
 	bool		m_nDepthOfField;
 	float		m_nFocalLength;
 	int			m_nApertureSize;
+
+	//glossy shadow
+	bool		m_nEnableGlossy;
+
+	//soft shadow
+	bool		m_nEnableSoftShadow;
 // static class members
 	static Fl_Menu_Item menuitems[];
 
@@ -121,6 +130,8 @@ private:
 	static void cb_focal_length_Slides(Fl_Widget* o, void* v);
 	static void cb_depth_of_field_button(Fl_Widget* o, void* v);
 	static void cb_aperture_size_slider(Fl_Widget* o, void* v);
+	static void cb_glossy_reflection(Fl_Widget* o, void* v);
+	static void cb_soft_shadow(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);

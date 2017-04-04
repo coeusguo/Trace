@@ -97,7 +97,29 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 		vec3f reflecVec = r.getDirection() - r.getDirection() * normal * 2 * normal;
 		reflecVec = reflecVec.normalize();
 		ray newRay(pos, reflecVec);
+		
 		refColor = traceRay(scene, newRay, thresh, depth + 1,materials);
+
+		//glossy reflection
+		if (enableGlossy) {
+			uniform_real_distribution<double> rand(0, 2);
+			static default_random_engine re;
+
+			vec3f u = (reflecVec ^ normal).normalize();
+			vec3f v = (u ^ reflecVec).normalize();
+			for (int i = 0; i < 50; i++) {
+				float deltaU = rand(re) - 1.0;
+				float deltaV = rand(re) - 1.0;
+
+				vec3f newReflecVec = (reflecVec + u * deltaU * 0.05 + v * deltaV * 0.05).normalize();
+				ray newRay(pos, newReflecVec);
+				refColor += traceRay(scene, newRay, thresh, scene->getDepth() - 2, materials);
+			}
+			for (int i = 0; i < 3; i++)
+				refColor[i] /= 51.0f;
+		}
+
+		//cout << "?";
 		refColor = prod(refColor, m.kr);
 
 		//refraction
@@ -166,6 +188,8 @@ RayTracer::RayTracer()
 	apertureSize = 2;
 	focalLength = 2.0;
 	enableDepthOfField = false;
+	enableGlossy = false;
+	enableSoftShadow = false;
 }
 
 

@@ -35,7 +35,7 @@ vec3f Camera::getPlaneWorldCoords(double x, double y) {
 	x -= 0.5;
 	y -= 0.5;
 	vec3f result =  eye + look + x * u + y * v;
-	cout << "(" << result << ")";
+	//cout << "(" << result << ")";
 	return result;
 }
 

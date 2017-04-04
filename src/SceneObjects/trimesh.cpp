@@ -62,7 +62,7 @@ Trimesh::doubleCheck()
 // Calculates and returns the normal of the triangle too.
 bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
 {
-	cout << "here!";
+	//cout << "here!";
     const vec3f& a = parent->vertices[ids[0]];
     const vec3f& b = parent->vertices[ids[1]];
     const vec3f& c = parent->vertices[ids[2]];
