@@ -75,7 +75,7 @@ bool Cylinder::intersectBody( const ray& r, isect& i ) const
 		// In case we are _inside_ the _uncapped_ cone, we need to flip the normal.
 		// Essentially, the cone in this case is a double-sided surface
 		// and has _2_ normals
-		if( !capped && normal.dot( r.getDirection() ) > 0 )
+		if(normal.dot( r.getDirection() ) > 0 )
 			normal = -normal;
 
 		i.N = normal.normalize();

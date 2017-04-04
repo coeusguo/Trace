@@ -8,6 +8,7 @@ class Camera
 public:
     Camera();
     void rayThrough( double x, double y, ray &r );
+	vec3f getPlaneWorldCoords(double x, double y);
     void setEye( const vec3f &eye );
     void setLook( double, double, double, double );
     void setLook( const vec3f &viewDir, const vec3f &upDir );

@@ -223,6 +223,22 @@ void TraceUI::cb_Bump_mapping_button(Fl_Widget* o, void* v) {
 	pUI->raytracer->getScene()->setUsingBump(!pUI->raytracer->getScene()->getUsingBump());
 }
 
+//depth of field
+void TraceUI::cb_depth_of_field_button(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->raytracer->setEnableDepthOfField(!pUI->raytracer->getEnableDepthofField());
+}
+void TraceUI::cb_focal_length_Slides(Fl_Widget* o, void* v){
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->m_nFocalLength = ((Fl_Slider *)o)->value();
+	pUI->raytracer->setFocalLength(pUI->m_nFocalLength);
+}
+void TraceUI::cb_aperture_size_slider(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->m_nApertureSize = ((Fl_Slider *)o)->value();
+	pUI->raytracer->setApertureSize(pUI->m_nApertureSize);
+}
+
 void TraceUI::cb_render(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -500,6 +516,40 @@ TraceUI::TraceUI() {
 		m_BumpButton->callback(cb_Bump_mapping_button);
 		m_BumpButton->value(m_nBump);
 		m_BumpButton->deactivate();
+
+		//depth of field
+		m_nDepthOfField = false;
+		m_nFocalLength = 2.0;
+		m_nApertureSize = 2;
+		m_DepthFieldButton = new Fl_Light_Button(10, 265, 110, 25, "&Depth of Field");
+		m_DepthFieldButton->user_data((void*)(this));
+		m_DepthFieldButton->callback(cb_depth_of_field_button);
+		m_DepthFieldButton->value(m_nDepthOfField);
+
+		m_FocalLengthSlider = new Fl_Value_Slider(10, 295, 180, 20, "Focal Length");
+		m_FocalLengthSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_FocalLengthSlider->type(FL_HOR_NICE_SLIDER);
+		m_FocalLengthSlider->labelfont(FL_COURIER);
+		m_FocalLengthSlider->labelsize(12);
+		m_FocalLengthSlider->minimum(1);
+		m_FocalLengthSlider->maximum(5);
+		m_FocalLengthSlider->step(0.01);
+		m_FocalLengthSlider->value(m_nFocalLength);
+		m_FocalLengthSlider->align(FL_ALIGN_RIGHT);
+		m_FocalLengthSlider->callback(cb_focal_length_Slides);
+
+		m_ApertureSizeSlider = new Fl_Value_Slider(10, 320, 180, 20, "Aperture Size");
+		m_ApertureSizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_ApertureSizeSlider->type(FL_HOR_NICE_SLIDER);
+		m_ApertureSizeSlider->labelfont(FL_COURIER);
+		m_ApertureSizeSlider->labelsize(12);
+		m_ApertureSizeSlider->minimum(1);
+		m_ApertureSizeSlider->maximum(5);
+		m_ApertureSizeSlider->step(1);
+		m_ApertureSizeSlider->value(m_nApertureSize);
+		m_ApertureSizeSlider->align(FL_ALIGN_RIGHT);
+		m_ApertureSizeSlider->callback(cb_aperture_size_slider);
+
 
 		m_mainWindow->callback(cb_exit2);
 		m_mainWindow->when(FL_HIDE);

@@ -26,7 +26,7 @@ bool Sphere::intersectLocal( const ray& r, isect& i ) const
 	if( t1 > RAY_EPSILON ) { //the ray is outside the sphere
 		i.t = t1;
 		i.N = r.at( t1 ).normalize();
-	} else {//the rat is inside the sphere
+	} else {//the ray is inside the sphere
 		i.t = t2;
 		i.N = -r.at( t2 ).normalize();
 	}

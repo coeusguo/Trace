@@ -35,6 +35,8 @@ public:
 	Fl_Slider*			m_attenuationQuadricSlider;
 	Fl_Slider*			m_ambientLightSlider;
 	Fl_Slider*			m_AntiAliasingGridSiseSlider;
+	Fl_Slider*			m_FocalLengthSlider;
+	Fl_Slider*			m_ApertureSizeSlider;
 
 
 	Fl_Button*			m_renderButton;
@@ -45,6 +47,7 @@ public:
 	Fl_Button*			m_backgroundButton;
 	Fl_Button*			m_textureButton;
 	Fl_Button*			m_BumpButton;
+	Fl_Button*			m_DepthFieldButton;
 
 
 
@@ -82,6 +85,11 @@ private:
 	//texture mapping
 	bool		m_nTexture;
 	bool		m_nBump;
+
+	//depth of field
+	bool		m_nDepthOfField;
+	float		m_nFocalLength;
+	int			m_nApertureSize;
 // static class members
 	static Fl_Menu_Item menuitems[];
 
@@ -110,6 +118,9 @@ private:
 	static void cb_Background_button(Fl_Widget* o, void* v);
 	static void cb_Texture_button(Fl_Widget* o, void* v);
 	static void cb_Bump_mapping_button(Fl_Widget* o, void* v);
+	static void cb_focal_length_Slides(Fl_Widget* o, void* v);
+	static void cb_depth_of_field_button(Fl_Widget* o, void* v);
+	static void cb_aperture_size_slider(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);

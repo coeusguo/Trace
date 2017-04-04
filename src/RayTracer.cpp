@@ -17,12 +17,15 @@
 
 vec3f RayTracer::trace( Scene *scene, double x, double y )
 {
+
     ray r( vec3f(0,0,0), vec3f(0,0,0) );
 	scene->getCamera()->rayThrough(x, y, r);
-
 	uniform_real_distribution<double> rand(0,2);
 	static default_random_engine re;
 	stack<Material> material;
+
+	double stepX = 1.0 / (double(gridSize) * buffer_width * 2);
+	double stepY = 1.0 / (double(gridSize) * buffer_height * 2);
 	if (supperSampling) {
 		double deltaX = 0.0;
 		double deltaY = 0.0;
@@ -31,8 +34,7 @@ vec3f RayTracer::trace( Scene *scene, double x, double y )
 			deltaY = rand(re) - 1.0;
 		}
 		vec3f result(0.0, 0.0, 0.0);
-		double stepX = 1.0 / (double(gridSize) * buffer_width * 2);
-		double stepY = 1.0 / (double(gridSize) * buffer_height * 2);
+		
 		x = x - (gridSize / 2) * stepX + stepX * 0.5;
 		y = y - (gridSize / 2) * stepY + stepY * 0.5;
 		for (int Y = 1; Y <= gridSize; Y++) {
@@ -45,6 +47,25 @@ vec3f RayTracer::trace( Scene *scene, double x, double y )
 		}
 		double number = 1.0/(gridSize * gridSize);
 		result *= number;
+		return result;
+	}
+	if (enableDepthOfField) {
+		vec3f focalPoint = r.at(focalLength + 1);
+		vec3f result(0.0, 0.0, 0.0);
+		result = traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0, material).clamp();
+		for (int i = 0; i < 50; i++) {
+			double deltaX = rand(re) - 1.0;
+			double deltaY = rand(re) - 1.0;
+			//cout << "(" << deltaX << "," << deltaY << ")";
+			vec3f newPoint = scene->getCamera()->getPlaneWorldCoords(x + deltaX *0.05 * apertureSize, y + deltaY * 0.05 * apertureSize);
+			vec3f newDir = (focalPoint - newPoint).normalize();
+			ray newRay(newPoint, newDir);
+			result += traceRay(scene, newRay, vec3f(1.0, 1.0, 1.0), scene->getDepth() - 2, material).clamp();
+		}
+		for (int i = 0; i < 3; i++) {
+			result[i] /= 51.0f;
+			//cout << result[i] << ",";
+		}
 		return result;
 	}
 	return traceRay( scene, r, vec3f(1.0,1.0,1.0), 0 ,material).clamp();
@@ -68,7 +89,7 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 		vec3f phong(0.0, 0.0, 0.0);
 		vec3f refColor(0.0, 0.0, 0.0);
 		vec3f refraColor(0.0, 0.0, 0.0);
-
+		//cout << (-dir)*normal<<endl;
 		//phong shading
 		phong = m.shade(scene, r, i);
 		
@@ -117,7 +138,7 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 		return result;
 	}
 	else {
-		if (usingBackgroundImage&&m_ucBackground&&depth==0) {
+		if (usingBackgroundImage && m_ucBackground && depth==0) {
 			int x = r.getCoords()[0] * m_nWidth;
 			int y = r.getCoords()[1] * m_nHeight;
 			int index = (y * m_nWidth + x) * 3;
@@ -142,6 +163,9 @@ RayTracer::RayTracer()
 	usingBackgroundImage = false;
 	jitter = false;
 	gridSize = 3;
+	apertureSize = 2;
+	focalLength = 2.0;
+	enableDepthOfField = false;
 }
 
 

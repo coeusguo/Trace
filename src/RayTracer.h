@@ -46,7 +46,13 @@ public:
 	bool getUisingBackgroundImage() { return usingBackgroundImage; }
 	void loadBackgroundImage(char* fn);
 
-
+	//depth of field
+	bool getEnableDepthofField() { return enableDepthOfField; }
+	void setEnableDepthOfField(bool value) { enableDepthOfField = value; }
+	void setApertureSize(int value) { apertureSize = value; }
+	int getApertureSize() { return apertureSize; }
+	void setFocalLength(float value) { focalLength = value; }
+	float getFocalLength() { return focalLength; }
 private:
 	unsigned char *buffer;
 	int buffer_width, buffer_height;
@@ -66,6 +72,11 @@ private:
 	bool usingBackgroundImage;
 	int m_nWidth;
 	int m_nHeight;
+
+	//depth of field
+	int apertureSize;
+	float focalLength;
+	bool enableDepthOfField;
 	
 
 	vec3f refractionDirection(vec3f& normal, vec3f& dir, double indexFrom, double indexTo);
