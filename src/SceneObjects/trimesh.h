@@ -33,7 +33,7 @@ public:
     void addVertex( const vec3f & );
     void addMaterial( Material *m );
     void addNormal( const vec3f & );
-
+	void addToNBoundedObjects();
     bool addFace( int a, int b, int c );
 
     char *doubleCheck();

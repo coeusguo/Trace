@@ -1,0 +1,32 @@
+SBT-raytracer 1.0
+
+camera {
+	position = (3,3,3);
+	viewdir = (-1,-1,-1);
+	aspectratio = 1;
+	updir = (0,1,0);
+}
+
+
+point_light
+{
+	position = (0, 0, 2);
+	colour = (1.0, 1.0, 1.0);
+
+}
+
+
+point_light
+{
+	position = (0, 2, 0);
+	colour = (1.0, 1.0, 1.0);
+
+}
+
+point_light
+{
+	position = (2, 2, 2);
+	colour = (1.0, 1.0, 1.0);
+
+}
+

@@ -532,7 +532,32 @@ static void processObject( Obj *obj, Scene *scene, mmap& materials )
 		scene->add( new PointLight( scene, 
 			tupleToVec( getField( child, "position" ) ),
 			tupleToVec( getColorField( child ) ) ) );
-	} else if( 	name == "sphere" ||
+	} 
+	else if (name == "spot_light") {
+		if (child == NULL) {
+			throw ParseError("No info for spot_light");
+		}
+
+		scene->add(new SpotLight(scene,
+			tupleToVec(getField(child, "position")),
+			tupleToVec(getField(child, "direction")).normalize(),
+			tupleToVec(getField(child, "edgeplace")),
+			tupleToVec(getColorField(child))));
+	}
+	else if (name == "shape_light") {
+		if (child == NULL) {
+			throw ParseError("No info for shape_light");
+		}
+
+		scene->add(new ShapeLight(scene,
+			tupleToVec(getField(child, "position")),
+			tupleToVec(getField(child, "direction")).normalize(),
+			tupleToVec(getField(child, "parms")),
+			tupleToVec(getField(child, "up")).normalize(),
+			tupleToVec(getField(child, "shape")),
+			tupleToVec(getColorField(child))));
+	}
+	else if (name == "sphere" ||
 				name == "box" ||
 				name == "cylinder" ||
 				name == "cone" ||

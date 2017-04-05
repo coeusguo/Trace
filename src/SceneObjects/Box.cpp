@@ -45,6 +45,8 @@ bool Box::intersectLocal( const ray& r, isect& i ) const
 	else
 		i.N = vec3f(-1.0, 0, 0);
 
+	if (r.getDirection() * i.N > 0)
+		i.N = -i.N;
 	i.obj = this;
 	return true;
 }

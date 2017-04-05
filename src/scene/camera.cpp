@@ -19,10 +19,24 @@ Camera::rayThrough( double x, double y, ray &r )
 // Ray through normalized window point x,y.  In normalized coordinates
 // the camera's x and y vary both vary from 0 to 1.
 {
+	double* coord = new double[2];
+	coord[0] = x;
+	coord[1] = y;
     x -= 0.5;
     y -= 0.5;
     vec3f dir = look + x * u + y * v;
+	//cout << "(" << u[0] << "," << u[1] << "," << u[2] << ")";
     r = ray( eye, dir.normalize() );
+	r.setCoords(coord);
+
+}
+
+vec3f Camera::getPlaneWorldCoords(double x, double y) {
+	x -= 0.5;
+	y -= 0.5;
+	vec3f result =  eye + look + x * u + y * v;
+	//cout << "(" << result << ")";
+	return result;
 }
 
 void
@@ -38,7 +52,7 @@ Camera::setLook( double r, double i, double j, double k )
 // We derive the new look direction by rotating the camera by the
 // quaternion rijk.
 {
-                                // set look matrix
+	//cout << "setlook" << endl;          // set look matrix
     m[0][0] = 1.0 - 2.0 * (i * i + j * j);
     m[0][1] = 2.0 * (r * i - j * k);
     m[0][2] = 2.0 * (j * r + i * k);
@@ -59,9 +73,9 @@ Camera::setLook( const vec3f &viewDir, const vec3f &upDir )
 {
     vec3f z = -viewDir;          // this is where the z axis should end up
     const vec3f &y = upDir;      // where the y axis should end up
-    vec3f x = y.cross(z);               // lah,
-
-    m = mat3f( x,y,z ).transpose();
+	vec3f x = y.cross(z).normalize();               // lah,
+	vec3f newUp = (z ^ x).normalize();
+    m = mat3f( x,newUp,z ).transpose();
 
     update();
 }
@@ -90,6 +104,7 @@ Camera::update()
     v = m * vec3f( 0,1,0 ) * normalizedHeight;
     look = m * vec3f( 0,0,-1 );
 }
+
 
 
 

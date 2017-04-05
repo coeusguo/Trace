@@ -14,7 +14,7 @@ public:
     
 	virtual bool intersectLocal( const ray& r, isect& i ) const;
 	virtual bool hasBoundingBoxCapability() const { return true; }
-
+	virtual vec3f getTextureColor(vec3f& intersecPoint);
     virtual BoundingBox ComputeLocalBoundingBox()
     {
         BoundingBox localbounds;
@@ -22,5 +22,7 @@ public:
 		localbounds.max = vec3f(1.0f, 1.0f, 1.0f);
         return localbounds;
     }
+	
+
 };
 #endif // __SPHERE_H__

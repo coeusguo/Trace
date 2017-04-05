@@ -1,0 +1,52 @@
+SBT-raytracer 1.0
+camera
+{
+	position = (0, 0, 5);
+	viewdir = (0, 0, -5);
+	updir = (0, 1, 0);
+}
+
+point_light
+{
+	position = (0, 2, 0);
+	colour = (1.0, 1.0, 1.0);
+
+}
+
+point_light
+{
+	position = (2, 2, 4);
+	colour = (1.0, 1.0, 1.0);
+
+}
+
+point_light
+{
+	position = (5, 5, -5);
+	colour = (1.0, 1.0, 1.0);
+
+}
+
+scale(0.5,
+translate(-1.0,0.0,3.0,
+sphere {
+	material = { 
+		diffuse = (1.0, 1.0, 1.0);
+	}
+}))
+
+scale(0.5,
+translate(0.0,0.0,1.0,
+sphere {
+	material = { 
+		diffuse = (1.0, 1.0, 1.0);
+	}
+}))
+
+scale(0.5,
+translate(1.0,0.0,-1.0,
+sphere {
+	material = { 
+		diffuse = (1.0, 1.0, 1.0);
+	}
+}))

@@ -13,6 +13,7 @@ class Scene;
 class ray;
 class isect;
 
+
 class Material
 {
 public:
@@ -24,13 +25,21 @@ public:
         , kr( vec3f( 0.0, 0.0, 0.0 ) )
         , kt( vec3f( 0.0, 0.0, 0.0 ) )
         , shininess( 0.0 ) 
-		, index(1.0) {}
+		, index(1.0) {
+		numMaterials++;
+		id = numMaterials;
+	}
 
     Material( const vec3f& e, const vec3f& a, const vec3f& s, 
               const vec3f& d, const vec3f& r, const vec3f& t, double sh, double in)
-        : ke( e ), ka( a ), ks( s ), kd( d ), kr( r ), kt( t ), shininess( sh ), index( in ) {}
+        : ke( e ), ka( a ), ks( s ), kd( d ), kr( r ), kt( t ), shininess( sh ), index( in ) {
+		numMaterials++;
+		id = numMaterials;
+	}
 
-	virtual vec3f shade( Scene *scene, const ray& r, const isect& i ) const;
+
+
+	virtual vec3f shade( Scene *scene, const ray& r, const isect& i ,bool enableSoftShadow) const;
 
     vec3f ke;                    // emissive
     vec3f ka;                    // ambient
@@ -41,8 +50,8 @@ public:
     
     double shininess;
     double index;               // index of refraction
-
-    
+	int id;//the id of this material
+	static int numMaterials;
                                 // material with zero coeffs for everything
                                 // as opposed to the "default" material which is
                                 // a pleasant blue.
@@ -65,6 +74,7 @@ public:
     friend Material operator*( double d, Material m );
 };
 
+
 inline Material
 operator*( double d, Material m )
 {
@@ -78,6 +88,8 @@ operator*( double d, Material m )
     m.shininess *= d;
     return m;
 }
+
+
 // extern Material THE_DEFAULT_MATERIAL;
 
 #endif // __MATERIAL_H__
