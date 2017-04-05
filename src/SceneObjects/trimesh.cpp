@@ -179,6 +179,7 @@ void Trimesh::generateNormals()
 void Trimesh::addToNBoundedObjects() {
 	for (int i = 0; i < faces.size(); i++) {
 		scene->nonboundedobjects.push_back(faces.at(i));
+		scene->ot->processOneObject(faces.at(i));
 	}
 }
 

@@ -52,6 +52,12 @@
       <UniqueIdentifier>{2a500cad-34e4-4544-a082-ff2e3169691d}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="Header Files\utils">
+      <UniqueIdentifier>{64d6334a-b5ff-487a-91ac-67af6b7abe54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\utils">
+      <UniqueIdentifier>{fd8473f6-0ca0-4049-80fe-1f1673a640ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\getopt.cpp">
@@ -114,6 +120,12 @@
     <ClCompile Include="src\SceneObjects\trimesh.cpp">
       <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
+    <ClCompile Include="src\utils\Octree.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\BoundingBox.cpp">
+      <Filter>Source Files\scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\RayTracer.h">
@@ -149,9 +161,6 @@
     <ClInclude Include="src\scene\ray.h">
       <Filter>Header Files\scene.</Filter>
     </ClInclude>
-    <ClInclude Include="src\scene\scene.h">
-      <Filter>Header Files\scene.</Filter>
-    </ClInclude>
     <ClInclude Include="src\SceneObjects\Box.h">
       <Filter>Header Files\SceneObjects.</Filter>
     </ClInclude>
@@ -169,6 +178,15 @@
     </ClInclude>
     <ClInclude Include="src\SceneObjects\trimesh.h">
       <Filter>Header Files\SceneObjects.</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\scene.h">
+      <Filter>Header Files\scene.</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\Octree.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene\BoundingBox.h">
+      <Filter>Header Files\scene.</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

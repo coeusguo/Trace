@@ -34,13 +34,13 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ,bool enableSo
 		if (diffuse < 0)
 			diffuse = 0;
 
-		vec3f ref = lightDirection - lightDirection * normal * 2 * normal;//the reflection of the light direction vector
+		vec3f ref = lightDirection - (lightDirection * normal * 2) * normal;//the reflection of the light direction vector
 		ref = ref.normalize();
 
 		float spec = ref * r.getDirection();
 		if (spec < 0)
 			spec = 0;
-		spec = pow(spec, shininess);
+		spec = pow(spec, shininess * 128);
 
 		vec3f result = (diffuseColor * diffuse + ks * spec) * fatt;
 		for (int k = 0; k < 3; k++)

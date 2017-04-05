@@ -1,7 +1,7 @@
 SBT-raytracer 1.0
 
 camera {
-	position = (3,3,3);
+	position = (7,7,7);
 	viewdir = (-1,-1,-1);
 	aspectratio = 1;
 	updir = (0,1,0);

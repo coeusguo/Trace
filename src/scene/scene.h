@@ -16,9 +16,11 @@ using namespace std;
 #include "material.h"
 #include "camera.h"
 #include "../vecmath/vecmath.h"
+#include "BoundingBox.h"
 
 class Light;
 class Scene;
+class Octree;
 
 class SceneElement
 {
@@ -34,25 +36,7 @@ protected:
     Scene *scene;
 };
 
-class BoundingBox
-{
-public:
-	vec3f min;
-	vec3f max;
 
-	void operator=(const BoundingBox& target);
-
-	// Does this bounding box intersect the target?
-	bool intersects(const BoundingBox &target) const;
-	
-	// does the box contain this point?
-	bool intersects(const vec3f& point) const;
-
-	// if the ray hits the box, put the "t" value of the intersection
-	// closest to the origin in tMin and the "t" value of the far intersection
-	// in tMax and return true, else return false.
-	bool intersect(const ray& r, double& tMin, double& tMax) const;
-};
 
 class TransformNode
 {
@@ -264,6 +248,7 @@ public:
 		m_ucNormalMap = NULL;
 		usingTexture = false;
 		usingBump = false;
+		ot = NULL;
 	}
 	virtual ~Scene();
 
@@ -277,6 +262,7 @@ public:
 	{ lights.push_back( light ); }
 
 	bool intersect( const ray& r, isect& i ) const;
+	bool intersectNonBounded(const ray& r, isect& i)const;
 	void initScene();
 
 	list<Light*>::const_iterator beginLights() const { return lights.begin(); }
@@ -315,10 +301,18 @@ public:
 	//height field
 	void loadHeightFieldMap(char* fname);
 	friend class Trimesh;
+	
+	//octree
+	bool getEnableOctree() { return enableOctree; }
+	void setEnableOctree(bool value) { enableOctree = value; }
+	bool intersectBoundingBox(const ray& r, isect& i);
+	void setOctreeDepth(int value) { octreeDepth = value; }
+	void iniOctree(float x, float y, float z, float xs, float ys, float zs, int depth);
 private:
     list<Geometry*> objects;
 	list<Geometry*> nonboundedobjects;
 	list<Geometry*> boundedobjects;
+	Octree * ot;
     list<Light*> lights;
     Camera camera;
 	
@@ -338,11 +332,45 @@ private:
 	int m_textureHeight;
 	bool usingBump;
 
-	
+	//octree
+	bool enableOctree;
+	int octreeDepth;
+
+
 	// Each object in the scene, provided that it has hasBoundingBoxCapability(),
 	// must fall within this bounding box.  Objects that don't have hasBoundingBoxCapability()
 	// are exempt from this requirement.
 	BoundingBox sceneBounds;
+};
+
+
+class OctNode : private BoundingBox {
+private:
+	OctNode* parent;
+	OctNode* childrens[8];//an dynamic array of 8 childrens
+	list<Geometry*> objects;
+	bool empty;
+	bool hasChildren;
+
+protected:
+	OctNode(OctNode* parent, vec3f& min, vec3f& max, int depth);
+	~OctNode();
+	void initChildren(int depth);
+	typedef list<Geometry*>::const_iterator cgiter;
+	void processObject(Geometry* object);
+	bool intersectNode(const ray& r, isect& i);
+
+public:
+	bool isEmpty() { return empty; }
+};
+
+class Octree :public OctNode {
+public:
+	Octree(vec3f& min, vec3f& max, int depth) :OctNode(this, min, max, depth) {};
+	~Octree();
+	void processObjects(list<Geometry*> objects);
+	void processOneObject(Geometry* object);
+	bool intersectThis(const ray& r, isect& i);
 };
 
 #endif // __SCENE_H__

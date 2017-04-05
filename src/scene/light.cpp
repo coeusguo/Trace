@@ -18,7 +18,11 @@ vec3f DirectionalLight::shadowAttenuation( const vec3f& P, bool enableSoftShadow
 	ray lightRay(P, direction);
 
 	vec3f result(1.0, 1.0, 1.0);
-	bool hasOne = scene->intersect(lightRay, i);
+	bool hasOne;
+	if (scene->getEnableOctree())
+		hasOne = scene->intersectBoundingBox(lightRay, i);
+	else
+		hasOne = scene->intersect(lightRay, i);
 
 	if (hasOne)
 		result = i.getMaterial().kt;
@@ -95,7 +99,11 @@ vec3f PointLight::shadowAttenuation(const vec3f& P, bool enableSoftShadow) const
 	ray lightRay(P, direction);
 
 	vec3f result(1.0, 1.0, 1.0);
-	bool hasOne = scene->intersect(lightRay, i);
+	bool hasOne;
+	if (scene->getEnableOctree())
+		hasOne = scene->intersectBoundingBox(lightRay, i);
+	else
+		hasOne = scene->intersect(lightRay, i);
 
 	if(hasOne)
 		result = i.getMaterial().kt;
@@ -158,7 +166,11 @@ vec3f SpotLight::shadowAttenuation(const vec3f& P, bool enableSoftShadow) const
 	ray lightRay(P, direction);
 
 	vec3f result(1.0, 1.0, 1.0);
-	bool hasOne = scene->intersect(lightRay, i);
+	bool hasOne;
+	if (scene->getEnableOctree())
+		hasOne = scene->intersectBoundingBox(lightRay, i);
+	else
+		hasOne = scene->intersect(lightRay, i);
 
 	if (hasOne)
 		result = i.getMaterial().kt;

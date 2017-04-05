@@ -50,7 +50,8 @@ void TraceUI::cb_load_scene(Fl_Menu_* o, void* v)
 		pUI->raytracer->getScene()->setAmbientLight(pUI->m_nAmbientLight);
 		pUI->raytracer->getScene()->setUsingTexture(pUI->m_nTexture);
 		pUI->raytracer->getScene()->setUsingBump(pUI->m_nBump);
-		
+		pUI->raytracer->getScene()->setEnableOctree(pUI->m_nEnableOctree);
+		pUI->raytracer->getScene()->iniOctree(pUI->m_nOctreeX, pUI->m_nOctreeY, pUI->m_nOctreeZ, pUI->m_nOctreeXSize, pUI->m_nOctreeYSize, pUI->m_nOctreeZSize, pUI->m_nOctreeDepth);
 	}
 }
 //load backgroung image
@@ -251,6 +252,46 @@ void TraceUI::cb_soft_shadow(Fl_Widget* o, void* v) {
 	pUI->raytracer->setEnableSoftShadow(!pUI->raytracer->getEnableSoftShadow());
 }
 
+//octree
+void TraceUI::cb_octree(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->m_nEnableOctree = ((Fl_Button *)o)->value();
+	pUI->raytracer->getScene()->setEnableOctree(pUI->m_nEnableOctree);
+}
+void TraceUI::cb_octree_depth(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->m_nOctreeDepth = ((Fl_Slider *)o)->value();
+}
+void TraceUI::cb_octree_X(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->m_nOctreeX = ((Fl_Slider *)o)->value();
+}
+void TraceUI::cb_octree_Y(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->m_nOctreeY = ((Fl_Slider *)o)->value();
+}
+void TraceUI::cb_octree_Z(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->m_nOctreeZ = ((Fl_Slider *)o)->value();
+}
+void TraceUI::cb_octree_XS(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->m_nOctreeXSize = ((Fl_Slider *)o)->value();
+}
+void TraceUI::cb_octree_YS(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->m_nOctreeYSize = ((Fl_Slider *)o)->value();
+}
+void TraceUI::cb_octree_ZS(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->m_nOctreeZSize = ((Fl_Slider *)o)->value();
+}
+void TraceUI::cb_octree_rebuild(Fl_Widget* o, void* v) {
+	TraceUI* pUI = ((TraceUI*)(o->user_data()));
+	if (pUI->raytracer->sceneLoaded())
+		pUI->raytracer->getScene()->iniOctree(pUI->m_nOctreeX, pUI->m_nOctreeY, pUI->m_nOctreeZ, pUI->m_nOctreeXSize, pUI->m_nOctreeYSize, pUI->m_nOctreeZSize, pUI->m_nOctreeDepth);
+}
+
 void TraceUI::cb_render(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -377,7 +418,7 @@ TraceUI::TraceUI() {
 	// init.
 	m_nDepth = 0;
 	m_nSize = 150;
-	m_mainWindow = new Fl_Window(100, 40, 350, 400, "Ray <Not Loaded>");
+	m_mainWindow = new Fl_Window(100, 40, 350, 450, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
 		m_menubar = new Fl_Menu_Bar(0, 0, 350, 25);
@@ -575,6 +616,109 @@ TraceUI::TraceUI() {
 		m_ApertureSizeSlider->value(m_nApertureSize);
 		m_ApertureSizeSlider->align(FL_ALIGN_RIGHT);
 		m_ApertureSizeSlider->callback(cb_aperture_size_slider);
+
+		//octree
+		m_nEnableOctree = false;
+		m_nOctreeDepth = 5;
+		m_nOctreeX = 0;
+		m_nOctreeY = 0;
+		m_nOctreeZ = 0;
+		m_nOctreeXSize = 5;
+		m_nOctreeYSize = 1;
+		m_nOctreeZSize = 5;
+
+		m_OctreeButton = new Fl_Light_Button(10, 345, 80, 25, "&Octree");
+		m_OctreeButton->user_data((void*)(this));
+		m_OctreeButton->callback(cb_octree);
+		m_OctreeButton->value(m_nEnableOctree);
+
+		m_octreeDepthSlider = new Fl_Value_Slider(180, 347, 120, 20, "Depth");
+		m_octreeDepthSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_octreeDepthSlider->type(FL_HOR_NICE_SLIDER);
+		m_octreeDepthSlider->labelfont(FL_COURIER);
+		m_octreeDepthSlider->labelsize(12);
+		m_octreeDepthSlider->minimum(1);
+		m_octreeDepthSlider->maximum(7);
+		m_octreeDepthSlider->step(1);
+		m_octreeDepthSlider->value(m_nOctreeDepth);
+		m_octreeDepthSlider->align(FL_ALIGN_RIGHT);
+		m_octreeDepthSlider->callback(cb_octree_depth);
+
+		m_BuildOctreeButton = new Fl_Button(100, 345, 70, 25, "&Rebuild");
+		m_BuildOctreeButton->user_data((void*)(this));
+		m_BuildOctreeButton->callback(cb_octree_rebuild);
+
+		m_octreeXSlider = new Fl_Value_Slider(10, 380, 90, 20, "X");
+		m_octreeXSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_octreeXSlider->type(FL_HOR_NICE_SLIDER);
+		m_octreeXSlider->labelfont(FL_COURIER);
+		m_octreeXSlider->labelsize(12);
+		m_octreeXSlider->minimum(-5.0);
+		m_octreeXSlider->maximum(5.0);
+		m_octreeXSlider->step(0.01);
+		m_octreeXSlider->value(m_nOctreeX);
+		m_octreeXSlider->align(FL_ALIGN_RIGHT);
+		m_octreeXSlider->callback(cb_octree_X);
+
+		m_octreeYSlider = new Fl_Value_Slider(120, 380, 90, 20, "Y");
+		m_octreeYSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_octreeYSlider->type(FL_HOR_NICE_SLIDER);
+		m_octreeYSlider->labelfont(FL_COURIER);
+		m_octreeYSlider->labelsize(12);
+		m_octreeYSlider->minimum(-5);
+		m_octreeYSlider->maximum(5);
+		m_octreeYSlider->step(0.01);
+		m_octreeYSlider->value(m_nOctreeY);
+		m_octreeYSlider->align(FL_ALIGN_RIGHT);
+		m_octreeYSlider->callback(cb_octree_Y);
+
+		m_octreeZSlider = new Fl_Value_Slider(230, 380, 90, 20, "Z");
+		m_octreeZSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_octreeZSlider->type(FL_HOR_NICE_SLIDER);
+		m_octreeZSlider->labelfont(FL_COURIER);
+		m_octreeZSlider->labelsize(12);
+		m_octreeZSlider->minimum(-5);
+		m_octreeZSlider->maximum(5);
+		m_octreeZSlider->step(0.01);
+		m_octreeZSlider->value(m_nOctreeZ);
+		m_octreeZSlider->align(FL_ALIGN_RIGHT);
+		m_octreeZSlider->callback(cb_octree_Z);
+
+		m_octreeXSizeSlider = new Fl_Value_Slider(10, 405, 90, 20, "XS");
+		m_octreeXSizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_octreeXSizeSlider->type(FL_HOR_NICE_SLIDER);
+		m_octreeXSizeSlider->labelfont(FL_COURIER);
+		m_octreeXSizeSlider->labelsize(12);
+		m_octreeXSizeSlider->minimum(0);
+		m_octreeXSizeSlider->maximum(10);
+		m_octreeXSizeSlider->step(0.01);
+		m_octreeXSizeSlider->value(m_nOctreeXSize);
+		m_octreeXSizeSlider->align(FL_ALIGN_RIGHT);
+		m_octreeXSizeSlider->callback(cb_octree_XS);
+
+		m_octreeYSizeSlider = new Fl_Value_Slider(120, 405, 90, 20, "YS");
+		m_octreeYSizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_octreeYSizeSlider->type(FL_HOR_NICE_SLIDER);
+		m_octreeYSizeSlider->labelfont(FL_COURIER);
+		m_octreeYSizeSlider->labelsize(12);
+		m_octreeYSizeSlider->minimum(0);
+		m_octreeYSizeSlider->maximum(10);
+		m_octreeYSizeSlider->step(0.01);
+		m_octreeYSizeSlider->value(m_nOctreeYSize);
+		m_octreeYSizeSlider->align(FL_ALIGN_RIGHT);
+		m_octreeYSizeSlider->callback(cb_octree_YS);
+
+		m_octreeZSizeSlider = new Fl_Value_Slider(230, 405, 90, 20, "ZS");
+		m_octreeZSizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_octreeZSizeSlider->type(FL_HOR_NICE_SLIDER);
+		m_octreeZSizeSlider->labelfont(FL_COURIER);
+		m_octreeZSizeSlider->labelsize(12);
+		m_octreeZSizeSlider->minimum(0);
+		m_octreeZSizeSlider->maximum(10);
+		m_octreeZSizeSlider->step(0.01);
+		m_octreeZSizeSlider->value(m_nOctreeZSize);
+		m_octreeZSizeSlider->align(FL_ALIGN_RIGHT);
+		m_octreeZSizeSlider->callback(cb_octree_ZS);
 
 
 		m_mainWindow->callback(cb_exit2);

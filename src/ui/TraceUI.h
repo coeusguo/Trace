@@ -37,6 +37,13 @@ public:
 	Fl_Slider*			m_AntiAliasingGridSiseSlider;
 	Fl_Slider*			m_FocalLengthSlider;
 	Fl_Slider*			m_ApertureSizeSlider;
+	Fl_Slider*			m_octreeDepthSlider;
+	Fl_Slider*			m_octreeXSlider;
+	Fl_Slider*			m_octreeYSlider;
+	Fl_Slider*			m_octreeZSlider;
+	Fl_Slider*			m_octreeXSizeSlider;
+	Fl_Slider*			m_octreeYSizeSlider;
+	Fl_Slider*			m_octreeZSizeSlider;
 
 
 	Fl_Button*			m_renderButton;
@@ -50,6 +57,8 @@ public:
 	Fl_Button*			m_DepthFieldButton;
 	Fl_Button*			m_GlossyReflectionButton;
 	Fl_Button*			m_SoftShadowButton;
+	Fl_Button*			m_OctreeButton;
+	Fl_Button*			m_BuildOctreeButton;
 
 
 
@@ -99,6 +108,16 @@ private:
 
 	//soft shadow
 	bool		m_nEnableSoftShadow;
+
+	//octree
+	bool		m_nEnableOctree;
+	int			m_nOctreeDepth;
+	float		m_nOctreeX;
+	float		m_nOctreeY;
+	float		m_nOctreeZ;
+	float		m_nOctreeXSize;
+	float		m_nOctreeYSize;
+	float		m_nOctreeZSize;
 // static class members
 	static Fl_Menu_Item menuitems[];
 
@@ -132,6 +151,15 @@ private:
 	static void cb_aperture_size_slider(Fl_Widget* o, void* v);
 	static void cb_glossy_reflection(Fl_Widget* o, void* v);
 	static void cb_soft_shadow(Fl_Widget* o, void* v);
+	static void cb_octree(Fl_Widget* o, void* v);
+	static void cb_octree_depth(Fl_Widget* o, void* v);
+	static void cb_octree_X(Fl_Widget* o, void* v);
+	static void cb_octree_Y(Fl_Widget* o, void* v);
+	static void cb_octree_Z(Fl_Widget* o, void* v);
+	static void cb_octree_XS(Fl_Widget* o, void* v);
+	static void cb_octree_YS(Fl_Widget* o, void* v);
+	static void cb_octree_ZS(Fl_Widget* o, void* v);
+	static void cb_octree_rebuild(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);
