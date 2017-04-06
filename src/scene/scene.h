@@ -18,9 +18,11 @@ using namespace std;
 #include "../vecmath/vecmath.h"
 #include "BoundingBox.h"
 
+
 class Light;
 class Scene;
 class Octree;
+
 
 class SceneElement
 {
@@ -308,6 +310,7 @@ public:
 	bool intersectBoundingBox(const ray& r, isect& i);
 	void setOctreeDepth(int value) { octreeDepth = value; }
 	void iniOctree(float x, float y, float z, float xs, float ys, float zs, int depth);
+
 private:
     list<Geometry*> objects;
 	list<Geometry*> nonboundedobjects;
@@ -335,7 +338,6 @@ private:
 	//octree
 	bool enableOctree;
 	int octreeDepth;
-
 
 	// Each object in the scene, provided that it has hasBoundingBoxCapability(),
 	// must fall within this bounding box.  Objects that don't have hasBoundingBoxCapability()
@@ -372,5 +374,8 @@ public:
 	void processOneObject(Geometry* object);
 	bool intersectThis(const ray& r, isect& i);
 };
+
+
+
 
 #endif // __SCENE_H__

@@ -194,7 +194,7 @@ private:
 	mytuple val;
 };
 
-class DictObj
+class DictObj //dictionary object
 	: public Obj
 {
 public:
@@ -257,7 +257,7 @@ public:
 	virtual Obj *getChild() const { return child; }
 
 private:
-	string name;
+	string name; //the name of the child
 	Obj *child;
 };
 

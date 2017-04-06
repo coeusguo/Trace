@@ -70,6 +70,17 @@ public:
         shininess += m.shininess;
         return *this;
     }
+	void operator=(const Material& m) {
+		ke = m.ke;
+		ka = m.ka;
+		ks = m.ks;
+		kd = m.kd;
+		kr = m.kr;
+		kt = m.kt;
+		index = m.index;
+		shininess = m.shininess;
+		id = m.id;
+	}
 
     friend Material operator*( double d, Material m );
 };

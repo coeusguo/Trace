@@ -126,6 +126,15 @@
     <ClCompile Include="src\scene\BoundingBox.cpp">
       <Filter>Source Files\scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\utils\MarchingCube.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SceneObjects\Metaball.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SceneObjects\Triangle.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\RayTracer.h">
@@ -187,6 +196,15 @@
     </ClInclude>
     <ClInclude Include="src\scene\BoundingBox.h">
       <Filter>Header Files\scene.</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\MarchingCube.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SceneObjects\Metaball.h">
+      <Filter>Header Files\SceneObjects.</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SceneObjects\Triangle.h">
+      <Filter>Header Files\SceneObjects.</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

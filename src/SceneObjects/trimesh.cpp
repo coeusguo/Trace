@@ -38,6 +38,7 @@ bool Trimesh::addFace( int a, int b, int c )
     newFace->setTransform(this->transform);
     faces.push_back( newFace );
     scene->add(newFace);
+	//cout << "(" << a << "," << b << "," << c << ")";
     return true;
 }
 
@@ -66,7 +67,7 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
     const vec3f& a = parent->vertices[ids[0]];
     const vec3f& b = parent->vertices[ids[1]];
     const vec3f& c = parent->vertices[ids[2]];
-    
+	
     vec3f bary;
     float t;
     vec3f n;
@@ -82,7 +83,10 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
 
 	// there exists some bad triangles such that two vertices coincide
 	// check this before normalize
-	if (cv.iszero()) return false;
+	if (cv.iszero()) { 
+		cout << "bad triangle!" << endl;
+		return false;
+	}
     n = (cv).normalize();
 	
     double vdotn = v*n;
@@ -117,7 +121,7 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
     bary[0] = 1-bary[1]-bary[2];
     if( bary[0] < 0 || bary[1] < 0 || bary[1] > 1 || bary[2] < 0 || bary[2] > 1 )
         return false;
-
+	//cout << "(" << a << "|" << b << "|" << c << ")" << endl;
     // if we get this far, we have an intersection.  Fill in the info.
     i.setT( t );
     if(parent->normals.size())
@@ -126,17 +130,20 @@ bool TrimeshFace::intersectLocal( const ray& r, isect& i ) const
         i.setN( (bary[0] * parent->normals[ids[0]]
                  + bary[1] * parent->normals[ids[1]]
                  + bary[2] * parent->normals[ids[2]]).normalize() );
+		//cout << "normal:" << n << endl;
     } else {
         i.setN( n );           // use face normal
     }
+	if (i.N * r.getDirection() > 0)
+		i.N = -i.N;
     i.obj = this;
-
     // linearly interpolate materials
     if( parent->materials.size() )
     {
         Material *m = new Material();
         for( int jj = 0; jj < 3; ++jj )
             (*m) += bary[jj] * (*parent->materials[ ids[jj] ]);
+		//cout << "material:" << m->kd << endl;
         i.setMaterial( m );
     }
 	//cout << "h";

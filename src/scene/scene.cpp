@@ -149,7 +149,7 @@ void Scene::initScene()
 			//cout << "nonBoundedobject!" << endl;
 		}
 	}
-
+	cout << boundedobjects.size() << endl;
 }
 
 void Scene::loadTextureImage(char* fn) {
@@ -441,7 +441,7 @@ void Scene::iniOctree(float x, float y, float z, float xs, float ys, float zs, i
 		minp[i] -= 0.1;
 		maxp[i] += 0.1;
 	}
-	cout << depth << endl;
+	//cout << depth << endl;
 	ot = new Octree(minp, maxp, depth);
 	ot->processObjects(objects);
 
