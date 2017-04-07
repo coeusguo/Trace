@@ -173,7 +173,6 @@
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="src\SceneObjects\Metaball.cpp" />
-    <ClCompile Include="src\SceneObjects\Triangle.cpp" />
     <ClCompile Include="src\scene\BoundingBox.cpp" />
     <ClCompile Include="src\ui\TraceGLWindow.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -283,7 +282,6 @@
   <ItemGroup>
     <ClInclude Include="src\RayTracer.h" />
     <ClInclude Include="src\SceneObjects\Metaball.h" />
-    <ClInclude Include="src\SceneObjects\Triangle.h" />
     <ClInclude Include="src\scene\BoundingBox.h" />
     <ClInclude Include="src\ui\TraceGLWindow.h" />
     <ClInclude Include="src\ui\TraceUI.h" />

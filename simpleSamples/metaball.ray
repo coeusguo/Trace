@@ -48,7 +48,7 @@ metaball {
 	ball = ((0,0,0,1.0),(1.5,1.5,1.5,1));
 }
 
-translate(0,-2.5,0,
+translate(2,-4,2,
 scale(5.0,
 box {
   material={

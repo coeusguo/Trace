@@ -112,7 +112,7 @@ void grid::drawSurface(float isolevel) {
 			vec3f n1 = onEdge[triTable[cubeindex][j * 3]].normal;
 			mesh->addVertex(p1);
 			mesh->addMaterial(m);
-			//mesh->addNormal(n1);
+			mesh->addNormal(n1);
 			//cout << onEdge[triTable[cubeindex][j * 3]].position << endl;
 			m = new Material;
 			m = sharedMaterial;
@@ -120,7 +120,7 @@ void grid::drawSurface(float isolevel) {
 			vec3f n2 = onEdge[triTable[cubeindex][j * 3 + 1]].normal;
 			mesh->addVertex(p2);
 			mesh->addMaterial(m);
-			//mesh->addNormal(n2);
+			mesh->addNormal(n2);
 
 			//cout << onEdge[triTable[cubeindex][j * 3 + 1]].position << endl;
 			m = new Material;
@@ -129,7 +129,7 @@ void grid::drawSurface(float isolevel) {
 			vec3f n3 = onEdge[triTable[cubeindex][j * 3 + 2]].normal;
 			mesh->addVertex(p3);
 			mesh->addMaterial(m);
-			//mesh->addNormal(n3);
+			mesh->addNormal(n3);
 			//cout << onEdge[triTable[cubeindex][j * 3 + 2]].position << endl;
 			//cout << "n:" << n << endl;
 			//cout << endl;
