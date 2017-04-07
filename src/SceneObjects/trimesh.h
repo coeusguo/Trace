@@ -7,6 +7,7 @@
 #include "../scene/ray.h"
 #include "../scene/material.h"
 #include "../scene/scene.h"
+
 class TrimeshFace;
 
 class Trimesh : public MaterialSceneObject
@@ -35,7 +36,11 @@ public:
     void addNormal( const vec3f & );
 	void addToNBoundedObjects();
     bool addFace( int a, int b, int c );
-
+	void outputVertices() {
+		for (int i = 0; i < vertices.size(); i++)
+			cout << vertices[i] << endl;
+	}
+	int getNumberOfVertices() { return vertices.size(); }
     char *doubleCheck();
     
     void generateNormals();

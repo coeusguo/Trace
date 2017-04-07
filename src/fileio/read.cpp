@@ -20,6 +20,7 @@
 #include "../SceneObjects/Sphere.h"
 #include "../SceneObjects/Square.h"
 #include "../scene/light.h"
+#include "../SceneObjects/Metaball.h"
 
 typedef map<string,Material*> mmap;
 
@@ -36,7 +37,7 @@ static void processCamera( Obj *child, Scene *scene );
 static Material *getMaterial( Obj *child, const mmap& bindings );
 static Material *processMaterial( Obj *child, mmap *bindings = NULL );
 static void verifyTuple( const mytuple& tup, size_t size );
-
+static void processMetaBall(string name, Obj *child, Scene *scene, const mmap& materials, TransformNode *transform);
 Scene *readScene( const string& filename )
 {
 	ifstream ifs( filename.c_str() );
@@ -226,7 +227,7 @@ static void processGeometry( string name, Obj *child, Scene *scene,
 	if( name == "translate" ) {
 		const mytuple& tup = child->getTuple();
 		verifyTuple( tup, 4 );
-        processGeometry( tup[3],
+        processGeometry( tup[3],//geometric object
                          scene,
                          materials,
                          transform->createChild(mat4f::translate( vec3f(tup[0]->getScalar(), 
@@ -293,7 +294,11 @@ static void processGeometry( string name, Obj *child, Scene *scene,
                                                              l4[3]->getScalar() ) ) ) );
 	} else if( name == "trimesh" || name == "polymesh" ) { // 'polymesh' is for backwards compatibility
         processTrimesh( name, child, scene, materials, transform);
-    } else {
+	}
+	else if (name == "metaball") {
+		processMetaBall(name, child, scene, materials, transform);
+	}
+	else {
 		SceneObject *obj = NULL;
        	Material *mat;
         
@@ -304,7 +309,8 @@ static void processGeometry( string name, Obj *child, Scene *scene,
 
 		if( name == "sphere" ) {
 			obj = new Sphere( scene, mat );
-		} else if( name == "box" ) {
+		} 
+		else if( name == "box" ) {
 			obj = new Box( scene, mat );
 		} else if( name == "cylinder" ) {
 			obj = new Cylinder( scene, mat );
@@ -567,7 +573,8 @@ static void processObject( Obj *obj, Scene *scene, mmap& materials )
 				name == "scale" ||
 				name == "transform" ||
                 name == "trimesh" ||
-                name == "polymesh") { // polymesh is for backwards compatibility.
+                name == "polymesh"||
+				name == "metaball") { // polymesh is for backwards compatibility.
 		processGeometry( name, child, scene, materials, &scene->transformRoot);
 		//scene->add( geo );
 	} else if( name == "material" ) {
@@ -577,4 +584,41 @@ static void processObject( Obj *obj, Scene *scene, mmap& materials )
 	} else {
 		throw ParseError( string( "Unrecognized object: " ) + name );
 	}
+}
+
+static void processMetaBall(string name, Obj *child, Scene *scene,const mmap& materials, TransformNode *transform) {
+	Material *mat;
+
+	if (hasField(child, "material"))
+		mat = getMaterial(getField(child, "material"), materials);
+	else
+		mat = new Material();
+
+	//cout << "kd:" << mat->kd << ",kt:" << mat->kt << endl;
+
+	int gridSize = getField(child, "gridSize")->getScalar();
+	double size = getField(child, "size")->getScalar();
+
+	//cout << "gridSize:" << gridSize << "," << "size:" << size << endl;
+
+	Metaball* metaball = new Metaball(gridSize, size, mat, scene ,transform);
+
+
+	mytuple balls = getField(child, "ball")->getTuple();
+
+	for (Obj* o : balls) {
+		mytuple myball = o->getTuple();
+
+		verifyTuple(myball, 4);
+
+		float x = myball[0]->getScalar();
+		float y = myball[1]->getScalar();
+		float z = myball[2]->getScalar();
+		float r = myball[3]->getScalar();
+		//cout << "(" << x << "," << y << "," << z << "," << r << ")" << endl;
+		ball* aball = new ball(x, y, z, r, scene, mat);
+		metaball->addBalls(aball);
+	}
+	metaball->drawMetaball();
+	scene->add(metaball);
 }

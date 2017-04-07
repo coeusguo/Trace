@@ -1,0 +1,61 @@
+SBT-raytracer 1.0
+
+// cyl_cyl_refract.ray
+// Test the refraction term
+// Don't forget to increase the trace depth to >= 2!
+
+camera
+{
+	position = (-3, 5, -3);
+	viewdir = (3, -5, 3);
+	updir = (1, 0, 0);
+}
+
+point_light
+{
+	position = (5, 5, 5);
+	colour = (1.0, 1.0, 1.0);
+
+}
+
+point_light
+{
+	position = (0, 3, 0);
+	colour = (1.0, 1.0, 1.0);
+
+}
+
+point_light
+{
+	position = (-5, 5, -5);
+	colour = (1.0, 1.0, 1.0);
+
+}
+
+
+
+metaball {
+	material = { 
+		diffuse = (0.6, 1.0, 1.0);
+		ambient=( 0.2,0.6,0.8);
+		transmissive = (0.8, 0.8, 0.8);
+		index = 1.5;
+	};
+
+	gridSize = 30;
+	size = 3.0;
+
+	ball = ((0,0,0,1.0),(1.5,1.5,1.5,1));
+}
+
+translate(2,-4,2,
+scale(5.0,
+box {
+  material={
+    diffuse=( 0.3,0.3,0.3);
+    ambient=( 0.2,0.2,0.2);
+    emissive=( 0,0,0);
+    shininess=1;
+    transmissive=( 0,0,0 );
+  }
+}))

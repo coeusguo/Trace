@@ -172,6 +172,8 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="src\SceneObjects\Metaball.cpp" />
+    <ClCompile Include="src\scene\BoundingBox.cpp" />
     <ClCompile Include="src\ui\TraceGLWindow.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -202,6 +204,8 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="src\utils\MarchingCube.cpp" />
+    <ClCompile Include="src\utils\Octree.cpp" />
     <ClCompile Include="src\vecmath\vecmath.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -277,11 +281,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\RayTracer.h" />
+    <ClInclude Include="src\SceneObjects\Metaball.h" />
+    <ClInclude Include="src\scene\BoundingBox.h" />
     <ClInclude Include="src\ui\TraceGLWindow.h" />
     <ClInclude Include="src\ui\TraceUI.h" />
     <ClInclude Include="src\fileio\bitmap.h" />
     <ClInclude Include="src\fileio\parse.h" />
     <ClInclude Include="src\fileio\read.h" />
+    <ClInclude Include="src\utils\MarchingCube.h" />
+    <ClInclude Include="src\utils\Octree.h" />
     <ClInclude Include="src\vecmath\vecmath.h" />
     <ClInclude Include="src\scene\camera.h" />
     <ClInclude Include="src\scene\light.h" />

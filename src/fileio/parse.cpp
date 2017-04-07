@@ -23,7 +23,7 @@ Obj *readFile( istream& is )
 	return readObject( is );
 }
 
-static void eatWS( istream& is )
+static void eatWS( istream& is )//eat white space
 {
 	int ch = is.peek();
 	while( ch == ' ' || ch == '\t' || ch == '\n' || ch == 0x0D || ch == 0x0A) {
@@ -35,7 +35,7 @@ static void eatWS( istream& is )
 	}
 }
 
-static void eatNL( istream& is )
+static void eatNL( istream& is )// eat next line
 {
 	int ch = is.peek();
 	while( ch != '\n' ) {
@@ -56,9 +56,9 @@ static bool eat( istream& is )
 			if( ch == '/' ) {
 				is.get();
 				int ch = is.peek();
-				if( ch == '/' ) {
+				if( ch == '/' ) {//ignore comment line
 					eatNL( is );
-				} else if( ch == '*' ) {
+				} else if( ch == '*' ) {//ignore /* .....*/
 					while( true ) {
 						is.get();
 						ch = is.peek();
@@ -200,18 +200,18 @@ static Obj *readTuple( istream& is )
 
 static Obj *readDict( istream& is )
 {
-	string lhs;
-	Obj *rhs;
+	string lhs;//left hand side
+	Obj *rhs;//right hand side
 
 	map<string,Obj*> ret;
 
-	is.get();
+	is.get();//remove the rubbish characters
 
 	while( true ) {
 		eat( is );
 		if( is.peek() == '}' ) {
 			is.get();
-			return new DictObj( ret );
+			return new DictObj( ret );//end of the dictionary
 		}
 		lhs = readID( is );
 		eat( is );
