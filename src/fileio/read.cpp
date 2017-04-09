@@ -689,7 +689,7 @@ static void processCSG(string name, Obj *child, Scene *scene, const mmap& materi
 				) * tf;
 			}
 			else if (action == "sphere") {
-				cout << "sphere" << endl;
+				//cout << "sphere" << endl;
 				Sphere* s = new Sphere(scene, mat);
 				s->setTransform(trans->createChild(tf));
 				primitives.push_back(s);
@@ -701,7 +701,7 @@ static void processCSG(string name, Obj *child, Scene *scene, const mmap& materi
 				primitives.push_back(s);
 			}
 			else if(action == "box"){
-				cout << "box" << endl;
+				//cout << "box" << endl;
 				Box* s = new Box(scene, mat);
 				s->setTransform(trans->createChild(tf));
 				primitives.push_back(s);

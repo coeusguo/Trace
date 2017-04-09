@@ -2,27 +2,65 @@
 #include <iostream>
 using namespace std;
 void T::Intersect(T& t) {
+	if (ts.size() == 0 || t.ts.size() == 0) {
+		ts.clear();
+		return;
+	}
 	vector<float> newT;
-	for (int i = 0; i < ts.size(); i = i + 2) {
-		if (ts[i] == -1 && ts[i + 1] == -1)
-			continue;
-		for (int j = 0; j < t.ts.size(); j = j + 2) {
-			if (t.ts[j] == -1)
-				continue;
-			else if (ts[i + 1] - EBSILON < t.ts[j])
-				break;
-			else if (t.ts[j + 1] - EBSILON< ts[i]) {
-				t.ts[j] = -1;
-				t.ts[j + 1] = -1;
+
+	int sizeA = ts.size();
+	int currentA = 0;
+
+	int sizeB = t.ts.size();
+	int currentB = 0;
+
+	int size = (sizeA + sizeB) / 2;
+
+	for (int i = 0; i < size; i++) {
+		if (currentA >= sizeA || currentB >= sizeB)
+			break;
+		if (ts[currentA + 1] + EBSILON < t.ts[currentB]) {
+			currentA += 2;
+		}
+		else if (t.ts[currentB + 1] + EBSILON < ts[currentA]) {
+			currentB += 2;
+		}
+		else if (ts[currentA] + EBSILON < t.ts[currentB]) {
+			newT.push_back(t.ts[currentB]);
+			newT.push_back(min(ts[currentA + 1], t.ts[currentB + 1]));
+			if (ts[currentA + 1] + EBSILON < t.ts[currentB + 1]) {
+				t.ts[currentB] = ts[currentA + 1];
+				currentA += 2;
+			}
+			else if(abs(ts[currentA + 1] - t.ts[currentB + 1]) < EBSILON){
+				currentA += 2;
+				currentB += 2;
+				i++;
 			}
 			else {
-				newT.push_back(max(ts[i], t.ts[j]));
-				newT.push_back(min(ts[i + 1], t.ts[j + 1]));
+				ts[currentA] = t.ts[currentB + 1];
+				currentB += 2;
+			}
+		}
+		else {
+			newT.push_back(ts[currentA]);
+			newT.push_back(min(ts[currentA + 1], t.ts[currentB + 1]));
+			if (t.ts[currentB + 1] + EBSILON < ts[currentA + 1]) {
+				ts[currentA] = t.ts[currentB + 1];
+				currentB += 2;
+			}
+			else if (abs(ts[currentA + 1] - t.ts[currentB + 1]) < EBSILON) {
+				currentA += 2;
+				currentB += 2;
+				i++;
+			}
+			else {
+				t.ts[currentB] = ts[currentA + 1];
+				currentA += 2;
 			}
 		}
 	}
 	ts = newT;
-	
 }
 
 //A union B
@@ -180,10 +218,13 @@ void T::Minus(T& t) {
 			currentA += 2;
 			continue;
 		}
-		if (ts[currentA + 1] < t.ts[currentB]) {//A is seprate with B
+		if (ts[currentA + 1] < t.ts[currentB]) {//A is seprate with B ,A::tmax < B::tmin
 			newT.push_back(ts[currentA]);
 			newT.push_back(ts[currentA + 1]);
 			currentA += 2;
+		}
+		else if (t.ts[currentB + 1] < ts[currentA]) {//B is seprate with A , B::tmax < A::tmin
+			currentB += 2;
 		}
 		else if (ts[currentA] + EBSILON < t.ts[currentB]) {
 			newT.push_back(ts[currentA]);
@@ -196,7 +237,7 @@ void T::Minus(T& t) {
 				currentA += 2;
 			}
 		}
-		else if (t.ts[currentB] <= ts[currentA] + EBSILON) {
+		else {
 			if (ts[currentA + 1] + EBSILON < t.ts[currentB + 1]) {
 				currentA += 2;
 			}
@@ -205,16 +246,14 @@ void T::Minus(T& t) {
 				currentB += 2;
 			}
 		}
-		else {//B::tmax < A::tmin
-			currentB += 2;
-		}
+	
 	}
 
 	ts = newT;
 
 }
 
-float T::operator[](int i) {
+float& T::operator[](int i) {
 	return ts[i];
 }
 

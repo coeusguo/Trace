@@ -50,8 +50,11 @@ bool Box::intersectLocal( const ray& r, isect& i ) const
 
 T Box::getPrimitiveT(const ray& r) {
 	vec3f pos = transform->globalToLocalCoords(r.getPosition());
-	vec3f dir = (transform->globalToLocalCoords(r.getPosition() + r.getDirection()) - pos).normalize();
+	vec3f dir = (transform->globalToLocalCoords(r.getPosition() + r.getDirection()) - pos);
+	float length = dir.length();
+	dir = dir.normalize();
 	ray localRay(pos, dir);
+
 	BoundingBox box;
 	vec3f min(-0.5, -0.5, -0.5);
 	vec3f max(0.5, 0.5, 0.5);
@@ -65,6 +68,7 @@ T Box::getPrimitiveT(const ray& r) {
 		return T();
 	}
 	//cout << "box:" << tmin << ",";
+	tmin /= length; tmax /= length;
 	if (tmin < RAY_EPSILON)
 		return T();
 	else

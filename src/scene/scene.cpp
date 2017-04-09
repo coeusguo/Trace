@@ -288,7 +288,6 @@ void  Geometry::setTextureNormal(float x, float y,const mat4f& mat) {
 
 void Scene::saveImage(char *iname)
 {
-
 	if (m_ucNormalMap)
 		writeBMP(iname, m_textureWidth, m_textureHeight, m_ucNormalMap);
 }

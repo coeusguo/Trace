@@ -8,27 +8,7 @@ camera {
 }
 
 
-point_light
-{
-	position = (0, 0, 2);
-	colour = (1.0, 1.0, 1.0);
 
-}
-
-
-point_light
-{
-	position = (0, 2, 0);
-	colour = (1.0, 1.0, 1.0);
-
-}
-
-point_light
-{
-	position = (0, 0, -3);
-	colour = (1.0, 1.0, 1.0);
-
-}
 
 point_light
 {
@@ -74,23 +54,41 @@ material{
 
 
 csg{
-	primitiveNumber = 3;
+	primitiveNumber = 5;
 	
-	queue0 = ("translate","sphere");
-	translate0 = (0,1,0);
-	primitive0 = "sphere";
-	materialID0 = "#1";
+	
+
+	queue0 = ("scale","box");
+	scale0 = (1.5,1.5,1.5);
+	primitive0 = "box";
+	materialID0 = "#2";
 
 	queue1 = ("sphere");
 	primitive1 = "sphere";
-	materialID1 = "#2";
+	materialID1 = "#3";
 
+	
 
-	queue2 = ("translate","sphere");
-	translate2 = (0,0.5,-1);
-	primitive2 = "sphere";
-	materialID2 = "#3";
+	queue2 = ("translate","scale","cylinder");
+	translate2 = (0,0,-0.5);
+	scale2 = (0.5,0.5,3.0);
+	primitive2 = "cylinder";
+	materialID2 = "#1";
 
-	operator = ((0,"intersect",1),"intersect",2);
+	queue3 = ("translate","scale","rotate","cylinder");
+	translate3 = (0,0,-0.5);
+	scale3 = (0.5,0.5,3.0);
+	rotate3 = (0,1,0,1.57);
+	primitive3 = "cylinder";
+	materialID3 = "#1";
 
+	queue4 = ("translate","scale","rotate","cylinder");
+	translate4 = (0,0,-0.5);
+	scale4 = (0.5,0.5,3.0);
+	rotate4 = (1,0,0,1.57);
+	primitive4 = "cylinder";
+	materialID4 = "#1";
+
+	operator = ((0,"intersect",1),"minus",((2,"union",3),"union",4));
+	//operator = (0,"intersect",1);
 }

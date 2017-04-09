@@ -144,21 +144,31 @@ bool Cylinder::intersectCaps( const ray& r, isect& i ) const
 
 T Cylinder::getPrimitiveT(const ray& r) {
 	vec3f pos = transform->globalToLocalCoords(r.getPosition());
-	vec3f dir = (transform->globalToLocalCoords(r.getPosition() + r.getDirection()) - pos).normalize();
+	vec3f dir = (transform->globalToLocalCoords(r.getPosition() + r.getDirection()) - pos);
+	float length = dir.length();
+	dir = dir.normalize();
 	ray localRay(pos, dir);
 
 	T body = intersectBody(localRay);
 	T caps = intersectCaps(localRay);
-	if (body[0] == -1 && caps[1] == -1)
+	body[0] /= length; body[1] /= length;
+	caps[0] /= length; caps[1] /= length;
+	if (body[0] == -1 && caps[0] == -1)
 		return T();
-	else if (body[0] != -1 && body[1] != -1)
+	else if (body[0] > RAY_EPSILON && body[1] > RAY_EPSILON)
 		return body;
-	else if (caps[0] != -1 && caps[1] != -1)
+	else if (caps[0] > RAY_EPSILON && caps[1] > RAY_EPSILON)
 		return caps;
-	else if (caps[0] != -1 && caps[1] == -1)
+	else if (caps[0] > RAY_EPSILON && caps[1] < RAY_EPSILON) {
+		//cout <<"caps[0]:"<< caps[0] << ",body[1]:" << body[1] << endl;
 		return T(caps[0], body[1]);
-	else {
+	}
+	else if(body[0] > RAY_EPSILON && body[1] < RAY_EPSILON){
+		//cout << "body[0]:" << body[0] << ",caps[1]:" << caps[1] << endl;
 		return T(body[0], caps[1]);
+	}
+	else {
+		return T();
 	}
 }
 
@@ -203,8 +213,6 @@ T Cylinder::intersectBody(const ray& r)const {
 	vec3f P = r.at(t2);
 	double z = P[2];
 	if (!(z >= 0.0 && z <= 1.0)) {
-		if (t1 == -1)
-			return T(-1, -1);
 		t2 = -1;
 	}
 

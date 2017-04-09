@@ -21,7 +21,7 @@ public:
 	void Union(T& t);
 	void Minus(T& t);
 	void addTuple(T& t);
-	float operator[](int i);
+	float& operator[](int i);
 	T firstTuple();
 	void eat();
 	int size() { return ts.size(); }

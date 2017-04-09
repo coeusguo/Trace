@@ -81,7 +81,9 @@ T Sphere::getPrimitiveT(const ray& r) {
 	*/
 	vec3f pos = transform->globalToLocalCoords(r.getPosition());
 	
-	vec3f dir = (transform->globalToLocalCoords(r.getPosition() + r.getDirection()) - pos).normalize();
+	vec3f dir = (transform->globalToLocalCoords(r.getPosition() + r.getDirection()) - pos);
+	float length = dir.length();
+	dir = dir.normalize();
 	ray localRay(pos, dir);
 	vec3f v = -localRay.getPosition();
 	double b = v.dot(localRay.getDirection());
@@ -104,6 +106,7 @@ T Sphere::getPrimitiveT(const ray& r) {
 	//if (pos.length() < 1.0)
 		//cout << "strange" << endl;
 	//cout << "sphere:" << t1 << ",";
+	t1 /= length; t2 /= length;
 	if (t1 < RAY_EPSILON)
 		return T();
 	else

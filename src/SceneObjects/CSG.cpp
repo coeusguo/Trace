@@ -51,10 +51,11 @@ bool CSG::intersectLocal(const ray& r, isect& i) const {
 	}
 	//cout << "here2" << endl;
 	i.obj = primitives[k / 2];
+	//cout << t[0] << endl;
 	i.t = t[0];
 	//cout << i.obj->getMaterial().kd << endl;
 	vec3f dir = r.getDirection();
-	vec3f pos = r.at(t[0]) - prod(dir, vec3f(0.01, 0.01, 0.01));
+	vec3f pos = r.at(t[0]) - prod(dir, vec3f(0.001, 0.001, 0.001));
 	
 	ray newRay(pos, dir);
 	isect newI;
@@ -64,6 +65,7 @@ bool CSG::intersectLocal(const ray& r, isect& i) const {
 			break;
 	}
 	primitives[k / 2]->intersect(newRay, newI);
+	
 	
 	i.N = newI.N;
 	if (i.N * r.getDirection() > 0)
