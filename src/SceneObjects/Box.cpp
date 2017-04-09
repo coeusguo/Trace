@@ -5,9 +5,6 @@
 
 bool Box::intersectLocal( const ray& r, isect& i ) const
 {
-	// YOUR CODE HERE:
-    // Add box intersection code here.
-	// it currently ignores all boxes and just returns false.
 	BoundingBox box;
 	vec3f min(-0.5, -0.5, -0.5);
 	vec3f max(0.5, 0.5, 0.5);
@@ -49,4 +46,27 @@ bool Box::intersectLocal( const ray& r, isect& i ) const
 		i.N = -i.N;
 	i.obj = this;
 	return true;
+}
+
+T Box::getPrimitiveT(const ray& r) {
+	vec3f pos = transform->globalToLocalCoords(r.getPosition());
+	vec3f dir = (transform->globalToLocalCoords(r.getPosition() + r.getDirection()) - pos).normalize();
+	ray localRay(pos, dir);
+	BoundingBox box;
+	vec3f min(-0.5, -0.5, -0.5);
+	vec3f max(0.5, 0.5, 0.5);
+	box.min = min;
+	box.max = max;
+
+	double tmin, tmax;
+	if (!box.intersect(localRay, tmin, tmax)) {
+		//cout << "box" << tmin << "," << tmax << endl;
+		//cout << endl;
+		return T();
+	}
+	//cout << "box:" << tmin << ",";
+	if (tmin < RAY_EPSILON)
+		return T();
+	else
+		return T(tmin, tmax);
 }

@@ -225,14 +225,19 @@ bool OctNode::intersectNode(const ray& r, isect& i) {
 }
 
 void Octree::processObjects(list<Geometry*> objects) {
+	//int i = 0;
 	for (cgiter it = objects.begin(); it != objects.end(); it++) {
 		if((*it)->hasBoundingBoxCapability())
 			processObject(*it);
+		//cout << i << ",";
+		//i++;
 	}
+
+	
 }
 
 bool Octree::intersectThis(const ray& r, isect& i) {
-	return intersectNode( r, i);
+	return intersectNode(r, i);
 }
 
 void Octree::processOneObject(Geometry* object) {

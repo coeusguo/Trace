@@ -26,8 +26,12 @@ public:
     bool intersectBody( const ray& r, isect& i ) const;
 	bool intersectCaps( const ray& r, isect& i ) const;
 
+	virtual T getPrimitiveT(const ray& r);
 protected:
 	bool capped;
+private:
+	T intersectBody(const ray& r)const;
+	T intersectCaps(const ray& r)const;
 };
 
 #endif // __CYLINDER_H__

@@ -87,7 +87,9 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 	}
 	else
 		isIntersect = scene->intersect(r, i);
+
 	if (isIntersect) {
+		//cout << i.getMaterial().kd << endl;
 		const Material& m = i.getMaterial();
 		vec3f normal = i.N;//the normal of the inter section point
 		vec3f dir = r.getDirection();//the direction of the ray
@@ -98,8 +100,9 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 		vec3f refraColor(0.0, 0.0, 0.0);
 		//cout << (-dir)*normal<<endl;
 		//phong shading
+		//cout << "?";
 		phong = m.shade(scene, r, i, enableSoftShadow);
-		
+		//cout << "?";
 		//reflection
 		vec3f reflecVec = r.getDirection() - r.getDirection() * normal * 2 * normal;
 		reflecVec = reflecVec.normalize();
@@ -126,7 +129,7 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 				refColor[i] /= 51.0f;
 		}
 
-		//cout << "?";
+		
 		refColor = prod(refColor, m.kr);
 
 		//refraction

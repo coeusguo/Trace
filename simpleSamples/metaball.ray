@@ -36,7 +36,7 @@ point_light
 
 metaball {
 	material = { 
-		diffuse = (0.6, 1.0, 1.0);
+		diffuse = (1.0, 1.0, 1.0);
 		ambient=( 0.2,0.6,0.8);
 		transmissive = (0.8, 0.8, 0.8);
 		index = 1.5;
@@ -48,14 +48,15 @@ metaball {
 	ball = ((0,0,0,1.0),(1.5,1.5,1.5,1));
 }
 
-translate(2,-4,2,
+translate(2,-1,2,
+rotate(1,0,0,1.57,
 scale(5.0,
-box {
+square {
   material={
-    diffuse=( 0.3,0.3,0.3);
+    diffuse=( 0.8,0.8,0.3);
     ambient=( 0.2,0.2,0.2);
     emissive=( 0,0,0);
     shininess=1;
     transmissive=( 0,0,0 );
   }
-}))
+})))

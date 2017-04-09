@@ -12,11 +12,20 @@ extern TraceUI* traceUI;
 bool Geometry::intersect(const ray&r, isect&i) const
 {
     // Transform the ray into the object's local coordinate space
+	vec3f inipos = r.getPosition();
     vec3f pos = transform->globalToLocalCoords(r.getPosition());
+	/*
+	if (pos[0] != inipos[0] || inipos[1] != pos[1] || inipos[2] == pos[2]) {
+		cout << "unknown error" << endl;
+	}*/
     vec3f dir = transform->globalToLocalCoords(r.getPosition() + r.getDirection()) - pos;
     double length = dir.length();
     dir /= length;
-
+	/*
+	if (r.getPosition().length() < 1) {
+		cout << "wtf?!" << endl;
+	}
+	*/
     ray localRay( pos, dir );
 
     if (intersectLocal(localRay, i)) {
@@ -376,7 +385,7 @@ void Scene::loadHeightFieldMap(char* fname) {
 			m->kd = vec3f(heightFieldImage[(Z * width + X) * 3] / 255.0f, heightFieldImage[(Z * width + X) * 3 + 1] / 255.0f, heightFieldImage[(Z * width + X) * 3 + 2] / 255.0f);
 			float x = (float(X) / float(width))  * 5;
 			float z = (float(Z) / float(height)) * 5;
-			float y = float(greyScaleMap[Z * width + X]) / 255.0f;
+			float y = (float(greyScaleMap[Z * width + X]) / 255.0f) * 2;
 			mesh->addVertex(vec3f(x, y, z));
 			mesh->addMaterial(m);
 			//cout << "(" << x << "," << y << "," << z << ")";

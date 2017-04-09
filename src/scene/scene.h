@@ -17,7 +17,7 @@ using namespace std;
 #include "camera.h"
 #include "../vecmath/vecmath.h"
 #include "BoundingBox.h"
-
+#include "../utils/T.h"
 
 class Light;
 class Scene;
@@ -184,6 +184,11 @@ public:
 		: SceneElement( scene ) {}
 	vec3f getBumpNormal() const{ return currentNormal; }
 	void setTextureNormal(float x, float y, const mat4f& mat);
+
+	//for CSG used only
+	virtual T getPrimitiveT(const ray& r) {
+		return T();
+	}
 protected:
 	BoundingBox bounds;
     TransformNode *transform;

@@ -21,6 +21,7 @@
 #include "../SceneObjects/Square.h"
 #include "../scene/light.h"
 #include "../SceneObjects/Metaball.h"
+#include "../SceneObjects/CSG.h"
 
 typedef map<string,Material*> mmap;
 
@@ -38,6 +39,8 @@ static Material *getMaterial( Obj *child, const mmap& bindings );
 static Material *processMaterial( Obj *child, mmap *bindings = NULL );
 static void verifyTuple( const mytuple& tup, size_t size );
 static void processMetaBall(string name, Obj *child, Scene *scene, const mmap& materials, TransformNode *transform);
+static void processCSG(string name, Obj *child, Scene *scene, const mmap& materials, TransformNode *transform);
+static Node* buildCSGtree(const mytuple& tuple, const vector<MaterialSceneObject*>& primitives);
 Scene *readScene( const string& filename )
 {
 	ifstream ifs( filename.c_str() );
@@ -297,6 +300,9 @@ static void processGeometry( string name, Obj *child, Scene *scene,
 	}
 	else if (name == "metaball") {
 		processMetaBall(name, child, scene, materials, transform);
+	}
+	else if (name == "csg") {
+		processCSG(name, child, scene, materials, transform);
 	}
 	else {
 		SceneObject *obj = NULL;
@@ -573,8 +579,9 @@ static void processObject( Obj *obj, Scene *scene, mmap& materials )
 				name == "scale" ||
 				name == "transform" ||
                 name == "trimesh" ||
-                name == "polymesh"||
-				name == "metaball") { // polymesh is for backwards compatibility.
+                name == "polymesh"||// polymesh is for backwards compatibility.
+				name == "metaball"||
+				name == "csg") { 
 		processGeometry( name, child, scene, materials, &scene->transformRoot);
 		//scene->add( geo );
 	} else if( name == "material" ) {
@@ -621,4 +628,131 @@ static void processMetaBall(string name, Obj *child, Scene *scene,const mmap& ma
 	}
 	metaball->drawMetaball();
 	scene->add(metaball);
+}
+
+static void processCSG(string name, Obj *child, Scene *scene, const mmap& materials, TransformNode *transform) {
+	int number = getField(child, "primitiveNumber")->getScalar();
+	vector<MaterialSceneObject*> primitives;
+
+	CSG* csg = new CSG(scene, transform, new Material);
+
+	for (int i = 0; i < number;i++) {
+		TransformRoot* trans = new TransformRoot();
+		string queue = "queue" + to_string(i);
+
+		mytuple actions = getField(child, queue)->getTuple();
+		Material* mat = getMaterial(getField(child, "materialID" + to_string(i)), materials);
+		mat4f tf = mat4f::identity();
+
+		int myTranslate = 0;
+		int myScale = 0;
+		int myRotate = 0;
+		for (Obj* o : actions) {
+			string action = o->getString();
+			if (action == "translate") {
+				mytuple xform = getField(child, "translate" + to_string(i))->getTuple();
+				//cout << "here1" << endl;
+				if (xform[0]->getTypeName() == "tuple") {//has multiple tuples
+					//cout << "here1" << endl;
+					xform = xform[myTranslate]->getTuple();
+				}
+				
+				verifyTuple(xform, 3);
+				tf = mat4f::translate(vec3f(xform[0]->getScalar(),xform[1]->getScalar(),xform[2]->getScalar())) * tf;
+			}
+			else if (action == "rotate") {
+				mytuple xform = getField(child, "rotate" + to_string(i))->getTuple();
+				if (xform[0]->getTypeName() == "tuple") {//has multiple tuples
+					xform = xform[myTranslate]->getTuple();
+				}
+
+				verifyTuple(xform, 4);
+				tf = mat4f::rotate(
+					vec3f(
+						xform[0]->getScalar(),
+						xform[1]->getScalar(),
+						xform[2]->getScalar()),
+					xform[3]->getScalar()) * tf;
+			}
+			else if (action == "scale") {
+				mytuple xform = getField(child, "scale" + to_string(i))->getTuple();
+				if (xform[0]->getTypeName() == "tuple") {//has multiple tuples
+					xform = xform[myTranslate]->getTuple();
+				}
+
+				verifyTuple(xform, 3);
+				tf = mat4f::scale(
+					vec3f(
+						xform[0]->getScalar(),
+						xform[1]->getScalar(),
+						xform[2]->getScalar())
+				) * tf;
+			}
+			else if (action == "sphere") {
+				cout << "sphere" << endl;
+				Sphere* s = new Sphere(scene, mat);
+				s->setTransform(trans->createChild(tf));
+				primitives.push_back(s);
+				//cout << "here2" << endl;
+			}
+			else if (action == "cylinder") {
+				Cylinder* s = new Cylinder(scene, mat);
+				s->setTransform(trans->createChild(tf));
+				primitives.push_back(s);
+			}
+			else if(action == "box"){
+				cout << "box" << endl;
+				Box* s = new Box(scene, mat);
+				s->setTransform(trans->createChild(tf));
+				primitives.push_back(s);
+				//cout << "here3" << endl;
+			}
+			else {
+				throw ParseError(string("Unrecognized object: ") + action);
+			}
+
+		}
+	}
+
+	mytuple sequence = getField(child, "operator")->getTuple();
+	csg->setTree(buildCSGtree(sequence, primitives));
+	csg->setPrimitives(primitives);
+	scene->add(csg);
+}
+
+static Node* buildCSGtree(const mytuple& tuple,const vector<MaterialSceneObject*>& primitives) {
+	//cout << "hello?" << endl;
+	Node* node;
+	string op = tuple[1]->getString();
+	if (op == "intersect")
+		node = new Operator(INTERSECT);
+	else if (op == "union")
+		node = new Operator(UNION);
+	else if (op == "minus")
+		node = new Operator(MINUS);
+	else
+		throw ParseError(string("Unrecognized operator: ") + op);
+
+	if (tuple[0]->getTypeName() == "scalar") {//left base case
+		int num = tuple[0]->getScalar();
+		LeafNode* lf = new LeafNode(node, primitives[num]);
+		//cout << "left:" << primitives[num]->getMaterial().kd << endl;
+		node->setLeft(lf);
+	}
+	else {
+		mytuple tp = tuple[0]->getTuple();
+		node->setLeft(buildCSGtree(tp, primitives));
+	}
+
+	if (tuple[2]->getTypeName() == "scalar") {//right base case
+		int num = tuple[2]->getScalar();
+		LeafNode* lf = new LeafNode(node, primitives[num]);
+		//cout << "right:" << primitives[num]->getMaterial().kd << endl;
+		node->setRight(lf);
+	}
+	else {
+		mytuple tp = tuple[2]->getTuple();
+		node->setRight(buildCSGtree(tp, primitives));
+	}
+	return node;
 }

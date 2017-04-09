@@ -22,7 +22,7 @@ public:
 		localbounds.max = vec3f(1.0f, 1.0f, 1.0f);
         return localbounds;
     }
-	
+	virtual T getPrimitiveT(const ray& r);
 
 };
 #endif // __SPHERE_H__

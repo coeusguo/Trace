@@ -141,3 +141,117 @@ bool Cylinder::intersectCaps( const ray& r, isect& i ) const
 
 	return false;
 }
+
+T Cylinder::getPrimitiveT(const ray& r) {
+	vec3f pos = transform->globalToLocalCoords(r.getPosition());
+	vec3f dir = (transform->globalToLocalCoords(r.getPosition() + r.getDirection()) - pos).normalize();
+	ray localRay(pos, dir);
+
+	T body = intersectBody(localRay);
+	T caps = intersectCaps(localRay);
+	if (body[0] == -1 && caps[1] == -1)
+		return T();
+	else if (body[0] != -1 && body[1] != -1)
+		return body;
+	else if (caps[0] != -1 && caps[1] != -1)
+		return caps;
+	else if (caps[0] != -1 && caps[1] == -1)
+		return T(caps[0], body[1]);
+	else {
+		return T(body[0], caps[1]);
+	}
+}
+
+T Cylinder::intersectBody(const ray& r)const {
+	double x0 = r.getPosition()[0];
+	double y0 = r.getPosition()[1];
+	double x1 = r.getDirection()[0];
+	double y1 = r.getDirection()[1];
+
+	double a = x1*x1 + y1*y1;
+	double b = 2.0*(x0*x1 + y0*y1);
+	double c = x0*x0 + y0*y0 - 1.0;
+
+	if (0.0 == a) {
+		return T(-1, -1);
+	}
+
+	double discriminant = b*b - 4.0*a*c;
+
+	if (discriminant < 0.0) {
+		return T(-1, -1);
+	}
+
+	discriminant = sqrt(discriminant);
+
+	double t2 = (-b + discriminant) / (2.0 * a);
+
+	if (t2 <= RAY_EPSILON) {
+		return T(-1, -1);
+	}
+
+	double t1 = (-b - discriminant) / (2.0 * a);
+
+	if (t1 > RAY_EPSILON) {
+		vec3f P = r.at(t1);
+		double z = P[2];
+		if (!(z >= 0.0 && z <= 1.0)) {
+			t1 = -1;
+		}
+	}
+
+	vec3f P = r.at(t2);
+	double z = P[2];
+	if (!(z >= 0.0 && z <= 1.0)) {
+		if (t1 == -1)
+			return T(-1, -1);
+		t2 = -1;
+	}
+
+	return T(t1, t2);
+}
+
+T Cylinder::intersectCaps(const ray& r)const {
+	if (!capped) {
+		return T(-1, -1);
+	}
+
+	double pz = r.getPosition()[2];
+	double dz = r.getDirection()[2];
+
+	if (0.0 == dz) {
+		return  T(-1, -1);
+	}
+
+	double t1;
+	double t2;
+
+	if (dz > 0.0) {
+		t1 = (-pz) / dz;
+		t2 = (1.0 - pz) / dz;
+	}
+	else {
+		t1 = (1.0 - pz) / dz;
+		t2 = (-pz) / dz;
+	}
+
+	if (t2 < RAY_EPSILON) {
+		return  T(-1, -1);
+	}
+
+
+	vec3f p(r.at(t1));
+	if ((p[0] * p[0] + p[1] * p[1]) > 1.0) {
+		t1 = -1;
+	}
+	
+
+	p = r.at(t2);
+	if ((p[0] * p[0] + p[1] * p[1]) >1.0) {
+		if (t1 == -1)
+			return T(-1, -1);
+		t2 = -1;
+	}
+
+	return T(t1, t2);
+}
