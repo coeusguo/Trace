@@ -175,9 +175,6 @@ vec3f RayTracer::traceRay(Scene *scene, ray& r,
 			ok = scene->getCamera()->resetCoords(r);
 		}
 		if (usingBackgroundImage && m_ucBackground && ok) {
-
-			
-			
 			int x = r.getCoords()[0] * m_nWidth;
 			int y = r.getCoords()[1] * m_nHeight;
 			int index = (y * m_nWidth + x) * 3;

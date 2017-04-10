@@ -248,8 +248,8 @@ void Scene::calcualteNormalMap(unsigned char* filteredMap) {
 				up = greyScale[(Y + 1) * m_textureWidth + X];
 
 
-			vec3f a(1.0, 0.0, (right - left + 1) * 0.5);
-			vec3f b(0.0, 1.0, (up - down + 1) * 0.5);
+			vec3f a(1.0, 0.0, (right - left + 1) * 0.1);
+			vec3f b(0.0, 1.0, (up - down + 1) * 0.1);
 			vec3f n = (a ^ b).normalize();
 
 			//float ha = (right - left + 1) * 0.5;
@@ -257,10 +257,10 @@ void Scene::calcualteNormalMap(unsigned char* filteredMap) {
 
 			//cout << n[0] << "," << n[1] << "," << n[2] << endl;
 			//cout << X << "," << Y << endl;
-			
 			m_ucNormalMap[(Y * m_textureWidth + X) * 3] = (n[0] + 1) * 0.5 * 255.0f;
 			m_ucNormalMap[(Y * m_textureWidth + X) * 3 + 1] = (n[1] + 1) * 0.5 * 255.0f;
 			m_ucNormalMap[(Y * m_textureWidth + X) * 3 + 2] = n[2] * 255.0f;
+			
 		}
 	}
 }
