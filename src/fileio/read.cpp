@@ -21,6 +21,8 @@
 #include "../SceneObjects/Square.h"
 #include "../scene/light.h"
 #include "../SceneObjects/Metaball.h"
+#include "../SceneObjects/Paraboloid.h"
+#include "../SceneObjects/Hyperbolic.h"
 
 typedef map<string,Material*> mmap;
 
@@ -328,6 +330,10 @@ static void processGeometry( string name, Obj *child, Scene *scene,
 			obj = new Cone( scene, mat, height, bottom_radius, top_radius, capped );
 		} else if( name == "square" ) {
 			obj = new Square( scene, mat );
+		} else if( name == "paraboloid" ) {
+			obj = new Paraboloid(scene, mat);
+		} else if ( name == "hyperbolic" ) {
+			obj = new Hyperbolic(scene, mat);
 		}
 
         obj->setTransform(transform);
@@ -568,6 +574,8 @@ static void processObject( Obj *obj, Scene *scene, mmap& materials )
 				name == "cylinder" ||
 				name == "cone" ||
 				name == "square" ||
+				name == "paraboloid" ||
+				name == "hyperbolic" ||
 				name == "translate" ||
 				name == "rotate" ||
 				name == "scale" ||
