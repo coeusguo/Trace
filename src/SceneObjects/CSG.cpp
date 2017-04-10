@@ -49,8 +49,6 @@ bool CSG::intersectLocal(const ray& r, isect& i) const {
 			break;
 		}
 	}
-	//cout << "here2" << endl;
-	i.obj = primitives[k / 2];
 	//cout << t[0] << endl;
 	i.t = t[0];
 	//cout << i.obj->getMaterial().kd << endl;
@@ -70,6 +68,7 @@ bool CSG::intersectLocal(const ray& r, isect& i) const {
 	i.N = newI.N;
 	if (i.N * r.getDirection() > 0)
 		i.N = -i.N;
+	i.obj = primitives[k / 2];
 	//cout << i.N << endl;
 	return true;
 }
