@@ -60,6 +60,9 @@ public:
 	//soft shadow
 	void setEnableSoftShadow(bool value) { enableSoftShadow = value; }
 	bool getEnableSoftShadow() { return enableSoftShadow; }
+	//motion blur
+	void setEnableMotionBlur(bool value) { enableMotionBlur = value; }
+	bool getEnableMotionBlur() { return enableMotionBlur; }
 private:
 	unsigned char *buffer;
 	int buffer_width, buffer_height;
@@ -89,6 +92,8 @@ private:
 	bool enableGlossy;
 	//soft shadow
 	bool enableSoftShadow;
+	//motion blur
+	bool enableMotionBlur;
 
 	vec3f refractionDirection(vec3f& normal, vec3f& dir, double indexFrom, double indexTo);
 	vec3f adaptiveSuperSampling(ray& center,ray& topLeft, ray& topRight, ray& bottomleft, ray& bottomRight,int depth);

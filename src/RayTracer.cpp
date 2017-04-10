@@ -77,6 +77,19 @@ vec3f RayTracer::trace( Scene *scene, double x, double y )
 		}
 		return result;
 	}
+
+	if (enableMotionBlur) {
+		//cout << "?" << endl;
+		vec3f result(0.0, 0.0, 0.0);
+		for (int i = 0; i < 50; i++) {
+			scene->motionBlurObjectsDeltaTransform();
+			result += traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0, material).clamp();
+		}
+		scene->motionBlurObjectRestore();
+		result /= 50;
+		return result;
+	}
+
 	return traceRay( scene, r, vec3f(1.0,1.0,1.0), 0 ,material).clamp();
 }
 
@@ -213,6 +226,7 @@ RayTracer::RayTracer()
 	enableDepthOfField = false;
 	enableGlossy = false;
 	enableSoftShadow = false;
+	enableMotionBlur = false;
 }
 
 

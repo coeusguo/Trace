@@ -7,7 +7,12 @@
 
 extern TraceUI* traceUI;
 
-
+mat4f TransformNode::motionBlurDelta(
+	vec4f(1.0, 0.0, 0.0, 0.01),
+	vec4f(0.0, 1.0, 0.0, 0.01),
+	vec4f(0.0, 0.0, 1.0, 0.01),
+	vec4f(0.0, 0.0, 0.0, 1.0)
+);
 
 bool Geometry::intersect(const ray&r, isect&i) const
 {
