@@ -105,6 +105,27 @@ Camera::update()
     look = m * vec3f( 0,0,-1 );
 }
 
+bool Camera::resetCoords(ray& r) {
+	
+	vec3f viewDir = r.getDirection();
+	viewDir = (1.0f / (viewDir * look)) * viewDir;
+	if (viewDir * look < 0)
+		return false;
+	vec3f onPlaneDir = viewDir - look;
+	
+	double deltaU = onPlaneDir.length() * (onPlaneDir * u) + 0.5;
+	double deltaV = onPlaneDir.length() * (onPlaneDir * v) + 0.5;
+
+	if (deltaU < 0 || deltaU > 1 || deltaV < 0 || deltaV > 1)
+		return false;
+	
+	double* xy = new double[2];
+	xy[0] = deltaU;
+	xy[1] = deltaV;
+	r.setCoords(xy);
+	return true;
+}
+
 
 
 
