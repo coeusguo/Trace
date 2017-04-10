@@ -18,8 +18,8 @@ directional_light {
 }
 
 rotate(1,1,1,1,
-cylinder{ 
-	material = { 
+cylinder{
+	material = {
 		diffuse = (0.8,0.3,0.1);
 		specular = (0.9,0.4,0.0);
 		shininess = 0.6;
