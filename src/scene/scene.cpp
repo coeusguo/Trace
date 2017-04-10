@@ -356,7 +356,8 @@ void Scene::loadNormalMap(char* fname) {
 
 void Scene::loadHeightFieldMap(char* fname) {
 	
-	unsigned char* heightFieldImage;
+	unsigned char* heightFieldColor;
+	unsigned char* heightFieldValue;
 	unsigned char* greyScaleMap;
 
 	unsigned char*	data;
@@ -368,20 +369,32 @@ void Scene::loadHeightFieldMap(char* fname) {
 		fl_alert("Can't load bitmap file");
 		return;
 	}
+	heightFieldColor = data;
 
+	string valueName = fname;
+	valueName = valueName.substr(0, valueName.length() - 4);
+	valueName += "grey_.bmp";
+	cout << valueName.c_str() << endl;
+	fname = strcpy(fname,valueName.c_str());
+	if ((data = readBMP(fname, width, height)) == NULL)
+	{
+		fl_alert("Can't load bitmap file");
+		return;
+	}
+	heightFieldValue = data;
 	
-	heightFieldImage = data;
+	
 	greyScaleMap = new unsigned char[width * height];
 
 	for(int i = 0;i < width * height;i ++)
-		greyScaleMap[i] = heightFieldImage[i * 3] * 0.299 + heightFieldImage[i * 3 + 1] * 0.587 + heightFieldImage[i * 3 + 2] * 0.114;
+		greyScaleMap[i] = heightFieldValue[i * 3] * 0.299 + heightFieldValue[i * 3 + 1] * 0.587 + heightFieldValue[i * 3 + 2] * 0.114;
 
 	Trimesh* mesh = new Trimesh(this,new Material,new TransformRoot);
 
 	for (int Z = 0; Z < height; Z++) {
 		for (int X = 0; X < width; X++) {
 			Material* m = new Material;
-			m->kd = vec3f(heightFieldImage[(Z * width + X) * 3] / 255.0f, heightFieldImage[(Z * width + X) * 3 + 1] / 255.0f, heightFieldImage[(Z * width + X) * 3 + 2] / 255.0f);
+			m->kd = vec3f(heightFieldColor[(Z * width + X) * 3] / 255.0f, heightFieldColor[(Z * width + X) * 3 + 1] / 255.0f, heightFieldColor[(Z * width + X) * 3 + 2] / 255.0f);
 			float x = (float(X) / float(width))  * 5;
 			float z = (float(Z) / float(height)) * 5;
 			float y = (float(greyScaleMap[Z * width + X]) / 255.0f) * 2;
