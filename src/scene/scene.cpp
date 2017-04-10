@@ -413,9 +413,7 @@ void Scene::loadHeightFieldMap(char* fname) {
 	}
 	boundedobjects.push_back(mesh);
 	mesh->addToNBoundedObjects();
-	//cout << "done" << endl;
-	//cout << objects.size() << endl;
-	//cout << boundedobjects.size();
+
 	fl_message("done!");
 }
 

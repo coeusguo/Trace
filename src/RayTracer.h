@@ -91,6 +91,8 @@ private:
 	bool enableSoftShadow;
 
 	vec3f refractionDirection(vec3f& normal, vec3f& dir, double indexFrom, double indexTo);
+	vec3f adaptiveSuperSampling(ray& center,ray& topLeft, ray& topRight, ray& bottomleft, ray& bottomRight,int depth);
+	void getFiveRays(ray&center,ray& topLeft, ray& topRight, ray& bottomleft, ray& bottomRight, double width, double height);
 };
 
 #endif // __RAYTRACER_H__
