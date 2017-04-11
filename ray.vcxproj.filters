@@ -132,11 +132,17 @@
     <ClCompile Include="src\SceneObjects\Metaball.cpp">
       <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
-    <ClCompile Include="src\SceneObjects\Paraboloid.cpp">
+    <ClCompile Include="src\utils\T.cpp">
+      <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SceneObjects\CSG.cpp">
       <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
     <ClCompile Include="src\SceneObjects\Hyperbolic.cpp">
-      <Filter>Source Files\SceneObjects</Filter>
+      <Filter>Header Files\SceneObjects.</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SceneObjects\Paraboloid.cpp">
+      <Filter>Header Files\SceneObjects.</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -206,11 +212,17 @@
     <ClInclude Include="src\SceneObjects\Metaball.h">
       <Filter>Header Files\SceneObjects.</Filter>
     </ClInclude>
-    <ClInclude Include="src\SceneObjects\Paraboloid.h">
+    <ClInclude Include="src\utils\T.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SceneObjects\CSG.h">
       <Filter>Header Files\SceneObjects.</Filter>
     </ClInclude>
     <ClInclude Include="src\SceneObjects\Hyperbolic.h">
-      <Filter>Header Files\SceneObjects.</Filter>
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SceneObjects\Paraboloid.h">
+      <Filter>Source Files\SceneObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

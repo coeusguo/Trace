@@ -7,16 +7,30 @@
 
 extern TraceUI* traceUI;
 
-
+mat4f TransformNode::motionBlurDelta(
+	vec4f(1.0, 0.0, 0.0, 0.01),
+	vec4f(0.0, 1.0, 0.0, 0.01),
+	vec4f(0.0, 0.0, 1.0, 0.01),
+	vec4f(0.0, 0.0, 0.0, 1.0)
+);
 
 bool Geometry::intersect(const ray&r, isect&i) const
 {
     // Transform the ray into the object's local coordinate space
+	vec3f inipos = r.getPosition();
     vec3f pos = transform->globalToLocalCoords(r.getPosition());
+	/*
+	if (pos[0] != inipos[0] || inipos[1] != pos[1] || inipos[2] == pos[2]) {
+		cout << "unknown error" << endl;
+	}*/
     vec3f dir = transform->globalToLocalCoords(r.getPosition() + r.getDirection()) - pos;
     double length = dir.length();
     dir /= length;
-
+	/*
+	if (r.getPosition().length() < 1) {
+		cout << "wtf?!" << endl;
+	}
+	*/
     ray localRay( pos, dir );
 
     if (intersectLocal(localRay, i)) {
@@ -239,8 +253,8 @@ void Scene::calcualteNormalMap(unsigned char* filteredMap) {
 				up = greyScale[(Y + 1) * m_textureWidth + X];
 
 
-			vec3f a(1.0, 0.0, (right - left + 1) * 0.5);
-			vec3f b(0.0, 1.0, (up - down + 1) * 0.5);
+			vec3f a(1.0, 0.0, (right - left + 1) * 0.1);
+			vec3f b(0.0, 1.0, (up - down + 1) * 0.1);
 			vec3f n = (a ^ b).normalize();
 
 			//float ha = (right - left + 1) * 0.5;
@@ -248,10 +262,10 @@ void Scene::calcualteNormalMap(unsigned char* filteredMap) {
 
 			//cout << n[0] << "," << n[1] << "," << n[2] << endl;
 			//cout << X << "," << Y << endl;
-			
 			m_ucNormalMap[(Y * m_textureWidth + X) * 3] = (n[0] + 1) * 0.5 * 255.0f;
 			m_ucNormalMap[(Y * m_textureWidth + X) * 3 + 1] = (n[1] + 1) * 0.5 * 255.0f;
 			m_ucNormalMap[(Y * m_textureWidth + X) * 3 + 2] = n[2] * 255.0f;
+			
 		}
 	}
 }
@@ -279,7 +293,6 @@ void  Geometry::setTextureNormal(float x, float y,const mat4f& mat) {
 
 void Scene::saveImage(char *iname)
 {
-
 	if (m_ucNormalMap)
 		writeBMP(iname, m_textureWidth, m_textureHeight, m_ucNormalMap);
 }
@@ -348,7 +361,8 @@ void Scene::loadNormalMap(char* fname) {
 
 void Scene::loadHeightFieldMap(char* fname) {
 	
-	unsigned char* heightFieldImage;
+	unsigned char* heightFieldColor;
+	unsigned char* heightFieldValue;
 	unsigned char* greyScaleMap;
 
 	unsigned char*	data;
@@ -360,23 +374,35 @@ void Scene::loadHeightFieldMap(char* fname) {
 		fl_alert("Can't load bitmap file");
 		return;
 	}
+	heightFieldColor = data;
 
+	string valueName = fname;
+	valueName = valueName.substr(0, valueName.length() - 4);
+	valueName += "grey_.bmp";
+	cout << valueName.c_str() << endl;
+	fname = strcpy(fname,valueName.c_str());
+	if ((data = readBMP(fname, width, height)) == NULL)
+	{
+		fl_alert("Can't load bitmap file");
+		return;
+	}
+	heightFieldValue = data;
 	
-	heightFieldImage = data;
+	
 	greyScaleMap = new unsigned char[width * height];
 
 	for(int i = 0;i < width * height;i ++)
-		greyScaleMap[i] = heightFieldImage[i * 3] * 0.299 + heightFieldImage[i * 3 + 1] * 0.587 + heightFieldImage[i * 3 + 2] * 0.114;
+		greyScaleMap[i] = heightFieldValue[i * 3] * 0.299 + heightFieldValue[i * 3 + 1] * 0.587 + heightFieldValue[i * 3 + 2] * 0.114;
 
 	Trimesh* mesh = new Trimesh(this,new Material,new TransformRoot);
 
 	for (int Z = 0; Z < height; Z++) {
 		for (int X = 0; X < width; X++) {
 			Material* m = new Material;
-			m->kd = vec3f(heightFieldImage[(Z * width + X) * 3] / 255.0f, heightFieldImage[(Z * width + X) * 3 + 1] / 255.0f, heightFieldImage[(Z * width + X) * 3 + 2] / 255.0f);
+			m->kd = vec3f(heightFieldColor[(Z * width + X) * 3] / 255.0f, heightFieldColor[(Z * width + X) * 3 + 1] / 255.0f, heightFieldColor[(Z * width + X) * 3 + 2] / 255.0f);
 			float x = (float(X) / float(width))  * 5;
 			float z = (float(Z) / float(height)) * 5;
-			float y = float(greyScaleMap[Z * width + X]) / 255.0f;
+			float y = (float(greyScaleMap[Z * width + X]) / 255.0f) * 2;
 			mesh->addVertex(vec3f(x, y, z));
 			mesh->addMaterial(m);
 			//cout << "(" << x << "," << y << "," << z << ")";
@@ -392,9 +418,7 @@ void Scene::loadHeightFieldMap(char* fname) {
 	}
 	boundedobjects.push_back(mesh);
 	mesh->addToNBoundedObjects();
-	//cout << "done" << endl;
-	//cout << objects.size() << endl;
-	//cout << boundedobjects.size();
+
 	fl_message("done!");
 }
 

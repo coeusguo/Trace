@@ -73,3 +73,43 @@ vec3f Sphere::getTextureColor(vec3f& intersecPoint) {
 	return scene->getColor(u, v);
 }
 
+T Sphere::getPrimitiveT(const ray& r) {
+	/*
+	if (r.getPosition().length() < 1) {
+		cout << "even more strange" << endl;
+	}
+	*/
+	vec3f pos = transform->globalToLocalCoords(r.getPosition());
+	
+	vec3f dir = (transform->globalToLocalCoords(r.getPosition() + r.getDirection()) - pos);
+	float length = dir.length();
+	dir = dir.normalize();
+	ray localRay(pos, dir);
+	vec3f v = -localRay.getPosition();
+	double b = v.dot(localRay.getDirection());
+	double discriminant = b*b - v.dot(v) + 1;
+
+	if (discriminant < RAY_EPSILON) {
+		//cout << endl;
+		return T();
+	}
+
+	discriminant = sqrt(discriminant);
+	double t2 = b + discriminant;
+
+	if (t2 <= RAY_EPSILON) {
+		//cout << endl;
+		return T();
+	}
+
+	double t1 = b - discriminant;
+	//if (pos.length() < 1.0)
+		//cout << "strange" << endl;
+	//cout << "sphere:" << t1 << ",";
+	t1 /= length; t2 /= length;
+	if (t1 < RAY_EPSILON)
+		return T();
+	else
+		return T(t1, t2);
+}
+

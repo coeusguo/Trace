@@ -252,6 +252,12 @@ void TraceUI::cb_soft_shadow(Fl_Widget* o, void* v) {
 	pUI->raytracer->setEnableSoftShadow(!pUI->raytracer->getEnableSoftShadow());
 }
 
+//motion blur
+void TraceUI::cb_motion_blur(Fl_Widget* o, void* v) {
+	TraceUI* pUI = (TraceUI*)(o->user_data());
+	pUI->m_nEnableMotionBlur = !pUI->raytracer->getEnableMotionBlur();
+	pUI->raytracer->setEnableMotionBlur(pUI->m_nEnableMotionBlur);
+}
 //octree
 void TraceUI::cb_octree(Fl_Widget* o, void* v) {
 	TraceUI* pUI = (TraceUI*)(o->user_data());
@@ -574,24 +580,31 @@ TraceUI::TraceUI() {
 		m_nDepthOfField = false;
 		m_nFocalLength = 2.0;
 		m_nApertureSize = 2;
-		m_DepthFieldButton = new Fl_Light_Button(10, 265, 110, 25, "&Depth of Field");
+		m_DepthFieldButton = new Fl_Light_Button(10, 265, 60, 25, "&DOF");
 		m_DepthFieldButton->user_data((void*)(this));
 		m_DepthFieldButton->callback(cb_depth_of_field_button);
 		m_DepthFieldButton->value(m_nDepthOfField);
 
 		//glossy reflection
 		m_nEnableGlossy = false;
-		m_GlossyReflectionButton = new Fl_Light_Button(130, 265, 100, 25, "&Glossy Refl.");
+		m_GlossyReflectionButton = new Fl_Light_Button(80, 265, 70, 25, "&Glossy");
 		m_GlossyReflectionButton->user_data((void*)(this));
 		m_GlossyReflectionButton->callback(cb_glossy_reflection);
 		m_GlossyReflectionButton->value(m_nEnableGlossy);
 
 		//soft shadow
 		m_nEnableSoftShadow = false;
-		m_SoftShadowButton = new Fl_Light_Button(240, 265, 100, 25, "&Soft Shadow");
+		m_SoftShadowButton = new Fl_Light_Button(160, 265, 100, 25, "&Soft Shadow");
 		m_SoftShadowButton->user_data((void*)(this));
 		m_SoftShadowButton->callback(cb_soft_shadow);
 		m_SoftShadowButton->value(m_nEnableSoftShadow);
+
+		//motion blur
+		m_nEnableMotionBlur = false;
+		m_MotionBlurButton = new Fl_Light_Button(270, 265, 70, 25, "&Motion");
+		m_MotionBlurButton->user_data((void*)(this));
+		m_MotionBlurButton->callback(cb_motion_blur);
+		m_MotionBlurButton->value(m_nEnableSoftShadow);
 
 		m_FocalLengthSlider = new Fl_Value_Slider(10, 295, 180, 20, "Focal Length");
 		m_FocalLengthSlider->user_data((void*)(this));	// record self to be used by static callback functions

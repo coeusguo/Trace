@@ -57,8 +57,10 @@ public:
 	Fl_Button*			m_DepthFieldButton;
 	Fl_Button*			m_GlossyReflectionButton;
 	Fl_Button*			m_SoftShadowButton;
+	Fl_Button*			m_MotionBlurButton;
 	Fl_Button*			m_OctreeButton;
 	Fl_Button*			m_BuildOctreeButton;
+	
 
 
 
@@ -109,6 +111,9 @@ private:
 	//soft shadow
 	bool		m_nEnableSoftShadow;
 
+	//motion blur
+	bool		m_nEnableMotionBlur;
+
 	//octree
 	bool		m_nEnableOctree;
 	int			m_nOctreeDepth;
@@ -151,6 +156,7 @@ private:
 	static void cb_aperture_size_slider(Fl_Widget* o, void* v);
 	static void cb_glossy_reflection(Fl_Widget* o, void* v);
 	static void cb_soft_shadow(Fl_Widget* o, void* v);
+	static void cb_motion_blur(Fl_Widget* o, void* v);
 	static void cb_octree(Fl_Widget* o, void* v);
 	static void cb_octree_depth(Fl_Widget* o, void* v);
 	static void cb_octree_X(Fl_Widget* o, void* v);
@@ -160,6 +166,7 @@ private:
 	static void cb_octree_YS(Fl_Widget* o, void* v);
 	static void cb_octree_ZS(Fl_Widget* o, void* v);
 	static void cb_octree_rebuild(Fl_Widget* o, void* v);
+	
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);

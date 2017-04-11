@@ -16,7 +16,7 @@ public:
     ~RayTracer();
 
     vec3f trace( Scene *scene, double x, double y );
-	vec3f traceRay( Scene *scene, const ray& r, const vec3f& thresh, int depth ,stack<Material> materials);
+	vec3f traceRay( Scene *scene,ray& r, const vec3f& thresh, int depth ,stack<Material> materials);
 
 
 	void getBuffer( unsigned char *&buf, int &w, int &h );
@@ -60,6 +60,9 @@ public:
 	//soft shadow
 	void setEnableSoftShadow(bool value) { enableSoftShadow = value; }
 	bool getEnableSoftShadow() { return enableSoftShadow; }
+	//motion blur
+	void setEnableMotionBlur(bool value) { enableMotionBlur = value; }
+	bool getEnableMotionBlur() { return enableMotionBlur; }
 private:
 	unsigned char *buffer;
 	int buffer_width, buffer_height;
@@ -89,8 +92,12 @@ private:
 	bool enableGlossy;
 	//soft shadow
 	bool enableSoftShadow;
+	//motion blur
+	bool enableMotionBlur;
 
 	vec3f refractionDirection(vec3f& normal, vec3f& dir, double indexFrom, double indexTo);
+	vec3f adaptiveSuperSampling(ray& center,ray& topLeft, ray& topRight, ray& bottomleft, ray& bottomRight,int depth);
+	void getFiveRays(ray&center,ray& topLeft, ray& topRight, ray& bottomleft, ray& bottomRight, double width, double height);
 };
 
 #endif // __RAYTRACER_H__

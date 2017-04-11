@@ -21,6 +21,7 @@ public:
 		localbounds.min = vec3f(-0.5, -0.5, -0.5);
         return localbounds;
     }
+	virtual T getPrimitiveT(const ray& r);
 };
 
 #endif // __BOX_H__

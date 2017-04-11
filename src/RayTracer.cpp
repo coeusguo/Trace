@@ -49,6 +49,15 @@ vec3f RayTracer::trace( Scene *scene, double x, double y )
 		result *= number;
 		return result;
 	}
+	if (adaptive) {//adaptive supper sampling
+		//cout << "wtf" << endl;
+		ray topLeft(r); ray topRight(r); ray bottomLeft(r); ray bottomRight(r);
+		double width = double(1) / double(buffer_width);
+		double height = double(1) / double(buffer_height);
+		getFiveRays(r, topLeft, topRight, bottomLeft, bottomRight, width, height);
+		return adaptiveSuperSampling(r, topLeft, topRight, bottomLeft, bottomRight, 0);
+	}
+
 	if (enableDepthOfField) {
 		vec3f focalPoint = r.at(focalLength + 1);
 		vec3f result(0.0, 0.0, 0.0);
@@ -68,12 +77,25 @@ vec3f RayTracer::trace( Scene *scene, double x, double y )
 		}
 		return result;
 	}
+
+	if (enableMotionBlur) {
+		//cout << "?" << endl;
+		vec3f result(0.0, 0.0, 0.0);
+		for (int i = 0; i < 50; i++) {
+			scene->motionBlurObjectsDeltaTransform();
+			result += traceRay(scene, r, vec3f(1.0, 1.0, 1.0), 0, material).clamp();
+		}
+		scene->motionBlurObjectRestore();
+		result /= 50;
+		return result;
+	}
+
 	return traceRay( scene, r, vec3f(1.0,1.0,1.0), 0 ,material).clamp();
 }
 
 // Do recursive ray tracing!  You'll want to insert a lot of code here
 // (or places called from here) to handle reflection, refraction, etc etc.
-vec3f RayTracer::traceRay(Scene *scene, const ray& r,
+vec3f RayTracer::traceRay(Scene *scene, ray& r,
 	const vec3f& thresh, int depth,stack<Material> materials)
 {
 	isect i;
@@ -87,7 +109,9 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 	}
 	else
 		isIntersect = scene->intersect(r, i);
+
 	if (isIntersect) {
+		//cout << i.getMaterial().kd << endl;
 		const Material& m = i.getMaterial();
 		vec3f normal = i.N;//the normal of the inter section point
 		vec3f dir = r.getDirection();//the direction of the ray
@@ -98,8 +122,9 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 		vec3f refraColor(0.0, 0.0, 0.0);
 		//cout << (-dir)*normal<<endl;
 		//phong shading
+		//cout << "?";
 		phong = m.shade(scene, r, i, enableSoftShadow);
-		
+		//cout << "?";
 		//reflection
 		vec3f reflecVec = r.getDirection() - r.getDirection() * normal * 2 * normal;
 		reflecVec = reflecVec.normalize();
@@ -126,7 +151,7 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 				refColor[i] /= 51.0f;
 		}
 
-		//cout << "?";
+		
 		refColor = prod(refColor, m.kr);
 
 		//refraction
@@ -167,7 +192,11 @@ vec3f RayTracer::traceRay(Scene *scene, const ray& r,
 		return result;
 	}
 	else {
-		if (usingBackgroundImage && m_ucBackground && depth==0) {
+		bool ok = true;
+		if (depth > 0) {
+			ok = scene->getCamera()->resetCoords(r);
+		}
+		if (usingBackgroundImage && m_ucBackground && ok) {
 			int x = r.getCoords()[0] * m_nWidth;
 			int y = r.getCoords()[1] * m_nHeight;
 			int index = (y * m_nWidth + x) * 3;
@@ -197,6 +226,7 @@ RayTracer::RayTracer()
 	enableDepthOfField = false;
 	enableGlossy = false;
 	enableSoftShadow = false;
+	enableMotionBlur = false;
 }
 
 
@@ -353,4 +383,89 @@ vec3f RayTracer::refractionDirection(vec3f& normal, vec3f& dir, double indexFrom
 		double fac = sinTheta2 / sinTheta3;
 		return (dir * fac + (-normal)).normalize();
 	}
+}
+
+void RayTracer::getFiveRays(ray&center,ray& topLeft, ray& topRight, ray& bottomleft, ray& bottomRight,double width,double height) {
+
+
+	double* coords = center.getCoords();
+
+	scene->getCamera()->rayThrough(coords[0] - width / double(2), coords[1] - height / double(2), bottomleft);
+	scene->getCamera()->rayThrough(coords[0] + width / double(2), coords[1] - height / double(2), bottomRight);
+	scene->getCamera()->rayThrough(coords[0] - width / double(2), coords[1] + height / double(2), topLeft);
+	scene->getCamera()->rayThrough(coords[0] + width / double(2), coords[1] + height / double(2), topRight);
+}
+
+vec3f RayTracer::adaptiveSuperSampling(ray& center,ray& topLeft, ray& topRight, ray& bottomleft, ray& bottomRight,int depth) {
+	if (depth == 3)
+		return vec3f(0.0, 0.0, 0.0);
+	stack<Material> material;
+
+	vec3f colorCenter = traceRay(scene, center, vec3f(1.0, 1.0, 1.0), scene->getDepth() - 2, material).clamp();
+	vec3f colorTopLeft = traceRay(scene, topLeft, vec3f(1.0, 1.0, 1.0), scene->getDepth() - 2, material).clamp();
+	vec3f colorTopRight = traceRay(scene, topRight, vec3f(1.0, 1.0, 1.0), scene->getDepth() - 2, material).clamp();
+	vec3f colorBottomLeft= traceRay(scene, bottomleft, vec3f(1.0, 1.0, 1.0), scene->getDepth() - 2, material).clamp();
+	vec3f colorBottomRight = traceRay(scene, bottomRight, vec3f(1.0, 1.0, 1.0), scene->getDepth() - 2, material).clamp();
+	bool statements[4];
+	statements[0] = (colorCenter - colorTopLeft).length() > 0.1;
+	statements[1] = (colorCenter - colorTopRight).length() > 0.1;
+	statements[2] = (colorCenter - colorBottomLeft).length() > 0.1;
+	statements[3] = (colorCenter - colorBottomRight).length() > 0.1;
+
+	double pixelWidth = double(1) / double(buffer_width);
+	double pixelHeight = double(1) / double(buffer_height);
+
+	double level = pow(2, depth + 1);
+	double width = pixelWidth / double(level);
+	double height = pixelHeight / double(level);
+
+	ray copyCenter(center);
+	
+	vec3f result(0.0, 0.0, 0.0);
+	int numOfDiff = 0;
+	if (statements[0]) {
+		//cout << "?" << endl;
+		center.getCoords()[0] = copyCenter.getCoords()[0] - width / double(2);
+		center.getCoords()[1] = copyCenter.getCoords()[1] + height / double(2);
+		getFiveRays(center, topLeft, topRight, bottomleft, bottomRight, width, height);
+		vec3f newColor = adaptiveSuperSampling(center, topLeft, topRight, bottomleft, bottomRight, depth + 1);
+		if (newColor.length() != 0)
+			colorTopLeft = newColor;
+	}
+
+	if (statements[1]) {
+		//cout << "??" << endl;
+		center.getCoords()[0] = copyCenter.getCoords()[0] + width / double(2);
+		center.getCoords()[1] = copyCenter.getCoords()[1] + height / double(2);
+		getFiveRays(center, topLeft, topRight, bottomleft, bottomRight, width, height);
+		vec3f newColor = adaptiveSuperSampling(center, topLeft, topRight, bottomleft, bottomRight, depth + 1);
+		if (newColor.length() != 0)
+			colorTopRight = newColor;
+	}
+
+	if (statements[2]) {
+		//cout << "???" << endl;
+		center.getCoords()[0] = copyCenter.getCoords()[0] - width / double(2);
+		center.getCoords()[1] = copyCenter.getCoords()[1] - height / double(2);
+		getFiveRays(center, topLeft, topRight, bottomleft, bottomRight, width, height);
+		vec3f newColor = adaptiveSuperSampling(center, topLeft, topRight, bottomleft, bottomRight, depth + 1);
+		if (newColor.length() != 0)
+			colorBottomLeft = newColor;
+	}
+
+	if (statements[3]) {
+		//cout << "????" << endl;
+		center.getCoords()[0] = copyCenter.getCoords()[0] + width / double(2);
+		center.getCoords()[1] = copyCenter.getCoords()[1] - height / double(2);
+		getFiveRays(center, topLeft, topRight, bottomleft, bottomRight, width, height);
+		vec3f newColor = adaptiveSuperSampling(center, topLeft, topRight, bottomleft, bottomRight, depth + 1);
+		if (newColor.length() != 0) {
+			colorBottomRight = newColor;
+			//cout << "sss" << endl;
+		}
+	}
+
+	
+	result = (colorBottomRight + colorBottomLeft + colorTopLeft + colorTopRight) / double(4);
+	return result;
 }

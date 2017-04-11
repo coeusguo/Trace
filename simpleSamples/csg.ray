@@ -1,0 +1,128 @@
+SBT-raytracer 1.0
+
+camera {
+	position = (3,3,3);
+	viewdir = (-1,-1,-1);
+	aspectratio = 1;
+	updir = (0,1,0);
+}
+
+
+
+
+point_light
+{
+	position = (2, 2, 2);
+	colour = (1.0, 1.0, 1.0);
+
+}
+
+point_light
+{
+	position = (2, 2, 0);
+	colour = (1.0, 1.0, 1.0);
+
+}
+
+point_light
+{
+	position = (0, 2, 2);
+	colour = (1.0, 1.0, 1.0);
+
+}
+
+
+material{
+	
+	name = "#1";
+	diffuse=( 0.0,0.7,0.0);
+    ambient=( 0.2,0.2,0.2);
+    specular=( 0,0,0);
+    emissive=( 0,0,0);
+    shininess=0.2;
+    transmissive=( 0,0,0 );
+}
+
+material{
+	
+	name = "#2";
+	diffuse=( 0.8,0.0,0.0);
+    ambient=( 0.2,0.2,0.2);
+    specular=( 0,0,0);
+    emissive=( 0,0,0);
+    shininess=0.2;
+    transmissive=( 0,0,0 );
+}
+
+material{
+	
+	name = "#3";
+	diffuse=( 0.0,0.0,0.8);
+    ambient=( 0.2,0.2,0.2);
+    specular=( 0,0,0);
+    emissive=( 0,0,0);
+    shininess=0.2;
+    transmissive=( 0,0,0 );
+}
+
+material{
+	
+	name = "#4";
+	diffuse=( 0.8,0.8,0.0);
+    ambient=( 0.2,0.2,0.2);
+    specular=( 0,0,0);
+    emissive=( 0,0,0);
+    shininess=0.2;
+    transmissive=( 0,0,0 );
+}
+
+material{
+	
+	name = "#5";
+	diffuse=( 0.8,0.8,0.8);
+    ambient=( 0.2,0.2,0.2);
+    specular=( 0,0,0);
+    emissive=( 0,0,0);
+    shininess=0.2;
+    transmissive=( 0,0,0 );
+}
+
+csg{
+	primitiveNumber = 5;
+	
+	
+
+	queue0 = ("scale","box");
+	scale0 = (1.5,1.5,1.5);
+	primitive0 = "box";
+	materialID0 = "#5";
+
+	queue1 = ("sphere");
+	primitive1 = "sphere";
+	materialID1 = "#1";
+
+	
+
+	queue2 = ("translate","scale","cylinder");
+	translate2 = (0,0,-0.5);
+	scale2 = (0.5,0.5,3.0);
+	primitive2 = "cylinder";
+	materialID2 = "#3";
+
+	queue3 = ("translate","scale","rotate","cylinder");
+	translate3 = (0,0,-0.5);
+	scale3 = (0.5,0.5,3.0);
+	rotate3 = (0,1,0,1.57);
+	primitive3 = "cylinder";
+	materialID3 = "#4";
+
+	queue4 = ("translate","scale","rotate","cylinder");
+	translate4 = (0,0,-0.5);
+	scale4 = (0.5,0.5,3.0);
+	rotate4 = (1,0,0,1.57);
+	primitive4 = "cylinder";
+	materialID4 = "#2";
+
+	operator = ((0,"intersect",1),"minus",((2,"union",3),"union",4));
+	//operator = (0,"intersect",1);
+}

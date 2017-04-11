@@ -14,9 +14,7 @@ public:
     void setLook( const vec3f &viewDir, const vec3f &upDir );
     void setFOV( double );
     void setAspectRatio( double );
-	vec3f getU()const { return u; }
-	vec3f getV()const { return v; }
-	vec3f getLook()const { return look; }
+	bool resetCoords(ray& r);
     double getAspectRatio() { return aspectRatio; }
 private:
     mat3f m;                     // rotation matrix
