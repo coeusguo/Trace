@@ -60,6 +60,8 @@ public:
 	Fl_Button*			m_MotionBlurButton;
 	Fl_Button*			m_OctreeButton;
 	Fl_Button*			m_BuildOctreeButton;
+	Fl_Button*			m_EnableCausticButton;
+	Fl_Button*			m_BuildPhotonMapButton;
 	
 
 
@@ -123,6 +125,9 @@ private:
 	float		m_nOctreeXSize;
 	float		m_nOctreeYSize;
 	float		m_nOctreeZSize;
+
+	//caustic
+	bool		m_nEnableCaustic;
 // static class members
 	static Fl_Menu_Item menuitems[];
 
@@ -166,7 +171,8 @@ private:
 	static void cb_octree_YS(Fl_Widget* o, void* v);
 	static void cb_octree_ZS(Fl_Widget* o, void* v);
 	static void cb_octree_rebuild(Fl_Widget* o, void* v);
-	
+	static void cb_caustics_button(Fl_Widget* o, void* v);
+	static void cb_built_photonMap(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);

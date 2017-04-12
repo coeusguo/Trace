@@ -49,15 +49,52 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ,bool enableSo
 		color += result;
 	}
 
-	for (int i = 0; i < 3; i++)
-		if (color[i] > 255)
-			color[i] = 255;
+	
 	vec3f trans(1.0, 1.0, 1.0);
 	trans -= kt;
-	color = prod(color, trans);
+
+	vec3f caustic(0.0, 0.0, 0.0);
+	if (kt.length() == 0 && kr.length() == 0 && scene->getEnableCaustic() && scene->isPhotonMapLoaded()) {
+		caustic = computeCaustic(scene, r.at(i.t), normal,r.getDirection());
+	}
+	color = prod(color, trans) + caustic;
+
+	for (int i = 0; i < 3; i++)
+		if (color[i] > 1.0)
+			color[i] = 1.0;
 
 	return color;
 }
 
+vec3f Material::computeCaustic(Scene* scene, vec3f& pos, vec3f& normal,vec3f& viewDir)const {
+	range* r = new range;
+	r->xRange[0] = pos[0] - 0.03;
+	r->xRange[1] = pos[0] + 0.03;
+	r->yRange[0] = pos[1] - 0.03;
+	r->yRange[1] = pos[1] + 0.03;
+	r->zRange[0] = pos[2] - 0.03;
+	r->zRange[1] = pos[2] + 0.03;
+
+	vector<photon*> plist;
+	scene->getPhotons(plist, r);
+	//cout << result.size() << endl;
+
+	vec3f result(0.0, 0.0, 0.0);
+	for (photon* p : plist) {
+		float nl = (-p->direction) * normal;
+		if (nl < 0)
+			nl = 0;
+
+		vec3f reflec = -((-p->direction) * normal * 2 * normal + p->direction);
+		float nh = reflec * viewDir;
+		if (nh < 0)
+			nh = 0;
+
+		result += prod(nl * kd + pow(nh, shininess) * ks, p->energy);
+	}
+
+	result /= (200);
+	return result;
+}
 
 

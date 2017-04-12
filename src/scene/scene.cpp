@@ -91,6 +91,10 @@ Scene::~Scene()
 		delete[]m_ucNormalMap;
 	if (ot)
 		delete ot;
+	for (photon* p : photonList)
+		delete p;
+	if (kdtree)
+		delete kdtree;
 }
 
 // Get any intersection with an object.  Return information about the 
@@ -133,7 +137,6 @@ void Scene::initScene()
 	BoundingBox b;
 	
 
-
 	typedef list<Geometry*>::const_iterator iter;
 	// split the objects into two categories: bounded and non-bounded
 	for( iter j = objects.begin(); j != objects.end(); ++j ) {
@@ -163,7 +166,9 @@ void Scene::initScene()
 			//cout << "nonBoundedobject!" << endl;
 		}
 	}
-	cout << boundedobjects.size() << endl;
+
+	iniOctree(-5, -5, -5, 10, 10, 10, 7);
+	//cout << photonList.size() << endl;
 }
 
 void Scene::loadTextureImage(char* fn) {
@@ -396,29 +401,28 @@ void Scene::loadHeightFieldMap(char* fname) {
 
 	Trimesh* mesh = new Trimesh(this,new Material,new TransformRoot);
 
-	for (int Z = 0; Z < height; Z++) {
-		for (int X = 0; X < width; X++) {
+	for (int Z = 0; Z < height - 2; Z = Z + 3) {
+		for (int X = 0; X < width - 2; X = X + 3) {
 			Material* m = new Material;
 			m->kd = vec3f(heightFieldColor[(Z * width + X) * 3] / 255.0f, heightFieldColor[(Z * width + X) * 3 + 1] / 255.0f, heightFieldColor[(Z * width + X) * 3 + 2] / 255.0f);
 			float x = (float(X) / float(width))  * 5;
 			float z = (float(Z) / float(height)) * 5;
-			float y = (float(greyScaleMap[Z * width + X]) / 255.0f) * 2;
+			float y = (float(greyScaleMap[Z * width + X]) / 255.0f);
 			mesh->addVertex(vec3f(x, y, z));
 			mesh->addMaterial(m);
 			//cout << "(" << x << "," << y << "," << z << ")";
 		}
 	}
-	int k = 0;
-	for(int Y = 0; Y < height - 4; Y = Y + 3) {
-		for (int X = 0; X < width - 4; X = X + 3) {
-			mesh->addFace(Y * width + X, (Y + 3) * width + X, (Y + 3) * width + X + 3);
-			mesh->addFace(Y * width + X, (Y + 3) * width + X + 3, Y * width + X + 3);
+	
+	for(int Y = 0; Y < height - 1; Y = Y + 1) {
+		for (int X = 0; X < width - 1; X = X + 1) {
+			mesh->addFace(Y * width + X, (Y + 1) * width + X, (Y + 1) * width + X + 1);
+			mesh->addFace(Y * width + X, (Y + 1) * width + X + 1, Y * width + X + 1);
 			//cout << k++ << "," << k++ << ",";
 		}
 	}
 	boundedobjects.push_back(mesh);
 	mesh->addToNBoundedObjects();
-
 	fl_message("done!");
 }
 
@@ -443,7 +447,7 @@ bool Scene::intersectBoundingBox(const ray& r, isect& i) {
 bool Scene::intersectNonBounded(const ray& r, isect& i) const{
 	isect cur;
 	bool have_one = false;
-	for (cgiter j = boundedobjects.begin(); j != boundedobjects.end(); ++j) {
+	for (cgiter j = nonboundedobjects.begin(); j != nonboundedobjects.end(); ++j) {
 		if ((*j)->intersect(r, cur)) {
 			if (!have_one || (cur.t < i.t)) {
 				i = cur;
@@ -469,4 +473,23 @@ void Scene::iniOctree(float x, float y, float z, float xs, float ys, float zs, i
 	ot = new Octree(minp, maxp, depth);
 	ot->processObjects(objects);
 
+}
+
+void Scene::initPhotonMap() {
+	if (kdtree)
+		return;
+	typedef list<Light*>::const_iterator 	cliter;
+	for (cliter it = beginLights(); it != endLights(); it++) {
+		(*it)->computePhotonMap();
+		vector<photon*> plist = (*it)->getPhotonList();
+		for (photon* p : plist)
+			photonList.push_back(p);
+	}
+	//cout << photonList.size();
+	kdtree = kdNode::processList(photonList);
+	fl_message("done!");
+}
+
+void Scene::getPhotons(vector<photon*>& plist, range* r) {
+	kdtree->getPhoton(r, plist, X);
 }

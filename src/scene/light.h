@@ -2,6 +2,7 @@
 #define __LIGHT_H__
 
 #include "scene.h"
+#include "../utils/kdtree.h"
 #include <random>
 
 class Light
@@ -12,12 +13,16 @@ public:
 	virtual double distanceAttenuation( const vec3f& P ) const = 0;
 	virtual vec3f getColor( const vec3f& P ) const = 0;
 	virtual vec3f getDirection( const vec3f& P ) const = 0;
-
+	virtual void computePhotonMap() { return; }
+	vector<photon*> getPhotonList() { return list; }
 protected:
 	Light( Scene *scene, const vec3f& col )
 		: SceneElement( scene ), color( col ) {}
-
 	vec3f 		color;
+	vector<photon*> list;
+	int number = 0;
+	void forwardTracing(ray& r, photon* p, int depth,bool isInside);
+	vec3f refractionDirection(vec3f& normal, vec3f& dir, double indexFrom, double indexTo);
 };
 
 class DirectionalLight
@@ -30,7 +35,6 @@ public:
 	virtual double distanceAttenuation( const vec3f& P ) const;
 	virtual vec3f getColor( const vec3f& P ) const;
 	virtual vec3f getDirection( const vec3f& P ) const;
-
 protected:
 	vec3f 		orientation;
 };
@@ -45,6 +49,7 @@ public:
 	virtual double distanceAttenuation( const vec3f& P ) const;
 	virtual vec3f getColor( const vec3f& P ) const;
 	virtual vec3f getDirection( const vec3f& P ) const;
+	virtual void computePhotonMap();
 
 protected:
 	vec3f position;

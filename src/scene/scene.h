@@ -18,7 +18,7 @@ using namespace std;
 #include "../vecmath/vecmath.h"
 #include "BoundingBox.h"
 #include "../utils/T.h"
-
+#include "../utils/kdtree.h"
 class Light;
 class Scene;
 class Octree;
@@ -278,7 +278,9 @@ public:
 		m_ucNormalMap = NULL;
 		usingTexture = false;
 		usingBump = false;
+		enableCaustics = false;
 		ot = NULL;
+		kdtree = NULL;
 	}
 	virtual ~Scene();
 
@@ -348,7 +350,13 @@ public:
 		for (giter i = objects.begin(); i != objects.end(); i++)
 			(*i)->motionBlurTranslateRestore();
 	}
-
+	
+	//caustic
+	void setCaustic(bool value) { enableCaustics = value; }
+	bool getEnableCaustic() { return enableCaustics; }
+	void initPhotonMap();
+	bool isPhotonMapLoaded() { return kdtree?true:false; }
+	void getPhotons(vector<photon*>& plist,range* r);
 private:
     list<Geometry*> objects;
 	list<Geometry*> nonboundedobjects;
@@ -376,6 +384,11 @@ private:
 	//octree
 	bool enableOctree;
 	int octreeDepth;
+
+	//caustic
+	bool enableCaustics;
+	vector<photon*> photonList;
+	kdNode* kdtree;
 
 	// Each object in the scene, provided that it has hasBoundingBoxCapability(),
 	// must fall within this bounding box.  Objects that don't have hasBoundingBoxCapability()

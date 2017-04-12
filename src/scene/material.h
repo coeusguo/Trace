@@ -83,6 +83,8 @@ public:
 	}
 
     friend Material operator*( double d, Material m );
+private:
+	vec3f computeCaustic(Scene* scene, vec3f& pos, vec3f& normal,vec3f& viewDir)const;
 };
 
 

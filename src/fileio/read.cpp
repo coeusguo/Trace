@@ -319,7 +319,8 @@ static void processGeometry( string name, Obj *child, Scene *scene,
 		else if( name == "box" ) {
 			obj = new Box( scene, mat );
 		} else if( name == "cylinder" ) {
-			obj = new Cylinder( scene, mat );
+			bool capped = getField(child, "capped")->getBoolean();
+			obj = new Cylinder( scene, mat,capped );
 		} else if( name == "cone" ) {
 			double height = 1.0;
 			double bottom_radius = 1.0;

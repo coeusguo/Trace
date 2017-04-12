@@ -6,8 +6,8 @@ SBT-raytracer 1.0
 
 camera
 {
-	position = (-3, 5, -3);
-	viewdir = (3, -5, 3);
+	position = (5, 6, 5);
+	viewdir = (-5, -6, -5);
 	updir = (1, 0, 0);
 }
 
@@ -45,12 +45,12 @@ metaball {
 	gridSize = 30;
 	size = 3.0;
 
-	ball = ((0,0,0,1.0),(1.5,1.5,1.5,1));
+	ball = ((0,0,0,1.0),(1.5,-1.5,1.5,1),(-1.5,-1.5,1.5,1));
 }
 
-translate(2,-1,2,
-rotate(1,0,0,1.57,
-scale(5.0,
+translate(0,-3.0,0.0,
+rotate(1,0,0,-1.57,
+scale(10.0,
 square {
   material={
     diffuse=( 0.8,0.8,0.3);

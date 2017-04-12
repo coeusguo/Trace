@@ -58,7 +58,7 @@ private:
 public:
 	CSG(Scene* scene, TransformNode* node, Material* mat) :MaterialSceneObject(scene, mat) {
 		csgTree = NULL;
-		transform = node;
+		setTransform(node);
 	}
 	void setTree(Node* tree) { csgTree = tree; }
 	void setPrimitives(vector<MaterialSceneObject*> pris) {

@@ -52,6 +52,7 @@ void TraceUI::cb_load_scene(Fl_Menu_* o, void* v)
 		pUI->raytracer->getScene()->setUsingBump(pUI->m_nBump);
 		pUI->raytracer->getScene()->setEnableOctree(pUI->m_nEnableOctree);
 		pUI->raytracer->getScene()->iniOctree(pUI->m_nOctreeX, pUI->m_nOctreeY, pUI->m_nOctreeZ, pUI->m_nOctreeXSize, pUI->m_nOctreeYSize, pUI->m_nOctreeZSize, pUI->m_nOctreeDepth);
+		pUI->raytracer->getScene()->setCaustic(pUI->m_nEnableCaustic);
 	}
 }
 //load backgroung image
@@ -298,6 +299,19 @@ void TraceUI::cb_octree_rebuild(Fl_Widget* o, void* v) {
 		pUI->raytracer->getScene()->iniOctree(pUI->m_nOctreeX, pUI->m_nOctreeY, pUI->m_nOctreeZ, pUI->m_nOctreeXSize, pUI->m_nOctreeYSize, pUI->m_nOctreeZSize, pUI->m_nOctreeDepth);
 }
 
+//caustics
+void TraceUI::cb_caustics_button(Fl_Widget* o, void* v) {
+	TraceUI* pUI = ((TraceUI*)(o->user_data()));
+	pUI->m_nEnableCaustic = ((Fl_Button *)o)->value();
+	if (pUI->raytracer->sceneLoaded())
+		pUI->raytracer->getScene()->setCaustic(pUI->m_nEnableCaustic);
+}
+void TraceUI::cb_built_photonMap(Fl_Widget* o, void* v) {
+	TraceUI* pUI = ((TraceUI*)(o->user_data()));
+	if (pUI->raytracer->sceneLoaded())
+		pUI->raytracer->getScene()->initPhotonMap();
+}
+
 void TraceUI::cb_render(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -424,7 +438,7 @@ TraceUI::TraceUI() {
 	// init.
 	m_nDepth = 0;
 	m_nSize = 150;
-	m_mainWindow = new Fl_Window(100, 40, 350, 450, "Ray <Not Loaded>");
+	m_mainWindow = new Fl_Window(100, 40, 350, 460, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
 		m_menubar = new Fl_Menu_Bar(0, 0, 350, 25);
@@ -632,13 +646,13 @@ TraceUI::TraceUI() {
 
 		//octree
 		m_nEnableOctree = false;
-		m_nOctreeDepth = 5;
-		m_nOctreeX = 0;
-		m_nOctreeY = 0;
-		m_nOctreeZ = 0;
-		m_nOctreeXSize = 5;
-		m_nOctreeYSize = 1;
-		m_nOctreeZSize = 5;
+		m_nOctreeDepth = 7;
+		m_nOctreeX = -5;
+		m_nOctreeY = -5;
+		m_nOctreeZ = -5;
+		m_nOctreeXSize = 10;
+		m_nOctreeYSize = 10;
+		m_nOctreeZSize = 10;
 
 		m_OctreeButton = new Fl_Light_Button(10, 345, 80, 25, "&Octree");
 		m_OctreeButton->user_data((void*)(this));
@@ -733,6 +747,15 @@ TraceUI::TraceUI() {
 		m_octreeZSizeSlider->align(FL_ALIGN_RIGHT);
 		m_octreeZSizeSlider->callback(cb_octree_ZS);
 
+		m_nEnableCaustic = false;
+		m_EnableCausticButton = new Fl_Light_Button(120, 430, 130, 25, "&Enable Caustics");
+		m_EnableCausticButton->user_data((void*)(this));
+		m_EnableCausticButton->callback(cb_caustics_button);
+		m_EnableCausticButton->value(m_nEnableCaustic);
+
+		m_BuildPhotonMapButton = new Fl_Button(10, 430, 100, 25, "&Init Caustics");
+		m_BuildPhotonMapButton->user_data((void*)(this));
+		m_BuildPhotonMapButton->callback(cb_built_photonMap);
 
 		m_mainWindow->callback(cb_exit2);
 		m_mainWindow->when(FL_HIDE);
@@ -742,4 +765,5 @@ TraceUI::TraceUI() {
 	m_traceGlWindow = new TraceGLWindow(100, 150, m_nSize, m_nSize, "Rendered Image");
 	m_traceGlWindow->end();
 	m_traceGlWindow->resizable(m_traceGlWindow);
+
 }

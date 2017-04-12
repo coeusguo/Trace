@@ -1,0 +1,72 @@
+SBT-raytracer 1.0
+
+camera {
+	position = (3,3,3);
+	viewdir = (-1,-1,-1);
+	aspectratio = 1;
+	updir = (0,1,0);
+}
+
+
+
+
+point_light
+{
+	position = (2, 2, 2);
+	colour = (1.0, 1.0, 1.0);
+
+}
+
+
+scale(5,0.2,5,
+translate(0,-0.5,0,
+box{
+	material = {
+		diffuse=( 0.3,0.3,0.3);
+   	 	ambient=( 0.2,0.2,0.2);
+   	 	specular=( 0,0,0);
+    	emissive=( 0,0,0);
+    	transmissive=( 0,0,0 );
+	}	
+}))
+
+
+material{
+	
+	name = "#1";
+	diffuse=( 1.0,0.843,0.0);
+    ambient=( 0.2,0.2,0.2);
+    specular=( 0.8,0.8,0.8);
+    emissive=( 0,0,0);
+    shininess=0.2;
+    transmissive=( 0,0,0 );
+}
+
+translate(1,0,1,
+rotate(1,0,0,-1.57,
+scale(1,1,0.4,
+cylinder{
+	material = "#1";
+	capped = false;
+})))
+
+/*
+translate(1.0,0.5,1.0,
+csg{
+	primitiveNumber = 2;
+
+	queue0 = ("scale","rotate","cylinder");
+	scale0 = (0.9,0.9,0.4);
+	rotate0 = (1,0,0,-1.57);
+	primitive0 = "cylinder";
+	materialID0 = "#1";
+
+	queue1 = ("scale","rotate","translate","cylinder");
+	translate1 = (0,-0.5,0);
+	scale1 = (0.8,0.8,1.0);
+	rotate1 = (1,0,0,-1.57);
+	primitive1 = "cylinder";
+	materialID1 = "#1";
+
+	operator = (0,"minus",1);
+})*/

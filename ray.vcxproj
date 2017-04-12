@@ -207,6 +207,7 @@
     </ClCompile>
     <ClCompile Include="src\utils\MarchingCube.cpp" />
     <ClCompile Include="src\utils\Octree.cpp" />
+    <ClCompile Include="src\utils\kdtree.cpp" />
     <ClCompile Include="src\utils\T.cpp" />
     <ClCompile Include="src\vecmath\vecmath.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -291,6 +292,7 @@
     <ClInclude Include="src\fileio\bitmap.h" />
     <ClInclude Include="src\fileio\parse.h" />
     <ClInclude Include="src\fileio\read.h" />
+    <ClInclude Include="src\utils\kdtree.h" />
     <ClInclude Include="src\utils\T.h" />
     <ClInclude Include="src\utils\MarchingCube.h" />
     <ClInclude Include="src\utils\Octree.h" />
