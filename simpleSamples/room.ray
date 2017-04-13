@@ -27,7 +27,7 @@ translate(0.5,0,0,
 scale(0.2,
 sphere{
 	material = {
-		diffuse = (0.0,0.0,0.3);
+		diffuse = (0.0,0.0,0.8);
    	 	specular=( 0,0,0);
     	emissive=( 0,0,0);
     	transmissive=( 0.8,0.8,0.8 );
@@ -37,10 +37,22 @@ sphere{
 
 translate(-0.5,-0.5,0,
 scale(0.2,
+box{
+	material = {
+		diffuse = (0.0,0.0,0.8);
+   	 	specular=( 0,0,0);
+    	emissive=( 0,0,0);
+    	transmissive=( 0.8,0.8,0.8 );
+    	index = 2.0;
+	};
+}))
+
+translate(-0.5,-1.7,0,
+scale(0.2,
 sphere{
 	material = {
-		diffuse = (0.0,0.0,0.3);
-   	 	specular=( 0,0,0);
+		diffuse = (0.0,0.0,0.8);
+   	 	specular=( 0.3,0.3,0.3);
     	emissive=( 0,0,0);
     	transmissive=( 0.8,0.8,0.8 );
     	index = 2.0;

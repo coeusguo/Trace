@@ -23,9 +23,11 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ,bool enableSo
 
 		vec3f diffuseColor = kd;
 		
-		vec3f temp = ((MaterialSceneObject*)(i.obj))->getTextureColor(r.at(i.t));
-		if (scene->getUsingTexture())
+		
+		if (scene->getUsingTexture()) {
+			vec3f temp = ((MaterialSceneObject*)(i.obj))->getTextureColor(r.at(i.t));
 			diffuseColor = temp;
+		}
 
 		if (scene->getUsingBump())
 			normal = i.obj->getBumpNormal();
@@ -68,12 +70,12 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ,bool enableSo
 
 vec3f Material::computeCaustic(Scene* scene, vec3f& pos, vec3f& normal,vec3f& viewDir)const {
 	range* r = new range;
-	r->xRange[0] = pos[0] - 0.03;
-	r->xRange[1] = pos[0] + 0.03;
-	r->yRange[0] = pos[1] - 0.03;
-	r->yRange[1] = pos[1] + 0.03;
-	r->zRange[0] = pos[2] - 0.03;
-	r->zRange[1] = pos[2] + 0.03;
+	r->xRange[0] = pos[0] - 0.05;
+	r->xRange[1] = pos[0] + 0.05;
+	r->yRange[0] = pos[1] - 0.05;
+	r->yRange[1] = pos[1] + 0.05;
+	r->zRange[0] = pos[2] - 0.05;
+	r->zRange[1] = pos[2] + 0.05;
 
 	vector<photon*> plist;
 	scene->getPhotons(plist, r);

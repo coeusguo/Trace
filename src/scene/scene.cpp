@@ -167,7 +167,7 @@ void Scene::initScene()
 		}
 	}
 
-	iniOctree(-5, -5, -5, 10, 10, 10, 7);
+	//iniOctree(-5, -5, -5, 10, 10, 10, 7);
 	//cout << photonList.size() << endl;
 }
 

@@ -362,7 +362,7 @@ void Light::forwardTracing(ray& r, photon* p, int depth,bool isInside) {
 		vec3f pos = r.at(i.t);
 		vec3f normal = i.N;
 
-		if (isSpecular) {
+		if (isSpecular && !isInside) {
 			photon* newP = p;
 			if (isTransmissive) {
 				newP = new photon;
@@ -385,7 +385,7 @@ void Light::forwardTracing(ray& r, photon* p, int depth,bool isInside) {
 
 			if (newDir.length() != 0) {
 				ray newRay(pos, newDir);
-				p->energy = prod(prod(m.kt, p->energy), color);
+				p->energy = prod(m.kt, p->energy);
 				p->direction = newDir;
 				forwardTracing(newRay, p, depth + 1, !isInside);
 			}

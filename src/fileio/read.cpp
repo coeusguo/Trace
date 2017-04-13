@@ -22,7 +22,7 @@
 #include "../scene/light.h"
 #include "../SceneObjects/Metaball.h"
 #include "../SceneObjects/CSG.h"
-
+#include "../SceneObjects/ParticleSystem.h"
 typedef map<string,Material*> mmap;
 
 static void processObject( Obj *obj, Scene *scene, mmap& materials );
@@ -319,7 +319,8 @@ static void processGeometry( string name, Obj *child, Scene *scene,
 		else if( name == "box" ) {
 			obj = new Box( scene, mat );
 		} else if( name == "cylinder" ) {
-			bool capped = getField(child, "capped")->getBoolean();
+			bool capped = true;
+			maybeExtractField(child, "capped",capped);
 			obj = new Cylinder( scene, mat,capped );
 		} else if( name == "cone" ) {
 			double height = 1.0;
@@ -335,6 +336,22 @@ static void processGeometry( string name, Obj *child, Scene *scene,
 			obj = new Cone( scene, mat, height, bottom_radius, top_radius, capped );
 		} else if( name == "square" ) {
 			obj = new Square( scene, mat );
+		}
+		else if (name == "meteorite") {
+			//cout << "£¿" << endl;
+			vec3f direction = tupleToVec(getField(child, "direction")).normalize();
+			vec3f startColorMin = tupleToVec(getField(child, "startColorMin"));
+			vec3f startColorMax = tupleToVec(getField(child, "startColorMax"));
+			vec3f endColorMin = tupleToVec(getField(child, "endColorMin"));
+			vec3f endColorMax = tupleToVec(getField(child, "endColorMax"));
+			float force = getField(child, "force")->getScalar();
+			int minLife = getField(child, "minLife")->getScalar();
+			int maxLife = getField(child, "maxLife")->getScalar();
+			int numEmit = getField(child, "numEmit")->getScalar();
+			float maxSpeed = getField(child, "maxSpeed")->getScalar();
+			float minSpeed = getField(child, "minSpeed")->getScalar();
+			int maxNumParticles = getField(child, "maxNumParticles")->getScalar();
+			obj = new ParticleSystem(direction, startColorMin, startColorMax, endColorMin, endColorMax, force, minLife, maxLife, numEmit, maxNumParticles, maxSpeed, minSpeed, scene, mat);
 		}
 
         obj->setTransform(transform);
@@ -582,7 +599,8 @@ static void processObject( Obj *obj, Scene *scene, mmap& materials )
                 name == "trimesh" ||
                 name == "polymesh"||// polymesh is for backwards compatibility.
 				name == "metaball"||
-				name == "csg") { 
+				name == "csg"||
+				name == "meteorite") { 
 		processGeometry( name, child, scene, materials, &scene->transformRoot);
 		//scene->add( geo );
 	} else if( name == "material" ) {

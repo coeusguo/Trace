@@ -87,7 +87,7 @@ material{
     transmissive=( 0,0,0 );
 }
 
-translate(1.0,0.0,0.0,
+
 csg{
 	primitiveNumber = 5;
 	
@@ -126,7 +126,7 @@ csg{
 
 	operator = ((0,"intersect",1),"minus",((2,"union",3),"union",4));
 	//operator = (0,"intersect",1);
-})
+}
 /*
 translate(0.0,1.0,0.0,
 cag{

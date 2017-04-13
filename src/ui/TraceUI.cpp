@@ -675,7 +675,7 @@ TraceUI::TraceUI() {
 		m_BuildOctreeButton->user_data((void*)(this));
 		m_BuildOctreeButton->callback(cb_octree_rebuild);
 
-		m_octreeXSlider = new Fl_Value_Slider(10, 380, 90, 20, "X");
+		m_octreeXSlider = new Fl_Value_Slider(10, 375, 90, 20, "X");
 		m_octreeXSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_octreeXSlider->type(FL_HOR_NICE_SLIDER);
 		m_octreeXSlider->labelfont(FL_COURIER);
@@ -687,7 +687,7 @@ TraceUI::TraceUI() {
 		m_octreeXSlider->align(FL_ALIGN_RIGHT);
 		m_octreeXSlider->callback(cb_octree_X);
 
-		m_octreeYSlider = new Fl_Value_Slider(120, 380, 90, 20, "Y");
+		m_octreeYSlider = new Fl_Value_Slider(120, 375, 90, 20, "Y");
 		m_octreeYSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_octreeYSlider->type(FL_HOR_NICE_SLIDER);
 		m_octreeYSlider->labelfont(FL_COURIER);
@@ -699,7 +699,7 @@ TraceUI::TraceUI() {
 		m_octreeYSlider->align(FL_ALIGN_RIGHT);
 		m_octreeYSlider->callback(cb_octree_Y);
 
-		m_octreeZSlider = new Fl_Value_Slider(230, 380, 90, 20, "Z");
+		m_octreeZSlider = new Fl_Value_Slider(230, 375, 90, 20, "Z");
 		m_octreeZSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_octreeZSlider->type(FL_HOR_NICE_SLIDER);
 		m_octreeZSlider->labelfont(FL_COURIER);
@@ -711,7 +711,7 @@ TraceUI::TraceUI() {
 		m_octreeZSlider->align(FL_ALIGN_RIGHT);
 		m_octreeZSlider->callback(cb_octree_Z);
 
-		m_octreeXSizeSlider = new Fl_Value_Slider(10, 405, 90, 20, "XS");
+		m_octreeXSizeSlider = new Fl_Value_Slider(10, 400, 90, 20, "XS");
 		m_octreeXSizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_octreeXSizeSlider->type(FL_HOR_NICE_SLIDER);
 		m_octreeXSizeSlider->labelfont(FL_COURIER);
@@ -723,7 +723,7 @@ TraceUI::TraceUI() {
 		m_octreeXSizeSlider->align(FL_ALIGN_RIGHT);
 		m_octreeXSizeSlider->callback(cb_octree_XS);
 
-		m_octreeYSizeSlider = new Fl_Value_Slider(120, 405, 90, 20, "YS");
+		m_octreeYSizeSlider = new Fl_Value_Slider(120, 400, 90, 20, "YS");
 		m_octreeYSizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_octreeYSizeSlider->type(FL_HOR_NICE_SLIDER);
 		m_octreeYSizeSlider->labelfont(FL_COURIER);
@@ -735,7 +735,7 @@ TraceUI::TraceUI() {
 		m_octreeYSizeSlider->align(FL_ALIGN_RIGHT);
 		m_octreeYSizeSlider->callback(cb_octree_YS);
 
-		m_octreeZSizeSlider = new Fl_Value_Slider(230, 405, 90, 20, "ZS");
+		m_octreeZSizeSlider = new Fl_Value_Slider(230, 400, 90, 20, "ZS");
 		m_octreeZSizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_octreeZSizeSlider->type(FL_HOR_NICE_SLIDER);
 		m_octreeZSizeSlider->labelfont(FL_COURIER);
@@ -748,12 +748,12 @@ TraceUI::TraceUI() {
 		m_octreeZSizeSlider->callback(cb_octree_ZS);
 
 		m_nEnableCaustic = false;
-		m_EnableCausticButton = new Fl_Light_Button(120, 430, 130, 25, "&Enable Caustics");
+		m_EnableCausticButton = new Fl_Light_Button(120, 425, 130, 25, "&Enable Caustics");
 		m_EnableCausticButton->user_data((void*)(this));
 		m_EnableCausticButton->callback(cb_caustics_button);
 		m_EnableCausticButton->value(m_nEnableCaustic);
 
-		m_BuildPhotonMapButton = new Fl_Button(10, 430, 100, 25, "&Init Caustics");
+		m_BuildPhotonMapButton = new Fl_Button(10, 425, 100, 25, "&Init Caustics");
 		m_BuildPhotonMapButton->user_data((void*)(this));
 		m_BuildPhotonMapButton->callback(cb_built_photonMap);
 
