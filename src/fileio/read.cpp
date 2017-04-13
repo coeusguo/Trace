@@ -23,6 +23,8 @@
 #include "../SceneObjects/Metaball.h"
 #include "../SceneObjects/CSG.h"
 #include "../SceneObjects/ParticleSystem.h"
+#include "../SceneObjects/Paraboloid.h"
+#include "../SceneObjects/Hyperbolic.h"
 typedef map<string,Material*> mmap;
 
 static void processObject( Obj *obj, Scene *scene, mmap& materials );
@@ -337,6 +339,12 @@ static void processGeometry( string name, Obj *child, Scene *scene,
 		} else if( name == "square" ) {
 			obj = new Square( scene, mat );
 		}
+		else if (name == "paraboloid") {
+			obj = new Paraboloid(scene, mat);
+		}
+		else if (name == "hyperbolic") {
+			obj = new Hyperbolic(scene, mat);
+		}
 		else if (name == "meteorite") {
 			//cout << "£¿" << endl;
 			vec3f direction = tupleToVec(getField(child, "direction")).normalize();
@@ -595,6 +603,8 @@ static void processObject( Obj *obj, Scene *scene, mmap& materials )
 				name == "translate" ||
 				name == "rotate" ||
 				name == "scale" ||
+				name == "paraboloid" ||
+				name == "hyperbolic" ||
 				name == "transform" ||
                 name == "trimesh" ||
                 name == "polymesh"||// polymesh is for backwards compatibility.
