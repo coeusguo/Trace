@@ -13,7 +13,10 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ,bool enableSo
 	cliter l;
 	vec3f normal = i.N;
 	vec3f point = r.at(i.t);
-	vec3f color = ke + prod(ka, scene->getAmbientLight() * scene->getAmbientLightFactor());
+	vec3f trans(1.0, 1.0, 1.0);
+	trans -= kt;
+	vec3f color = ke + prod(prod(ka, scene->getAmbientLight() * scene->getAmbientLightFactor()), trans);
+
 	for (l = scene->beginLights(); l != scene->endLights(); ++l) {
 		vec3f lightDirection = (*l)->getDirection(point);
 
@@ -43,7 +46,7 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ,bool enableSo
 			spec = 0;
 		spec = pow(spec, shininess * 128);
 
-		vec3f result = (diffuseColor * diffuse + ks * spec) * fatt;
+		vec3f result = (prod(diffuseColor * diffuse, trans) + ks * spec) * fatt;
 		for (int k = 0; k < 3; k++)
 			result[k] = result[k] * ii[k] * satt[k];
 
@@ -51,14 +54,13 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ,bool enableSo
 	}
 
 	
-	vec3f trans(1.0, 1.0, 1.0);
-	trans -= kt;
+
 
 	vec3f caustic(0.0, 0.0, 0.0);
 	if (kt.length() == 0 && kr.length() == 0 && scene->getEnableCaustic() && scene->isPhotonMapLoaded()) {
 		caustic = computeCaustic(scene, r.at(i.t), normal,r.getDirection());
 	}
-	color = prod(color, trans) + caustic;
+	color += caustic;
 
 	for (int i = 0; i < 3; i++)
 		if (color[i] > 1.0)

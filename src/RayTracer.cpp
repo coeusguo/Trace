@@ -125,69 +125,70 @@ vec3f RayTracer::traceRay(Scene *scene, ray& r,
 		//cout << "?";
 		phong = m.shade(scene, r, i, enableSoftShadow);
 		//cout << "?";
-		//reflection
-		vec3f reflecVec = r.getDirection() - r.getDirection() * normal * 2 * normal;
-		reflecVec = reflecVec.normalize();
-		ray newRay(pos, reflecVec);
-		
-		refColor = traceRay(scene, newRay, thresh, depth + 1,materials);
+		if (phong.length() / (depth + 1) > threshold) {
+			//reflection
+			vec3f reflecVec = r.getDirection() - r.getDirection() * normal * 2 * normal;
+			reflecVec = reflecVec.normalize();
+			ray newRay(pos, reflecVec);
 
-		//glossy reflection
-		if (enableGlossy) {
-			uniform_real_distribution<double> rand(0, 2);
-			static default_random_engine re;
+			refColor = traceRay(scene, newRay, thresh, depth + 1, materials);
 
-			vec3f u = (reflecVec ^ normal).normalize();
-			vec3f v = (u ^ reflecVec).normalize();
-			for (int i = 0; i < 50; i++) {
-				float deltaU = rand(re) - 1.0;
-				float deltaV = rand(re) - 1.0;
+			//glossy reflection
+			if (enableGlossy) {
+				uniform_real_distribution<double> rand(0, 2);
+				static default_random_engine re;
 
-				vec3f newReflecVec = (reflecVec + u * deltaU * 0.05 + v * deltaV * 0.05).normalize();
-				ray newRay(pos, newReflecVec);
-				refColor += traceRay(scene, newRay, thresh, scene->getDepth() - 2, materials);
+				vec3f u = (reflecVec ^ normal).normalize();
+				vec3f v = (u ^ reflecVec).normalize();
+				for (int i = 0; i < 50; i++) {
+					float deltaU = rand(re) - 1.0;
+					float deltaV = rand(re) - 1.0;
+
+					vec3f newReflecVec = (reflecVec + u * deltaU * 0.05 + v * deltaV * 0.05).normalize();
+					ray newRay(pos, newReflecVec);
+					refColor += traceRay(scene, newRay, thresh, scene->getDepth() - 2, materials);
+				}
+				for (int i = 0; i < 3; i++)
+					refColor[i] /= 51.0f;
 			}
-			for (int i = 0; i < 3; i++)
-				refColor[i] /= 51.0f;
-		}
 
-		
-		refColor = prod(refColor, m.kr);
 
-		//refraction
-		//the matrial is transmissive if length > 0
-		if (m.kt.length() > 0) {
-			vec3f newDir;
-			//stack is empty, air -> outermost object
-			if (materials.empty()) {
-				materials.push(m);
-				//cout << m.id << ",";
-				newDir = refractionDirection(normal, dir, 1.0, m.index);
-			}
-			else {//not empty, obj -> obj, obj->air
-				Material& material = materials.top();
-				if (material.id != m.id) {//differect object,the ray must be go the inner object
+			refColor = prod(refColor, m.kr);
+
+			//refraction
+			//the matrial is transmissive if length > 0
+			if (m.kt.length() > 0) {
+				vec3f newDir;
+				//stack is empty, air -> outermost object
+				if (materials.empty()) {
 					materials.push(m);
-					newDir = refractionDirection(normal, dir, material.index, m.index);
+					//cout << m.id << ",";
+					newDir = refractionDirection(normal, dir, 1.0, m.index);
 				}
-				else {//the same object,the ray escape from the inner object to outer object or to the air
-					materials.pop();
-					if (materials.empty()) {//current object is the outermost object,obj -> air
-						newDir = refractionDirection(normal, dir, material.index, 1.0);
+				else {//not empty, obj -> obj, obj->air
+					Material& material = materials.top();
+					if (material.id != m.id) {//differect object,the ray must be go the inner object
+						materials.push(m);
+						newDir = refractionDirection(normal, dir, material.index, m.index);
 					}
-					else {//not the outermost object,inner object -> outer object
-						Material& outer = materials.top();
-						newDir = refractionDirection(normal, dir, material.index, outer.index);
+					else {//the same object,the ray escape from the inner object to outer object or to the air
+						materials.pop();
+						if (materials.empty()) {//current object is the outermost object,obj -> air
+							newDir = refractionDirection(normal, dir, material.index, 1.0);
+						}
+						else {//not the outermost object,inner object -> outer object
+							Material& outer = materials.top();
+							newDir = refractionDirection(normal, dir, material.index, outer.index);
+						}
 					}
 				}
+				ray newRay(pos, newDir);
+				if (newDir.length() != 0)//no inner reflection
+					refraColor = traceRay(scene, newRay, thresh, depth + 1, materials);
 			}
-			ray newRay(pos, newDir);
-			if(newDir.length()!=0)//no inner reflection
-				refraColor = traceRay(scene, newRay, thresh, depth + 1, materials);
+
+			refraColor = prod(refraColor, m.kt);
 		}
-
-		refraColor = prod(refraColor, m.kt);
-
 		vec3f result = phong + refColor + refraColor;
 		return result;
 	}
@@ -223,6 +224,7 @@ RayTracer::RayTracer()
 	gridSize = 3;
 	apertureSize = 2;
 	focalLength = 2.0;
+	threshold = 0.0;
 	enableDepthOfField = false;
 	enableGlossy = false;
 	enableSoftShadow = false;

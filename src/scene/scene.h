@@ -361,6 +361,7 @@ public:
 	void initPhotonMap();
 	bool isPhotonMapLoaded() { return kdtree?true:false; }
 	void getPhotons(vector<photon*>& plist,range* r);
+
 private:
     list<Geometry*> objects;
 	list<Geometry*> nonboundedobjects;
@@ -393,6 +394,7 @@ private:
 	bool enableCaustics;
 	vector<photon*> photonList;
 	kdNode* kdtree;
+
 
 	// Each object in the scene, provided that it has hasBoundingBoxCapability(),
 	// must fall within this bounding box.  Objects that don't have hasBoundingBoxCapability()

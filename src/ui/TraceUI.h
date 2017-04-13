@@ -44,7 +44,7 @@ public:
 	Fl_Slider*			m_octreeXSizeSlider;
 	Fl_Slider*			m_octreeYSizeSlider;
 	Fl_Slider*			m_octreeZSizeSlider;
-
+	Fl_Slider*			m_ThresholdSlider;
 
 	Fl_Button*			m_renderButton;
 	Fl_Button*			m_stopButton;
@@ -81,6 +81,9 @@ private:
 
 	int			m_nSize;
 	int			m_nDepth;
+	
+	//adaptive termination
+	float		m_nThreshold;
 
 	//distanceAttenuation
 	double		m_nQuadric;
@@ -173,6 +176,7 @@ private:
 	static void cb_octree_rebuild(Fl_Widget* o, void* v);
 	static void cb_caustics_button(Fl_Widget* o, void* v);
 	static void cb_built_photonMap(Fl_Widget* o, void* v);
+	static void cb_adaptive_termination(Fl_Widget* o, void* v);
 
 	static void cb_render(Fl_Widget* o, void* v);
 	static void cb_stop(Fl_Widget* o, void* v);

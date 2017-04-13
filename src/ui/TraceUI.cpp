@@ -312,6 +312,13 @@ void TraceUI::cb_built_photonMap(Fl_Widget* o, void* v) {
 		pUI->raytracer->getScene()->initPhotonMap();
 }
 
+//adaptive termination
+void TraceUI::cb_adaptive_termination(Fl_Widget* o, void* v) {
+	TraceUI* pUI = ((TraceUI*)(o->user_data()));
+	pUI->m_nThreshold = ((Fl_Slider *)o)->value();
+	pUI->raytracer->setThreshold(pUI->m_nThreshold);
+}
+
 void TraceUI::cb_render(Fl_Widget* o, void* v)
 {
 	char buffer[256];
@@ -438,7 +445,7 @@ TraceUI::TraceUI() {
 	// init.
 	m_nDepth = 0;
 	m_nSize = 150;
-	m_mainWindow = new Fl_Window(100, 40, 350, 460, "Ray <Not Loaded>");
+	m_mainWindow = new Fl_Window(100, 40, 350, 480, "Ray <Not Loaded>");
 		m_mainWindow->user_data((void*)(this));	// record self to be used by static callback functions
 		// install menu bar
 		m_menubar = new Fl_Menu_Bar(0, 0, 350, 25);
@@ -527,6 +534,20 @@ TraceUI::TraceUI() {
 		m_ambientLightSlider->align(FL_ALIGN_RIGHT);
 		m_ambientLightSlider->callback(cb_ambientLightSlides);
 
+		// install slider ambient light
+		m_nThreshold = 0.00;
+		m_ThresholdSlider = new Fl_Value_Slider(10, 180, 180, 20, "Threshold");
+		m_ThresholdSlider->user_data((void*)(this));	// record self to be used by static callback functions
+		m_ThresholdSlider->type(FL_HOR_NICE_SLIDER);
+		m_ThresholdSlider->labelfont(FL_COURIER);
+		m_ThresholdSlider->labelsize(12);
+		m_ThresholdSlider->minimum(0);
+		m_ThresholdSlider->maximum(1);
+		m_ThresholdSlider->step(0.01);
+		m_ThresholdSlider->value(m_nThreshold);
+		m_ThresholdSlider->align(FL_ALIGN_RIGHT);
+		m_ThresholdSlider->callback(cb_adaptive_termination);
+
 		m_renderButton = new Fl_Button(270, 27, 70, 25, "&Render");
 		m_renderButton->user_data((void*)(this));
 		m_renderButton->callback(cb_render);
@@ -539,25 +560,25 @@ TraceUI::TraceUI() {
 		m_nAdaptive = false;
 		m_nJitter = false;
 		m_nSuperSampling = false;
-		m_AntiSuperSampButton = new Fl_Light_Button(10, 180, 120, 25, "&Supper Samp");
+		m_AntiSuperSampButton = new Fl_Light_Button(10, 205, 120, 25, "&Supper Samp");
 		m_AntiSuperSampButton->user_data((void*)(this));
 		m_AntiSuperSampButton->callback(cb_Anti_Super_button);
 		m_AntiSuperSampButton->value(m_nSuperSampling);
 
 		//anti aliasing by supper sampling button
-		m_AntiAdaptSampButton = new Fl_Light_Button(140, 180, 130, 25, "&Adapt Supper");
+		m_AntiAdaptSampButton = new Fl_Light_Button(140, 205, 130, 25, "&Adapt Supper");
 		m_AntiAdaptSampButton->user_data((void*)(this));
 		m_AntiAdaptSampButton->callback(cb_Anti_Adaptive_button);
 		m_AntiAdaptSampButton->value(m_nAdaptive);
 
-		m_JitterButton = new Fl_Light_Button(280, 180, 60, 25, "&Jitter");
+		m_JitterButton = new Fl_Light_Button(280, 205, 60, 25, "&Jitter");
 		m_JitterButton->user_data((void*)(this));
 		m_JitterButton->callback(cb_Jitter_button);
 		m_JitterButton->value(m_nJitter);
 
 		//anti aliasing grid size slider
 		// install slider ambient light
-		m_ambientLightSlider = new Fl_Value_Slider(10, 210, 180, 20, "Number of sup-pixel");
+		m_ambientLightSlider = new Fl_Value_Slider(10, 235, 180, 20, "Number of sup-pixel");
 		m_ambientLightSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_ambientLightSlider->type(FL_HOR_NICE_SLIDER);
 		m_ambientLightSlider->labelfont(FL_COURIER);
@@ -570,7 +591,7 @@ TraceUI::TraceUI() {
 		m_ambientLightSlider->callback(cb_antiAliasingGridSizeSlides);
 
 		m_nbackground = false;
-		m_backgroundButton = new Fl_Light_Button(10, 235, 110, 25, "&Background");
+		m_backgroundButton = new Fl_Light_Button(10, 260, 110, 25, "&Background");
 		m_backgroundButton->user_data((void*)(this));
 		m_backgroundButton->callback(cb_Background_button);
 		m_backgroundButton->value(m_nbackground);
@@ -578,13 +599,13 @@ TraceUI::TraceUI() {
 
 		m_nBump = false;
 		m_nTexture = false;
-		m_textureButton = new Fl_Light_Button(130, 235, 80, 25, "&Texture");
+		m_textureButton = new Fl_Light_Button(130, 260, 80, 25, "&Texture");
 		m_textureButton->user_data((void*)(this));
 		m_textureButton->callback(cb_Texture_button);
 		m_textureButton->value(m_nTexture);
 		m_textureButton->deactivate();
 
-		m_BumpButton = new Fl_Light_Button(220, 235, 120, 25, "&Bump mapping");
+		m_BumpButton = new Fl_Light_Button(220, 260, 120, 25, "&Bump mapping");
 		m_BumpButton->user_data((void*)(this));
 		m_BumpButton->callback(cb_Bump_mapping_button);
 		m_BumpButton->value(m_nBump);
@@ -594,33 +615,33 @@ TraceUI::TraceUI() {
 		m_nDepthOfField = false;
 		m_nFocalLength = 2.0;
 		m_nApertureSize = 2;
-		m_DepthFieldButton = new Fl_Light_Button(10, 265, 60, 25, "&DOF");
+		m_DepthFieldButton = new Fl_Light_Button(10, 290, 60, 25, "&DOF");
 		m_DepthFieldButton->user_data((void*)(this));
 		m_DepthFieldButton->callback(cb_depth_of_field_button);
 		m_DepthFieldButton->value(m_nDepthOfField);
 
 		//glossy reflection
 		m_nEnableGlossy = false;
-		m_GlossyReflectionButton = new Fl_Light_Button(80, 265, 70, 25, "&Glossy");
+		m_GlossyReflectionButton = new Fl_Light_Button(80, 290, 70, 25, "&Glossy");
 		m_GlossyReflectionButton->user_data((void*)(this));
 		m_GlossyReflectionButton->callback(cb_glossy_reflection);
 		m_GlossyReflectionButton->value(m_nEnableGlossy);
 
 		//soft shadow
 		m_nEnableSoftShadow = false;
-		m_SoftShadowButton = new Fl_Light_Button(160, 265, 100, 25, "&Soft Shadow");
+		m_SoftShadowButton = new Fl_Light_Button(160, 290, 100, 25, "&Soft Shadow");
 		m_SoftShadowButton->user_data((void*)(this));
 		m_SoftShadowButton->callback(cb_soft_shadow);
 		m_SoftShadowButton->value(m_nEnableSoftShadow);
 
 		//motion blur
 		m_nEnableMotionBlur = false;
-		m_MotionBlurButton = new Fl_Light_Button(270, 265, 70, 25, "&Motion");
+		m_MotionBlurButton = new Fl_Light_Button(270, 290, 70, 25, "&Motion");
 		m_MotionBlurButton->user_data((void*)(this));
 		m_MotionBlurButton->callback(cb_motion_blur);
 		m_MotionBlurButton->value(m_nEnableSoftShadow);
 
-		m_FocalLengthSlider = new Fl_Value_Slider(10, 295, 180, 20, "Focal Length");
+		m_FocalLengthSlider = new Fl_Value_Slider(10, 320, 180, 20, "Focal Length");
 		m_FocalLengthSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_FocalLengthSlider->type(FL_HOR_NICE_SLIDER);
 		m_FocalLengthSlider->labelfont(FL_COURIER);
@@ -632,7 +653,7 @@ TraceUI::TraceUI() {
 		m_FocalLengthSlider->align(FL_ALIGN_RIGHT);
 		m_FocalLengthSlider->callback(cb_focal_length_Slides);
 
-		m_ApertureSizeSlider = new Fl_Value_Slider(10, 320, 180, 20, "Aperture Size");
+		m_ApertureSizeSlider = new Fl_Value_Slider(10, 345, 180, 20, "Aperture Size");
 		m_ApertureSizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_ApertureSizeSlider->type(FL_HOR_NICE_SLIDER);
 		m_ApertureSizeSlider->labelfont(FL_COURIER);
@@ -654,12 +675,12 @@ TraceUI::TraceUI() {
 		m_nOctreeYSize = 10;
 		m_nOctreeZSize = 10;
 
-		m_OctreeButton = new Fl_Light_Button(10, 345, 80, 25, "&Octree");
+		m_OctreeButton = new Fl_Light_Button(10, 370, 80, 25, "&Octree");
 		m_OctreeButton->user_data((void*)(this));
 		m_OctreeButton->callback(cb_octree);
 		m_OctreeButton->value(m_nEnableOctree);
 
-		m_octreeDepthSlider = new Fl_Value_Slider(180, 347, 120, 20, "Depth");
+		m_octreeDepthSlider = new Fl_Value_Slider(180, 372, 120, 20, "Depth");
 		m_octreeDepthSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_octreeDepthSlider->type(FL_HOR_NICE_SLIDER);
 		m_octreeDepthSlider->labelfont(FL_COURIER);
@@ -671,11 +692,11 @@ TraceUI::TraceUI() {
 		m_octreeDepthSlider->align(FL_ALIGN_RIGHT);
 		m_octreeDepthSlider->callback(cb_octree_depth);
 
-		m_BuildOctreeButton = new Fl_Button(100, 345, 70, 25, "&Rebuild");
+		m_BuildOctreeButton = new Fl_Button(100, 370, 70, 25, "&Rebuild");
 		m_BuildOctreeButton->user_data((void*)(this));
 		m_BuildOctreeButton->callback(cb_octree_rebuild);
 
-		m_octreeXSlider = new Fl_Value_Slider(10, 375, 90, 20, "X");
+		m_octreeXSlider = new Fl_Value_Slider(10, 400, 90, 20, "X");
 		m_octreeXSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_octreeXSlider->type(FL_HOR_NICE_SLIDER);
 		m_octreeXSlider->labelfont(FL_COURIER);
@@ -687,7 +708,7 @@ TraceUI::TraceUI() {
 		m_octreeXSlider->align(FL_ALIGN_RIGHT);
 		m_octreeXSlider->callback(cb_octree_X);
 
-		m_octreeYSlider = new Fl_Value_Slider(120, 375, 90, 20, "Y");
+		m_octreeYSlider = new Fl_Value_Slider(120, 400, 90, 20, "Y");
 		m_octreeYSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_octreeYSlider->type(FL_HOR_NICE_SLIDER);
 		m_octreeYSlider->labelfont(FL_COURIER);
@@ -699,7 +720,7 @@ TraceUI::TraceUI() {
 		m_octreeYSlider->align(FL_ALIGN_RIGHT);
 		m_octreeYSlider->callback(cb_octree_Y);
 
-		m_octreeZSlider = new Fl_Value_Slider(230, 375, 90, 20, "Z");
+		m_octreeZSlider = new Fl_Value_Slider(230, 400, 90, 20, "Z");
 		m_octreeZSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_octreeZSlider->type(FL_HOR_NICE_SLIDER);
 		m_octreeZSlider->labelfont(FL_COURIER);
@@ -711,7 +732,7 @@ TraceUI::TraceUI() {
 		m_octreeZSlider->align(FL_ALIGN_RIGHT);
 		m_octreeZSlider->callback(cb_octree_Z);
 
-		m_octreeXSizeSlider = new Fl_Value_Slider(10, 400, 90, 20, "XS");
+		m_octreeXSizeSlider = new Fl_Value_Slider(10, 425, 90, 20, "XS");
 		m_octreeXSizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_octreeXSizeSlider->type(FL_HOR_NICE_SLIDER);
 		m_octreeXSizeSlider->labelfont(FL_COURIER);
@@ -723,7 +744,7 @@ TraceUI::TraceUI() {
 		m_octreeXSizeSlider->align(FL_ALIGN_RIGHT);
 		m_octreeXSizeSlider->callback(cb_octree_XS);
 
-		m_octreeYSizeSlider = new Fl_Value_Slider(120, 400, 90, 20, "YS");
+		m_octreeYSizeSlider = new Fl_Value_Slider(120, 425, 90, 20, "YS");
 		m_octreeYSizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_octreeYSizeSlider->type(FL_HOR_NICE_SLIDER);
 		m_octreeYSizeSlider->labelfont(FL_COURIER);
@@ -735,7 +756,7 @@ TraceUI::TraceUI() {
 		m_octreeYSizeSlider->align(FL_ALIGN_RIGHT);
 		m_octreeYSizeSlider->callback(cb_octree_YS);
 
-		m_octreeZSizeSlider = new Fl_Value_Slider(230, 400, 90, 20, "ZS");
+		m_octreeZSizeSlider = new Fl_Value_Slider(230, 425, 90, 20, "ZS");
 		m_octreeZSizeSlider->user_data((void*)(this));	// record self to be used by static callback functions
 		m_octreeZSizeSlider->type(FL_HOR_NICE_SLIDER);
 		m_octreeZSizeSlider->labelfont(FL_COURIER);
@@ -748,12 +769,12 @@ TraceUI::TraceUI() {
 		m_octreeZSizeSlider->callback(cb_octree_ZS);
 
 		m_nEnableCaustic = false;
-		m_EnableCausticButton = new Fl_Light_Button(120, 425, 130, 25, "&Enable Caustics");
+		m_EnableCausticButton = new Fl_Light_Button(120, 450, 130, 25, "&Enable Caustics");
 		m_EnableCausticButton->user_data((void*)(this));
 		m_EnableCausticButton->callback(cb_caustics_button);
 		m_EnableCausticButton->value(m_nEnableCaustic);
 
-		m_BuildPhotonMapButton = new Fl_Button(10, 425, 100, 25, "&Init Caustics");
+		m_BuildPhotonMapButton = new Fl_Button(10, 450, 100, 25, "&Init Caustics");
 		m_BuildPhotonMapButton->user_data((void*)(this));
 		m_BuildPhotonMapButton->callback(cb_built_photonMap);
 
