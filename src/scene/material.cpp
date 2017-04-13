@@ -13,7 +13,7 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ,bool enableSo
 	cliter l;
 	vec3f normal = i.N;
 	vec3f point = r.at(i.t);
-	vec3f color = ke + ka * scene->getAmbientLight();
+	vec3f color = ke + prod(ka, scene->getAmbientLight() * scene->getAmbientLightFactor());
 	for (l = scene->beginLights(); l != scene->endLights(); ++l) {
 		vec3f lightDirection = (*l)->getDirection(point);
 
@@ -23,9 +23,8 @@ vec3f Material::shade( Scene *scene, const ray& r, const isect& i ,bool enableSo
 
 		vec3f diffuseColor = kd;
 		
-		
+		vec3f temp = ((MaterialSceneObject*)(i.obj))->getTextureColor(r.at(i.t));
 		if (scene->getUsingTexture()) {
-			vec3f temp = ((MaterialSceneObject*)(i.obj))->getTextureColor(r.at(i.t));
 			diffuseColor = temp;
 		}
 

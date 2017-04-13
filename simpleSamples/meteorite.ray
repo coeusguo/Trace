@@ -42,10 +42,10 @@ meteorite{
     	transmissive=( 0,0,0 );
 	};
 	direction = (1,1,0); 
-	startColorMin = (0.8,0.8,0.8);
-	startColorMax = (0.9,0.9,0.9);
-	endColorMin = (0.6,0.1,0.1);
-	endColorMax = (0.8,0.2,0.2);
+	startColorMin = (0.8,0.8,0.3);
+	startColorMax = (0.9,0.9,0.4);
+	endColorMin = (0.4,0.4,0.1);
+	endColorMax = (0.6,0.6,0.2);
 	force = 0.05;
 	minLife = 60;
 	maxLife = 80;

@@ -55,6 +55,20 @@ protected:
 	vec3f position;
 };
 
+class AmbientLight
+	: public Light
+{
+public:
+	AmbientLight(Scene *scene, const vec3f& color)
+		: Light(scene, color) {}
+	virtual vec3f shadowAttenuation(const vec3f& P, bool enableSoftShadow) const { return vec3f(1.0, 1.0, 1.0); };
+	virtual double distanceAttenuation(const vec3f& P) const{ return 1; }
+	virtual vec3f getColor(const vec3f& P) const { return color; }
+	virtual vec3f getDirection(const vec3f& P) const { return P.normalize(); }
+
+};
+
+
 class SpotLight
 	: public Light
 {

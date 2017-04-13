@@ -111,6 +111,7 @@ bool ParticleSystem::intersectLocal(const ray& r, isect& i)const {
 		i.N = one->speed.normalize();
 		m->kd = one->currentColor;
 		i.material = m;
+		i.obj = this;
 	}
 	return haveOne;
 }

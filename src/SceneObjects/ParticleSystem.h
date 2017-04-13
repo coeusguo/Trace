@@ -64,6 +64,7 @@ public:
 	}
 	virtual bool intersectLocal(const ray& r, isect& i) const;
 	virtual bool hasBoundingBoxCapability() const { return false; }
+	virtual vec3f getTextureColor(vec3f& interxecPoint) { return vec3f(0, 0, 0); }
 	~ParticleSystem() {
 		while (!recycleBin.empty()) {
 			particle* p = recycleBin.top();

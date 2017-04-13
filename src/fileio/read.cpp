@@ -595,6 +595,11 @@ static void processObject( Obj *obj, Scene *scene, mmap& materials )
 			tupleToVec(getField(child, "shape")),
 			tupleToVec(getColorField(child))));
 	}
+	else if (name == "ambient_light") {
+		vec3f abl = tupleToVec(getField(child, "color"));
+		scene->add(new AmbientLight(scene, abl));
+		scene->setAmbientLight(abl);
+	}
 	else if (name == "sphere" ||
 				name == "box" ||
 				name == "cylinder" ||

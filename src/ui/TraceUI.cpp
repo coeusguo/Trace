@@ -47,7 +47,7 @@ void TraceUI::cb_load_scene(Fl_Menu_* o, void* v)
 		pUI->raytracer->getScene()->setQuadric(pUI->m_nQuadric);
 		pUI->raytracer->getScene()->setLinear(pUI->m_nLinear);
 		pUI->raytracer->getScene()->setConstant(pUI->m_nConstant);
-		pUI->raytracer->getScene()->setAmbientLight(pUI->m_nAmbientLight);
+		pUI->raytracer->getScene()->setAmbientLightFactor(pUI->m_nAmbientLight);
 		pUI->raytracer->getScene()->setUsingTexture(pUI->m_nTexture);
 		pUI->raytracer->getScene()->setUsingBump(pUI->m_nBump);
 		pUI->raytracer->getScene()->setEnableOctree(pUI->m_nEnableOctree);
@@ -178,7 +178,7 @@ void TraceUI::cb_ambientLightSlides(Fl_Widget* o, void* v) {
 	TraceUI* pUI = (TraceUI*)(o->user_data());
 	pUI->m_nAmbientLight = double(((Fl_Slider *)o)->value());
 	if (pUI->raytracer->sceneLoaded())
-		pUI->raytracer->getScene()->setAmbientLight(double(((Fl_Slider *)o)->value()));
+		pUI->raytracer->getScene()->setAmbientLightFactor(double(((Fl_Slider *)o)->value()));
 }
 
 //anti-aliasing

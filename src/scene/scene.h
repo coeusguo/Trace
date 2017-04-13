@@ -273,7 +273,8 @@ public:
 		linear = 0.025;
 		quadric = 0.005;
 		depth = 0;
-		ambientLight = 0.20;
+		ambientLightFactor = 0.20;
+		ambientLight = vec3f(1.0, 1.0, 1.0);
 		m_ucTextureImage = NULL;
 		m_ucNormalMap = NULL;
 		usingTexture = false;
@@ -310,8 +311,11 @@ public:
 	double getLinear() { return linear * 0.1; }
 	double getQuadric() { return quadric * 0.05; }
 
-	void setAmbientLight(double value) { ambientLight = value; }
-	double getAmbientLight() { return ambientLight; }
+	void setAmbientLightFactor(double value) { ambientLightFactor = value; }
+	double getAmbientLightFactor() { return ambientLightFactor; }
+
+	void setAmbientLight(vec3f ambient) { ambientLight = ambient; }
+	vec3f getAmbientLight() { return ambientLight; }
 
 	//recurtion depth
 	void setDepth(int value) { depth = value; }
@@ -371,8 +375,8 @@ private:
 	double linear;
 	double quadric;
 	double depth;
-	double ambientLight;
-
+	double ambientLightFactor;
+	vec3f ambientLight;
 	//texture image
 	unsigned char* m_ucTextureImage;
 	unsigned char* m_ucNormalMap;

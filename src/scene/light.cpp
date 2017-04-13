@@ -154,10 +154,19 @@ vec3f SpotLight::getDirection(const vec3f& P) const
 double SpotLight::distanceAttenuation(const vec3f& P) const {
 	vec3f d = (P - position).normalize();
 	double value = d * direction;
+	double isInside = 0;
 	if (value >= angleCos)
-		return 1.0;
+		isInside = 1.0;
 	else
-		return 0.0;
+		isInside = 0.0;
+
+	double distance = (P - position).length();
+	Scene* scene = getScene();
+	double att = 1.0 / (scene->getConstant() + scene->getLinear() * distance + scene->getQuadric() * distance * distance);
+	if (att > 1.0)
+		return 1.0 * isInside;
+	else
+		return att * isInside;
 }
 
 vec3f SpotLight::shadowAttenuation(const vec3f& P, bool enableSoftShadow) const
@@ -278,7 +287,7 @@ double ShapeLight::distanceAttenuation(const vec3f& P) const {
 		return 0.0;
 
 	vec3f dir = (P - position).normalize();
-	return pow(dir * direction, powIndex);
+	return pow(dir * direction, powIndex * 20);
 }
 
 vec3f ShapeLight::shadowAttenuation(const vec3f& P, bool enableSoftShadow) const
